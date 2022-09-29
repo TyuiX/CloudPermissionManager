@@ -1,0 +1,36 @@
+.page-header {
+    display:flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid black;
+    font-size: 16px;
+    font-weight: bold;
+    align-items: center;
+}
+
+.header-section {
+    display:flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+}
+
+.login-signup-link {
+    border-radius: 10px;
+    text-decoration: none;
+    color: inherit;
+    padding: 5px 20px;
+    border: 2px solid black;
+    transition: 0.2s;
+    margin-left: 10px;
+}
+
+.login-signup-link:first-child:hover {
+    background-color: cornflowerblue;
+}
+
+.login-signup-link:hover {
+    background-color: mediumseagreen;
+    color: white;
+    border: 2px solid white;
+}
