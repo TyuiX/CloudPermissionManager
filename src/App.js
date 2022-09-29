@@ -1,12 +1,12 @@
 import './App.css';
-import PageHeader from "./components/common-page-components/PageHeader";
+import PageHeader from "./components/common-page-components/PageHeader/PageHeader";
 import { Route, Routes } from "react-router-dom";
-import PageSideBar from "./components/common-page-components/sidebar-components/PageSideBar";
+import PageSideBar from "./components/common-page-components/PageSidebar/PageSideBar";
 
 function App() {
   return (
       <>
-          <PageHeader />
+          <PageHeader loggedIn={false} />
           <PageSideBar />
           <Routes>
               <Route path="/" element={<div>Home</div>} />
