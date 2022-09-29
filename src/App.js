@@ -1,11 +1,13 @@
 import './App.css';
-import PageHeader from "./components/PageHeader";
+import PageHeader from "./components/common-page-components/PageHeader";
 import { Route, Routes } from "react-router-dom";
+import PageSideBar from "./components/common-page-components/PageSideBar";
 
 function App() {
   return (
       <>
           <PageHeader />
+          <PageSideBar />
           <Routes>
               <Route path="/" element={<div>Home</div>} />
               <Route path="/files" element={<div>Files</div>} />
