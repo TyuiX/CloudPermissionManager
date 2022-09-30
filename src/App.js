@@ -7,6 +7,7 @@ import CloudSharingManager from "./components/CloudManager/CloudSharingManager";
 import React, {useEffect, useState} from "react";
 import {gapi} from "gapi-script";
 import googleAuth from "./utils/GoogleAuth";
+import {getFiles} from "./api/GoogleAPI";
 
 function App() {
     const [loggedIn, setLoggedIn] = useState(false);
@@ -19,26 +20,13 @@ function App() {
         gapi.load('client:auth2', start)
     }, [])
 
-    const listFiles = (searchTerm = null) => {
-        gapi.client.drive.files
-            .list({
-                pageSize: 10,
-                fields: 'nextPageToken, files(id, name, mimeType, modifiedTime)',
-                q: searchTerm,
-            })
-            .then(function (response) {
-                const res = JSON.parse(response.body);
-                console.log(res.files);
-            });
-    };
-
     const logInOut = () => {
         setLoggedIn(!loggedIn);
     }
 
   return (
       <>
-          <button onClick={listFiles}>showfile</button>
+          <button onClick={getFiles}>showfile</button>
           <PageHeader loggedIn={loggedIn} logInOut={logInOut} />
           <Routes>
               <Route path="/" element={<div>Home</div>} />
