@@ -2,6 +2,8 @@ import './App.css';
 import PageHeader from "./components/common-page-components/PageHeader/PageHeader";
 import { Route, Routes } from "react-router-dom";
 import PageSideBar from "./components/common-page-components/PageSidebar/PageSideBar";
+import AllFilesPage from "./components/pages/AllFiles/AllFilesPage";
+import CloudSharingManager from "./components/CloudManager/CloudSharingManager";
 
 function App() {
   return (
@@ -11,10 +13,10 @@ function App() {
           <Routes>
               <Route path="/" element={<div>Home</div>} />
               <Route path="/login" element={<div>Login</div>} />
-              <Route path="/login/google" element={<div>Login Google Drive</div>} />
+              <Route path="/login/google" element={<CloudSharingManager />} />
               <Route path="/login/one" element={<div>Login OneDrive</div>} />
               <Route path="/signup" element={<div>Signup</div>} />
-              <Route path="/files" element={<div>Files</div>} />
+              <Route path="/files" element={<AllFilesPage />} />
               <Route path="/myfiles" element={<div>MyFiles</div>} />
               <Route path="/sharedfiles" element={<div>SharedFiles</div>} />
               <Route path="/folder/:folderId" element={<div>OpenFolder</div>} />
