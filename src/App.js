@@ -4,12 +4,18 @@ import { Route, Routes } from "react-router-dom";
 import PageSideBar from "./components/common-page-components/PageSidebar/PageSideBar";
 import AllFilesPage from "./components/pages/AllFiles/AllFilesPage";
 import CloudSharingManager from "./components/CloudManager/CloudSharingManager";
+import {useState} from "react";
 
 function App() {
+    const [loggedIn, setLoggedIn] = useState(false);
+
+    const logInOut = () => {
+        setLoggedIn(!loggedIn);
+    }
+
   return (
       <>
-          <PageHeader loggedIn={false} />
-          <PageSideBar />
+          <PageHeader loggedIn={loggedIn} logInOut={logInOut} />
           <Routes>
               <Route path="/" element={<div>Home</div>} />
               <Route path="/login" element={<div>Login</div>} />

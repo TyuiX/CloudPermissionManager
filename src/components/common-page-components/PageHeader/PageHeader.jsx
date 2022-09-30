@@ -3,9 +3,10 @@ import "./PageHeader.css"
 import {FaUserCircle} from "react-icons/fa";
 import {AiFillSetting, AiOutlineCloudSync} from "react-icons/ai";
 import {Link} from "react-router-dom";
+import SearchBar from "./SearchBar/SearchBar";
 
 export default function PageHeader(props) {
-    const {loggedIn} = props;
+    const {loggedIn, logInOut} = props;
 
     if (!loggedIn) {
         return (
@@ -15,10 +16,10 @@ export default function PageHeader(props) {
                     <span>Cloud Sharing Manager</span>
                 </Link>
                 <div className="header-section">
-                    <Link className="login-signup-link" to={loggedIn ? "/files" : "/login"}>
+                    <Link className="login-signup-link" to={"/files" /* "/login" */} onClick={logInOut}>
                         Login
                     </Link>
-                    <Link className="login-signup-link" to={loggedIn ? "/files" : "/signup"}>
+                    <Link className="login-signup-link" to={"/signup"}>
                         Sign Up
                     </Link>
                 </div>
@@ -33,7 +34,7 @@ export default function PageHeader(props) {
                 <span>Cloud Sharing Manager</span>
             </Link>
             <div className="header-section">
-                Search Bar PlaceHolder
+                <SearchBar />
             </div>
             <div className="header-section">
                 <AiFillSetting size={30} />
