@@ -4,10 +4,33 @@ import { Route, Routes } from "react-router-dom";
 import PageSideBar from "./components/common-page-components/PageSidebar/PageSideBar";
 import AllFilesPage from "./components/pages/AllFiles/AllFilesPage";
 import CloudSharingManager from "./components/CloudManager/CloudSharingManager";
-import {useState} from "react";
+import React, {useEffect, useState} from "react";
+import {gapi} from "gapi-script";
+import googleAuth from "./utils/GoogleAuth";
 
 function App() {
     const [loggedIn, setLoggedIn] = useState(false);
+
+    useEffect(() => {
+        const start = () => {
+            gapi.client.init(googleAuth).then()
+        }
+
+        gapi.load('client:auth2', start)
+    }, [])
+
+    const listFiles = (searchTerm = null) => {
+        gapi.client.drive.files
+            .list({
+                pageSize: 10,
+                fields: 'nextPageToken, files(id, name, mimeType, modifiedTime)',
+                q: searchTerm,
+            })
+            .then(function (response) {
+                const res = JSON.parse(response.body);
+                console.log(res.files);
+            });
+    };
 
     const logInOut = () => {
         setLoggedIn(!loggedIn);
@@ -15,6 +38,7 @@ function App() {
 
   return (
       <>
+          <button onClick={listFiles}>showfile</button>
           <PageHeader loggedIn={loggedIn} logInOut={logInOut} />
           <Routes>
               <Route path="/" element={<div>Home</div>} />
