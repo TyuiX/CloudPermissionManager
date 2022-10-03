@@ -4,19 +4,20 @@ import { Route, Routes } from "react-router-dom";
 import PageSideBar from "./components/common-page-components/PageSidebar/PageSideBar";
 import AllFilesPage from "./components/pages/AllFiles/AllFilesPage";
 import CloudSharingManager from "./components/CloudManager/CloudSharingManager";
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {gapi} from "gapi-script";
 import googleAuth from "./utils/GoogleAuth";
 import {getFiles} from "./api/GoogleAPI";
+import {UserContext} from "./utils/context/UserContext";
 
 function App() {
     const [loggedIn, setLoggedIn] = useState(false);
+    const { testConnect }  = useContext(UserContext)
 
     useEffect(() => {
         const start = () => {
             gapi.client.init(googleAuth).then()
         }
-
         gapi.load('client:auth2', start)
     }, [])
 
@@ -26,6 +27,7 @@ function App() {
 
   return (
       <>
+          <button onClick={testConnect}>test</button>
           <button onClick={getFiles}>showfile</button>
           <PageHeader loggedIn={loggedIn} logInOut={logInOut} />
           <Routes>
