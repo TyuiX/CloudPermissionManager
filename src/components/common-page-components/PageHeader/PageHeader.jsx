@@ -1,12 +1,13 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import "./PageHeader.css"
 import {FaUserCircle} from "react-icons/fa";
 import {AiFillSetting, AiOutlineCloudSync} from "react-icons/ai";
 import {Link} from "react-router-dom";
 import SearchBar from "./SearchBar/SearchBar";
+import {UserContext} from "../../../utils/context/UserContext";
 
-export default function PageHeader(props) {
-    const {loggedIn, logInOut} = props;
+export default function PageHeader() {
+    const {loggedIn, logoutUser} = useContext(UserContext)
 
     if (!loggedIn) {
         return (
@@ -16,7 +17,7 @@ export default function PageHeader(props) {
                     <span>Cloud Sharing Manager</span>
                 </Link>
                 <div className="header-section">
-                    <Link className="login-signup-link" to={"/files" /* "/login" */} onClick={logInOut}>
+                    <Link className="login-signup-link" to={"/login"}>
                         Login
                     </Link>
                     <Link className="login-signup-link" to={"/signup"}>
@@ -37,6 +38,7 @@ export default function PageHeader(props) {
                 <SearchBar />
             </div>
             <div className="header-section">
+                <button onClick={logoutUser}>Logout</button>
                 <AiFillSetting size={30} />
                 <FaUserCircle size={30} />
             </div>
