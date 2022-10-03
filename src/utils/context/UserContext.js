@@ -7,37 +7,37 @@ function UserContextProvider(props) {
 
     const createUser = async (userInfo) => {
         try {
-            const response = await api.createUser(userInfo);
-            if (response.status === 200) {
+            const res = await api.createUser(userInfo);
+            if (res.status === 200) {
 
             }
         }
         catch (err) {
-            console.error(err.response.data.errorMessage);
+            console.error(err.res.data.errorMessage);
         }
     }
 
     const loginUser = async (loginInfo) => {
         try {
-            const response = await api.loginUser(loginInfo);
-            if (response.status === 200) {
+            const res = await api.loginUser(loginInfo);
+            if (res.status === 200) {
 
             }
         }
         catch (err) {
-            console.error(err.response.data.errorMessage);
+            console.error(err.res.data.errorMessage);
         }
     }
 
     const testConnect = async () => {
         try {
-            const response = await api.testConnect();
-            if (response.status === 200) {
-                console.log(response)
+            const res = await api.testConnect();
+            if (res.status === 200) {
+                console.log(res)
             }
         }
         catch (err) {
-            console.error(err.response.data.errorMessage);
+            console.error(err.res.data.errorMessage);
         }
     }
 
