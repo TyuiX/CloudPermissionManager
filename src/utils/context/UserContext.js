@@ -31,7 +31,8 @@ function UserContextProvider(props) {
             return navigate("/files");
         }
         catch (err) {
-            console.error(err.res.data.errorMessage);
+            console.log(err)
+            return err.response.data.errorMessage;
         }
     }, [setUser, setLoggedIn, navigate])
 
@@ -48,7 +49,7 @@ function UserContextProvider(props) {
             return navigate("/files");
         }
         catch (err) {
-            console.error(err.res.data.errorMessage);
+            return err.response.data.errorMessage;
         }
     }, [setUser, setLoggedIn, navigate]);
 
