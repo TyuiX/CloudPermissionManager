@@ -1,4 +1,21 @@
 import {gapi} from "gapi-script";
+import AllFilesPage from "../components/pages/AllFiles/AllFilesPage";
+import { Route, Routes } from "react-router-dom";
+import Login from "../components/pages/Login/Login";
+
+export const fileTypeNotSupported = () => {
+    // return <Route path="/login" element={<Login />} />
+}
+
+export const getFileToShow = async (fileId) => {
+    var accessToken = gapi.auth.getToken().access_token;
+    let temp = await fetch('https://www.googleapis.com/drive/v3/files/' + fileId, {
+        method: "GET",
+        headers: new Headers({'Authorization': 'Bearer ' + accessToken})
+    })
+    console.log(temp);
+    return temp;
+}
 
 export const getFiles = async () => {
     var accessToken = gapi.auth.getToken().access_token;
@@ -24,8 +41,11 @@ export const getFiles = async () => {
                     });
             }
         });
-    console.log(files)
-    return(files)
+    console.log(files);
+    console.log(files[0]);
+    console.log(files[1]);
+
+    return(files);
 }
 
 async function getPermissions(fileId){
