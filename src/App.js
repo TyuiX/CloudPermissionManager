@@ -6,15 +6,12 @@ import CloudSharingManager from "./components/CloudManager/CloudSharingManager";
 import React, { useEffect } from "react";
 import { gapi } from "gapi-script";
 import googleAuth from "./utils/GoogleAuth";
-<<<<<<< HEAD
 import {getFiles} from "./api/GoogleAPI";
 import {getPermissionsStart} from "./api/GoogleAPI"
 import {updatePermissionsStart} from "./api/GoogleAPI"
 import {addPermissionForUser} from "./api/GoogleAPI"
-=======
 import SignUp from "./components/pages/SignUp/SignUp";
 import Login from "./components/pages/Login/Login";
->>>>>>> cd2fa37bdc5bb0ce8166e6e6076aa6f4318bc4ec
 
 function App() {
 
