@@ -1,25 +1,27 @@
 import './App.css';
 import PageHeader from "./components/common-page-components/PageHeader/PageHeader";
 import { Route, Routes } from "react-router-dom";
-import PageSideBar from "./components/common-page-components/PageSidebar/PageSideBar";
 import AllFilesPage from "./components/pages/AllFiles/AllFilesPage";
 import CloudSharingManager from "./components/CloudManager/CloudSharingManager";
-import React, {useEffect, useState} from "react";
-import {gapi} from "gapi-script";
+import React, { useEffect } from "react";
+import { gapi } from "gapi-script";
 import googleAuth from "./utils/GoogleAuth";
+<<<<<<< HEAD
 import {getFiles} from "./api/GoogleAPI";
 import {getPermissionsStart} from "./api/GoogleAPI"
 import {updatePermissionsStart} from "./api/GoogleAPI"
 import {addPermissionForUser} from "./api/GoogleAPI"
+=======
+import SignUp from "./components/pages/SignUp/SignUp";
+import Login from "./components/pages/Login/Login";
+>>>>>>> cd2fa37bdc5bb0ce8166e6e6076aa6f4318bc4ec
 
 function App() {
-    const [loggedIn, setLoggedIn] = useState(false);
 
     useEffect(() => {
         const start = () => {
             gapi.client.init(googleAuth).then()
         }
-
         gapi.load('client:auth2', start)
     }, [])
 
@@ -37,10 +39,10 @@ function App() {
           <PageHeader loggedIn={loggedIn} logInOut={logInOut} />
           <Routes>
               <Route path="/" element={<div>Home</div>} />
-              <Route path="/login" element={<div>Login</div>} />
+              <Route path="/login" element={<Login />} />
               <Route path="/login/google" element={<CloudSharingManager />} />
-              <Route path="/login/one" elemen={<div>Login OneDrive</div>} />
-              <Route path="/signup" element={<div>Signup</div>} />
+              <Route path="/login/one" element={<div>Login OneDrive</div>} />
+              <Route path="/signup" element={<SignUp />} />
               <Route path="/files" element={<AllFilesPage />} />
               <Route path="/myfiles" element={<div>MyFiles</div>} />
               <Route path="/sharedfiles" element={<div>SharedFiles</div>} />

@@ -2,3 +2,90 @@
     display: flex;
     flex-direction: row;
 }
+
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top:0;
+    left:0;
+
+    background-image: linear-gradient(to top, #2d81e3, #72aef6);
+}
+
+.account-form {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    height: 50%;
+    width: 350px;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px 0 #2a2a2a;
+    padding: 40px;
+}
+
+.form-input {
+    font-size: 16px;
+    border: 1px solid dimgrey;
+    border-radius: 5px;
+    padding: 10px;
+    width: 95%;
+    margin: 10px auto;
+}
+
+.form-title {
+    margin-bottom: 70px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.form-input:focus {
+    outline: none;
+}
+
+.form-error-msg {
+    height: 20px;
+    width: 100%;
+    border-bottom: 1px solid dimgrey;
+    margin: 20px 0;
+    color: red;
+    font-size: 14px;
+}
+
+.form-button {
+    width: 350px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px;
+    text-decoration: none;
+    padding: 10px 20px;
+    border: none;
+    transition: 0.2s;
+    color: white;
+    background-color: cornflowerblue;
+    box-shadow: 0 3px 5px 0 #646464;
+    position: absolute;
+    bottom: 30px;
+    left: 40px;
+}
+
+.form-button:hover {
+    cursor: pointer;
+    background-color: #3871d9;
+}
+
+.app-logo {
+    position: absolute;
+    top:0;
+    left:0;
+    padding: 10px;
+    display:flex;
+    align-items: center;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+}
