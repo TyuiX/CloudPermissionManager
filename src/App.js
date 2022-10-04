@@ -10,6 +10,7 @@ import googleAuth from "./utils/GoogleAuth";
 import {getFiles} from "./api/GoogleAPI";
 import {getPermissionsStart} from "./api/GoogleAPI"
 import {updatePermissionsStart} from "./api/GoogleAPI"
+import {addPermissionForUser} from "./api/GoogleAPI"
 
 function App() {
     const [loggedIn, setLoggedIn] = useState(false);
@@ -26,11 +27,13 @@ function App() {
         setLoggedIn(!loggedIn);
     }
 
+
   return (
       <>
           <button onClick={getFiles}>showfile</button>
-          <button onClick={getPermissionsStart}>showPerm</button>
-          <button onClick={updatePermissionsStart}>upatePerm</button>
+          <button onClick={() => getPermissionsStart("15fPh_-XK41GV2Kul1_m6OXXRCsaBU9fECuA1yAfXLzw")}>showPerm</button>
+          <button onClick={() => updatePermissionsStart("15fPh_-XK41GV2Kul1_m6OXXRCsaBU9fECuA1yAfXLzw", "13084050885625841573")}>upatePerm</button>
+          <button onClick={() => addPermissionForUser("1xxxJyk8BFeM7rsY4w_kZE-xa0olPAGihgsoHQ0mOeRo")}>upatePerm</button>
           <PageHeader loggedIn={loggedIn} logInOut={logInOut} />
           <Routes>
               <Route path="/" element={<div>Home</div>} />

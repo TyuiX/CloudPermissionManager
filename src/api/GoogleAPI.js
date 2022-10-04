@@ -2,7 +2,7 @@ import {gapi} from "gapi-script";
 
 export const getFiles = async () => {
     var accessToken = gapi.auth.getToken().access_token;
-    let files = [];
+    let files = new Array();
     let nextToken;
 
     await fetch('https://www.googleapis.com/drive/v3/files', {
@@ -31,28 +31,47 @@ export const getFiles = async () => {
 async function getPermissions(fileId){
     var accessToken = gapi.auth.getToken().access_token;
     
-    return fetch('https://www.googleapis.com/drive/v3/files/' + fileId + '/permissions', {
+    return fetch('https://www.googleapis.com/drive/v3/files/' + fileId + '?q=parents&fields=*', {
         method: "GET",
         headers: new Headers({'Authorization': 'Bearer ' + accessToken})
     })
 }
 
 // going to need to pass in an index here. the index is the index of the file in which we want to find the access permissions for.
-export const getPermissionsStart = async () => {
-    let permissions = [];
-    let files = await getFiles();
-    getPermissions(files[78].id).then((resp) => resp.json().then(response => permissions.push(response)));
-    console.log(permissions);
-    return(permissions)
+// @param: id 
+export const getPermissionsStart = async (fileId) => {
+    let perm = await getPermissions(fileId).then((resp) => resp.json().then(response => response));
+    console.log(perm.permissions)
+    return perm.permissions;
 }
 
-//PATCH https://www.googleapis.com/drive/v3/files/fileId/permissions/permissionId
-export const updatePermissionsStart = async () => {
-    console.log("pquobgqube");
-    getFiles().then (response => {getPermissionsStart(response[0].id).then((res) => console.log(res))}) 
+export const updatePermissionsStart = async (fileId, permId) => {
+    let updated = await updatePermissions(fileId, permId);
+    console.log(updated);
 }
 
 async function updatePermissions(fileId, permId){
-    console.log("fileId: " + fileId);
-    console.log("PermId: " + permId);
+    var accessToken = gapi.auth.getToken().access_token;
+    
+    return fetch('https://www.googleapis.com/drive/v3/files/' + fileId + '/permissions/' + permId, { //  + '?transferOwnership=true'
+        method: 'PATCH',
+        headers: new Headers({'Authorization': 'Bearer ' + accessToken}),
+        role: "owner",
+        type: "user",
+        domain: "global",
+    }).then(resp => resp.json().then(res => console.log(res)).catch(err => console.log(err)))
+}
+
+export const addPermissionForUser = async(fileId) => {
+    var accessToken = gapi.auth.getToken().access_token;
+    
+    return fetch('https://www.googleapis.com/drive/v3/files/' + fileId + '/permissions', { //  , + '?sendNotificationEmail=true'
+        method: 'POST',
+        headers: new Headers({'Authorization': 'Bearer ' + accessToken}),
+        role: "reader",
+        type: "user",
+        permission: ["reader"],
+        emailAddress: "varunvinay.chotalia@stonybrook.edu",
+    }).then(resp => resp.json().then(res => console.log(res)).catch(err => console.log(err)))
+    
 }
