@@ -1,52 +1,50 @@
 import './App.css';
 import PageHeader from "./components/common-page-components/PageHeader/PageHeader";
 import { Route, Routes } from "react-router-dom";
-import PageSideBar from "./components/common-page-components/PageSidebar/PageSideBar";
 import AllFilesPage from "./components/pages/AllFiles/AllFilesPage";
 import CloudSharingManager from "./components/CloudManager/CloudSharingManager";
-import React, {useEffect, useState} from "react";
-import {gapi} from "gapi-script";
+import React, { useEffect, useState } from "react";
+import { gapi } from "gapi-script";
 import googleAuth from "./utils/GoogleAuth";
+import {getFiles} from "./api/GoogleAPI";
+import {getPermissionsStart} from "./api/GoogleAPI"
+import {updatePermissionsStart} from "./api/GoogleAPI"
+import {addPermissionForUser} from "./api/GoogleAPI"
+import SignUp from "./components/pages/SignUp/SignUp";
+import Login from "./components/pages/Login/Login";
 
 function App() {
-    const [loggedIn, setLoggedIn] = useState(false);
+
+    const [files, setFiles] = useState([])
 
     useEffect(() => {
         const start = () => {
-            gapi.client.init(googleAuth).then()
+            gapi.client.init(googleAuth).then(async () => {
+                    let files = await getFiles()
+                    console.log(files)
+                    setFiles(files)
+                }
+            )
         }
-
         gapi.load('client:auth2', start)
     }, [])
 
-    const listFiles = (searchTerm = null) => {
-        gapi.client.drive.files
-            .list({
-                pageSize: 10,
-                fields: 'nextPageToken, files(id, name, mimeType, modifiedTime)',
-                q: searchTerm,
-            })
-            .then(function (response) {
-                const res = JSON.parse(response.body);
-                console.log(res.files);
-            });
-    };
-
-    const logInOut = () => {
-        setLoggedIn(!loggedIn);
-    }
+    
 
   return (
       <>
-          <button onClick={listFiles}>showfile</button>
-          <PageHeader loggedIn={loggedIn} logInOut={logInOut} />
+          <button onClick={getFiles}>showfile</button>
+          <button onClick={() => getPermissionsStart("15fPh_-XK41GV2Kul1_m6OXXRCsaBU9fECuA1yAfXLzw")}>showPerm</button>
+          <button onClick={() => updatePermissionsStart("15fPh_-XK41GV2Kul1_m6OXXRCsaBU9fECuA1yAfXLzw", "13084050885625841573")}>upatePerm</button>
+          <button onClick={() => addPermissionForUser("1xxxJyk8BFeM7rsY4w_kZE-xa0olPAGihgsoHQ0mOeRo")}>upatePerm</button>
+          <PageHeader  />
           <Routes>
               <Route path="/" element={<div>Home</div>} />
-              <Route path="/login" element={<div>Login</div>} />
+              <Route path="/login" element={<Login />} />
               <Route path="/login/google" element={<CloudSharingManager />} />
               <Route path="/login/one" element={<div>Login OneDrive</div>} />
-              <Route path="/signup" element={<div>Signup</div>} />
-              <Route path="/files" element={<AllFilesPage />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/files" element={<AllFilesPage files={files}/>} />
               <Route path="/myfiles" element={<div>MyFiles</div>} />
               <Route path="/sharedfiles" element={<div>SharedFiles</div>} />
               <Route path="/folder/:folderId" element={<div>OpenFolder</div>} />
