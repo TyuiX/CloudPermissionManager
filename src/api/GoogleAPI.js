@@ -1,11 +1,4 @@
 import {gapi} from "gapi-script";
-import AllFilesPage from "../components/pages/AllFiles/AllFilesPage";
-import { Route, Routes } from "react-router-dom";
-import Login from "../components/pages/Login/Login";
-
-export const fileTypeNotSupported = () => {
-    // return <Route path="/login" element={<Login />} />
-}
 
 export const getFileToShow = async (fileId) => {
     var accessToken = gapi.auth.getToken().access_token;
@@ -19,7 +12,7 @@ export const getFileToShow = async (fileId) => {
 
 export const getFiles = async () => {
     var accessToken = gapi.auth.getToken().access_token;
-    let files = new Array();
+    let files = [];
     let nextToken;
 
     await fetch('https://www.googleapis.com/drive/v3/files', {
@@ -37,13 +30,9 @@ export const getFiles = async () => {
                     .then((responseJSON) => {
                         files = files.concat(responseJSON.files)
                         nextToken = responseJSON.nextPageToken;
-                        console.log(responseJSON);
                     });
             }
         });
-    console.log(files);
-    console.log(files[0]);
-    console.log(files[1]);
 
     return(files);
 }
@@ -70,14 +59,16 @@ export const updatePermissionsStart = async (fileId, permId) => {
     console.log(updated);
 }
 
-async function updatePermissions(fileId, permId){
+async function updatePermissions(fileId, permId, newPerm){
     var accessToken = gapi.auth.getToken().access_token;
     
-    return fetch('https://www.googleapis.com/drive/v3/files/' + fileId + '/permissions/' + permId, { //  + '?transferOwnership=true'
+    return fetch(`https://www.googleapis.com/drive/v3/files/${fileId}/permissions/${permId}`, {
         method: 'PATCH',
-        headers: new Headers({'Authorization': 'Bearer ' + accessToken}),
-        role: "owner",
-        type: "user",
+        headers: new Headers({'Authorization': 'Bearer ' + accessToken,
+            'Content-type': 'application/json; charset=UTF-8',}),
+        body: JSON.stringify({
+            role: newPerm,
+        }),
         domain: "global",
     }).then(resp => resp.json().then(res => console.log(res)).catch(err => console.log(err)))
 }

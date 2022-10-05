@@ -89,3 +89,29 @@
     color: white;
     font-weight: bold;
 }
+
+.page-content {
+    margin-left: 10px;
+}
+
+.page-content-container {
+    width: 100%;
+}
+
+.page-content-header {
+    width: 95%;
+    background-color: #d9d9d9;
+    padding: 5px 10px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.category-title {
+    font-size: 16px;
+}
+
+.category-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
