@@ -1,9 +1,8 @@
 import React from 'react';
 import PageSideBar from "../../common-page-components/PageSidebar/PageSideBar";
 import "../index.css";
-import {getFileToShow, fileTypeNotSupported} from "../../../api/GoogleAPI";
+import {fileTypeNotSupported} from "../../../api/GoogleAPI";
 import "./AllFilesPage.css";
-import { Route, Routes } from "react-router-dom";
 
 export default function AllFilesPage(props) {
     const {files} = props;
@@ -11,7 +10,6 @@ export default function AllFilesPage(props) {
     console.log("egbui");
 
     let fileNames = [];
-    let fileIds = [];
 
     let index = 0;
     while(index < files.length){
@@ -26,6 +24,7 @@ export default function AllFilesPage(props) {
         else{
             fileNames.push(<a href = {"#"} onClick={fileTypeNotSupported}><p id = "fileNames">{files[index].name}</p></a>);
         }
+        index += 1;
     }
 
     return (
