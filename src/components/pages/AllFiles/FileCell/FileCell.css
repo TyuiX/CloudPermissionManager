@@ -1,0 +1,35 @@
+.file-cell {
+    text-decoration: none;
+    color: #565656;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    border-radius: 50px;
+    padding: 5px 10px;
+    border: 2px solid #adadad;
+    width: 150px;
+    margin: 10px;
+    transition: 0.2s;
+}
+
+.file-cell:hover {
+    color: white;
+    background-color: cornflowerblue;
+    cursor: pointer;
+}
+
+.file-name {
+    padding-left: 10px;
+    width: 120px;
+    font-size: 14px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    font-weight: bold;
+}
+
+.file-role {
+    padding-left: 10px;
+    font-size: 12px;
+}
