@@ -19,8 +19,25 @@ function GoogleContextProvider(props) {
         const start = () => {
             gapi.client.init(googleAuth).then(async () => {
                     let files = await getFiles()
-                    console.log(files)
-                    setFiles(files)
+                    // console.log(files);
+                    let reformattedFiles = []
+                    files.forEach(({id, name, mimeType}) => {
+                        let type;
+                        switch (mimeType) {
+                            case "application/vnd.google-apps.folder":
+                                type = "folder";
+                                break;
+                            default:
+                                type = "file";
+                        }
+                        reformattedFiles.push({
+                            name: name,
+                            id: id,
+                            type: type,
+                        })
+                    });
+                    console.log(reformattedFiles);
+                    setFiles(reformattedFiles)
                 }
             )
         }

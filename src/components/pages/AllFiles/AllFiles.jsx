@@ -11,7 +11,19 @@ import {Link} from "react-router-dom";
 import FileCell from "./FileCell/FileCell";
 
 export default function AllFiles(props) {
+    const [filesList, setFilesList] = useState([]);
+    const [foldersList, setFoldersList] = useState([]);
     const {files} = props;
+
+    useEffect(() => {
+        if (!files) {
+            return
+        }
+        let file = files.filter(file => file.type !== "folder")
+        let folder = files.filter(file => file.type === "folder")
+        setFilesList(file)
+        setFoldersList(folder)
+    }, [files])
 
     return (
         <div className="page-container">
@@ -21,13 +33,30 @@ export default function AllFiles(props) {
             <PageSideBar />
             <div className="page-content">
                 <h2 className="page-content-header">All Files</h2>
-                <div className="category-list">
-                    {files &&
-                        files.map((file) => (
-                            <FileCell key={file.id} fileInfo={file} />
-                        ))
-                    }
-                </div>
+                {filesList &&
+                    <>
+                        <h3 className="category-title">Files</h3>
+                        <div className="category-list">
+                            {
+                                filesList.map((file) => (
+                                    <FileCell key={file.id} fileInfo={file} />
+                                ))
+                            }
+                        </div>
+                    </>
+                }
+                {foldersList &&
+                    <>
+                        <h3 className="category-title">Folders</h3>
+                        <div className="category-list">
+                            {
+                                foldersList.map((folder) => (
+                                    <FileCell key={folder.id} fileInfo={folder} />
+                                ))
+                            }
+                        </div>
+                    </>
+                }
             </div>
         </div>
     );
