@@ -31,7 +31,7 @@ export default function MyFiles() {
             {/*<button onClick={() => addPermissionForUser("1xxxJyk8BFeM7rsY4w_kZE-xa0olPAGihgsoHQ0mOeRo")}>upatePerm</button>*/}
             <PageSideBar />
             <div className="page-content">
-                <h2 className="page-content-header">All Files</h2>
+                <h2 className="page-content-header">My Files</h2>
                 {filesList &&
                     <>
                         <h3 className="category-title">Files</h3>
