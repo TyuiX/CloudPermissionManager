@@ -8,6 +8,7 @@ import SignUp from "./components/pages/SignUp/SignUp";
 import Login from "./components/pages/Login/Login";
 import OpenFile from "./components/pages/OpenFile/OpenFile";
 import SharedFiles from "./components/pages/SharedFiles/SharedFiles";
+import Home from "./components/pages/Home/Home";
 
 function App() {
 
@@ -15,7 +16,7 @@ function App() {
       <>
           <PageHeader  />
           <Routes>
-              <Route path="/" element={<div>Home</div>} />
+              <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/login/google" element={<CloudSharingManager />} />
               <Route path="/login/one" element={<div>Login OneDrive</div>} />
