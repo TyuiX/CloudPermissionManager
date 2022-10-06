@@ -41,7 +41,8 @@ function GoogleContextProvider(props) {
                             permissions: permissions,
                             shared: shared,
                             lastUpdatedOn: modifiedTime,
-                            createdOn: createdTime
+                            createdOn: createdTime,
+                            cloudOrigin: "google",
                         }
                         reformattedFiles.push(fileData)
                     });

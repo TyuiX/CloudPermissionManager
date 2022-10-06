@@ -15,6 +15,7 @@ function UserContextProvider(props) {
             const foundUser = JSON.parse(loggedInUser);
             setUser(foundUser);
             setLoggedIn(true)
+            navigate("/files")
         }
     }, []);
 
