@@ -1,21 +1,11 @@
 import {gapi} from "gapi-script";
 
-export const getFileToShow = async (fileId) => {
-    var accessToken = gapi.auth.getToken().access_token;
-    let temp = await fetch('https://www.googleapis.com/drive/v3/files/' + fileId, {
-        method: "GET",
-        headers: new Headers({'Authorization': 'Bearer ' + accessToken})
-    })
-    console.log(temp);
-    return temp;
-}
-
 export const getFiles = async () => {
     var accessToken = gapi.auth.getToken().access_token;
     let files = [];
     let nextToken;
 
-    await fetch('https://www.googleapis.com/drive/v3/files', {
+    await fetch('https://www.googleapis.com/drive/v3/files?fields=*', {
         method: "GET",
         headers: new Headers({'Authorization': 'Bearer ' + accessToken})
     }).then((response) => response.json())
@@ -37,6 +27,24 @@ export const getFiles = async () => {
     return(files);
 }
 
+export const getFileInfo = async (fileId) => {
+    var accessToken = gapi.auth.getToken().access_token;
+    let temp = await fetch('https://www.googleapis.com/drive/v3/files/' + fileId, {
+        method: "GET",
+        headers: new Headers({'Authorization': 'Bearer ' + accessToken})
+    })
+    console.log(temp);
+    return temp;
+}
+
+// going to need to pass in an index here. the index is the index of the file in which we want to find the access permissions for.
+// @param: id
+export const getPermissionsStart = async (fileId) => {
+    let perm = await getPermissions(fileId).then((resp) => resp.json().then(response => response));
+    console.log(perm)
+    return perm.permissions;
+}
+
 async function getPermissions(fileId){
     var accessToken = gapi.auth.getToken().access_token;
     
@@ -44,14 +52,6 @@ async function getPermissions(fileId){
         method: "GET",
         headers: new Headers({'Authorization': 'Bearer ' + accessToken})
     })
-}
-
-// going to need to pass in an index here. the index is the index of the file in which we want to find the access permissions for.
-// @param: id 
-export const getPermissionsStart = async (fileId) => {
-    let perm = await getPermissions(fileId).then((resp) => resp.json().then(response => response));
-    console.log(perm.permissions)
-    return perm.permissions;
 }
 
 export const updatePermissionsStart = async (fileId, permId) => {
@@ -86,3 +86,13 @@ export const addPermissionForUser = async(fileId) => {
     }).then(resp => resp.json().then(res => console.log(res)).catch(err => console.log(err)))
     
 }
+
+const googleAPI = {
+    getFiles,
+    getPermissionsStart,
+    updatePermissionsStart,
+    addPermissionForUser,
+    getFileToShow: getFileInfo,
+}
+
+export default googleAPI

@@ -1,29 +1,27 @@
-import React, {useEffect, useState} from 'react';
-import {Link, useParams} from "react-router-dom";
-import {addPermissionForUser, getPermissionsStart, updatePermissionsStart} from "../../../api/GoogleAPI";
-import {gapi} from "gapi-script";
+import React, {useContext, useEffect, useState} from 'react';
+import {useParams} from "react-router-dom";
 import PageSideBar from "../../common-page-components/PageSidebar/PageSideBar";
-import PermissionsCell from "./PermissionsCell/PermissionsCell";
+import PermissionsCell from "../../common-page-components/PermissionsCell/PermissionsCell";
+import {GoogleContext} from "../../../utils/context/GoogleContext";
 
 export default function OpenFile() {
     const {fileId} = useParams();
-    const [permissions, setPermissions] = useState([])
-    console.log(fileId)
-    const auth = gapi.auth
+    const [permissions, setPermissions] = useState([]);
+    const [fileInfo, setFileInfo] = useState({});
+    const { allFiles } = useContext(GoogleContext);
 
 
     useEffect(() => {
-        if (!auth) {
-            return
+        if (!allFiles) {
+            return;
         }
-        const getPerms = async () => {
-            let perms = await getPermissionsStart(fileId)
-            console.log(perms)
-            setPermissions(perms)
+        let fileInfo = allFiles.find(file => file.id === fileId);
+        if (fileInfo.permissions) {
+            setPermissions(fileInfo.permissions)
         }
-        getPerms();
+        setFileInfo(fileInfo);
 
-    }, [auth, fileId])
+    }, [allFiles, fileId])
 
     return (
         <div className="page-container">
