@@ -6,9 +6,8 @@ import {FaCamera, FaCameraRetro, FaFolder, FaRegFolder} from "react-icons/fa";
 import {RiGroupFill} from "react-icons/ri";
 
 const links = [
-    {path: "/files", name: "All Files"},
-    {path: "/myfiles", name: "My Files"},
-    {path: "/sharedfiles", name: "Shared Files"},
+    {path: "/files", name: "My Files"},
+    {path: "/sharedfiles", name: "Shared with me"},
     {path: "/filesnapshot", name: "File Snapshots"},
     {path: "/groupsnapshot", name: "Group Snapshots"},
 ]
@@ -22,8 +21,6 @@ export default function PageSideBar() {
         switch (path) {
             case "/files":
                 return <FaFolder size={20} />
-            case "/myfiles":
-                return <FaRegFolder size={20} />
             case "/sharedfiles":
                 return <RiGroupFill size={20} />
             case "/filesnapshot":

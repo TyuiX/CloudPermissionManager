@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import PageSideBar from "../../common-page-components/PageSidebar/PageSideBar";
 import "../index.css";
 import {
@@ -6,24 +6,23 @@ import {
     getPermissionsStart,
     updatePermissionsStart
 } from "../../../api/GoogleAPI";
-import "./AllFiles.css";
-import {Link} from "react-router-dom";
-import FileCell from "./FileCell/FileCell";
+import FileCell from "../../common-page-components/FileCell/FileCell";
+import {GoogleContext} from "../../../utils/context/GoogleContext";
 
-export default function AllFiles(props) {
+export default function MyFiles() {
+    const { myFiles } = useContext(GoogleContext)
     const [filesList, setFilesList] = useState([]);
     const [foldersList, setFoldersList] = useState([]);
-    const {files} = props;
 
     useEffect(() => {
-        if (!files) {
+        if (!myFiles) {
             return
         }
-        let file = files.filter(file => file.type !== "folder")
-        let folder = files.filter(file => file.type === "folder")
+        let file = myFiles.filter(file => file.type !== "folder")
+        let folder = myFiles.filter(file => file.type === "folder")
         setFilesList(file)
         setFoldersList(folder)
-    }, [files])
+    }, [myFiles])
 
     return (
         <div className="page-container">

@@ -1,15 +1,15 @@
 import React, {createContext, useCallback, useContext, useEffect, useState} from "react";
-import api from '../../api/ShareManagerAPI'
-import {useNavigate} from "react-router-dom";
+import api from '../../api/GoogleAPI'
 import {UserContext} from "./UserContext";
 import {gapi} from "gapi-script";
 import googleAuth from "../GoogleAuth";
-import {getFiles} from "../../api/GoogleAPI";
 
 export const GoogleContext = createContext({});
 
 function GoogleContextProvider(props) {
-    const [files, setFiles] = useState([])
+    const [allFiles, setAllFiles] = useState([]);
+    const [myFiles, setMyFiles] = useState([]);
+    const [sharedFiles, setSharedFiles] = useState([]);
     const { loggedIn } = useContext(UserContext)
 
     useEffect(() => {
@@ -18,10 +18,11 @@ function GoogleContextProvider(props) {
         }
         const start = () => {
             gapi.client.init(googleAuth).then(async () => {
-                    let files = await getFiles()
-                    // console.log(files);
+                    let files = await api.getFiles()
+                    console.log(files);
                     let reformattedFiles = []
-                    files.forEach(({id, name, mimeType}) => {
+                    files.forEach(({id, name, mimeType, ownedByMe, permissions, shared, modifiedTime, createdTime,
+                                       owners}) => {
                         let type;
                         switch (mimeType) {
                             case "application/vnd.google-apps.folder":
@@ -30,14 +31,28 @@ function GoogleContextProvider(props) {
                             default:
                                 type = "file";
                         }
-                        reformattedFiles.push({
+                        let fileData = {
                             name: name,
                             id: id,
                             type: type,
-                        })
+                            owner: owners ? owners[0].displayName : undefined,
+                            creator: owners ? owners[owners.length - 1].displayName : undefined,
+                            ownedByMe: ownedByMe,
+                            permissions: permissions,
+                            shared: shared,
+                            lastUpdatedOn: modifiedTime,
+                            createdOn: createdTime
+                        }
+                        reformattedFiles.push(fileData)
                     });
                     console.log(reformattedFiles);
-                    setFiles(reformattedFiles)
+                    let myFiles = reformattedFiles.filter((file) => file.ownedByMe || typeof file.ownedByMe === 'undefined');
+                    let sharedFiles = reformattedFiles.filter((file) => file.ownedByMe === false);
+                    console.log(myFiles)
+                    console.log(sharedFiles)
+                    setAllFiles(reformattedFiles)
+                    setMyFiles(myFiles)
+                    setSharedFiles(sharedFiles)
                 }
             )
         }
@@ -46,7 +61,7 @@ function GoogleContextProvider(props) {
 
     return (
         <GoogleContext.Provider value={{
-            files
+            allFiles, myFiles, sharedFiles
         }}>
             {props.children}
         </GoogleContext.Provider>
