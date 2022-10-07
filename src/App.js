@@ -2,7 +2,7 @@ import './App.css';
 import PageHeader from "./components/common-page-components/PageHeader/PageHeader";
 import { Route, Routes } from "react-router-dom";
 import MyFiles from "./components/pages/MyFiles/MyFiles";
-import CloudSharingManager from "./components/CloudManager/CloudSharingManager";
+import LinkGoogleLink from "./components/common-page-components/PageSidebar/LinkGoogleLink/LinkGoogleLink";
 import React from "react";
 import SignUp from "./components/pages/SignUp/SignUp";
 import Login from "./components/pages/Login/Login";
@@ -18,7 +18,7 @@ function App() {
           <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/login/google" element={<CloudSharingManager />} />
+              <Route path="/login/google" element={<LinkGoogleLink />} />
               <Route path="/login/one" element={<div>Login OneDrive</div>} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/files" element={<MyFiles />} />

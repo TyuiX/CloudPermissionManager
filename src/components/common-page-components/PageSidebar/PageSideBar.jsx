@@ -1,9 +1,11 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {Link, useLocation} from "react-router-dom";
 import "./PageSideBar.css";
 import SideBarDriveLink from "./SideBarDriveLink/SideBarDriveLink";
-import {FaCamera, FaCameraRetro, FaFolder, FaRegFolder} from "react-icons/fa";
+import {FaCamera, FaCameraRetro, FaFolder } from "react-icons/fa";
 import {RiGroupFill} from "react-icons/ri";
+import LinkGoogleLink from "./LinkGoogleLink/LinkGoogleLink";
+import {GoogleContext} from "../../../utils/context/GoogleContext";
 
 const links = [
     {path: "/files", name: "My Files"},
@@ -16,6 +18,7 @@ export default function PageSideBar() {
     const [linkedGoogle, setLinkedGoogle] = useState(false);
     const [linkedOne, setLinkedOne] = useState(false);
     const location = useLocation();
+    const {email} = useContext(GoogleContext)
 
     const pathIcon = (path) => {
         switch (path) {
@@ -51,7 +54,11 @@ export default function PageSideBar() {
                 ))}
             </div>
             <div className="linked-drives-list">
-                <SideBarDriveLink driveType="google" linked={false} />
+                {
+                    email ?
+                        <SideBarDriveLink driveType="google" linked={false} /> :
+                    <LinkGoogleLink />
+                }
                 <SideBarDriveLink driveType="one" linked={false} />
             </div>
         </div>
