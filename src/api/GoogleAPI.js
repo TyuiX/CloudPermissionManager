@@ -1,16 +1,21 @@
 import {gapi} from "gapi-script";
 
+const getDefaultRequestParams = (accessToken) => ({
+    method: "GET",
+    headers: new Headers({'Authorization': 'Bearer ' + accessToken,
+        'Content-type': 'application/json; charset=UTF-8',}),
+})
+
 export const getFiles = async () => {
-    var accessToken = gapi.auth.getToken().access_token;
+    let accessToken = gapi.auth.getToken().access_token;
     let files = [];
     let nextToken;
 
-    await fetch('https://www.googleapis.com/drive/v3/files?fields=*', {
-        method: "GET",
-        headers: new Headers({'Authorization': 'Bearer ' + accessToken})
-    }).then((response) => response.json())
+    await fetch('https://www.googleapis.com/drive/v3/files?fields=*',
+        getDefaultRequestParams(accessToken)
+    ).then((response) => response.json())
         .then(async (responseJSON) => {
-            files = responseJSON.files
+            files = responseJSON.files;
             nextToken = responseJSON.nextPageToken;
             while (nextToken) {
                 await fetch(`https://www.googleapis.com/drive/v3/files?pageToken=${nextToken}`, {
@@ -26,7 +31,6 @@ export const getFiles = async () => {
 
     return(files);
 }
-
 export const getFileInfo = async (fileId) => {
     var accessToken = gapi.auth.getToken().access_token;
     let temp = await fetch('https://www.googleapis.com/drive/v3/files/' + fileId, {

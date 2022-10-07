@@ -1,8 +1,8 @@
 import React from 'react';
 import {GoogleLogin} from "react-google-login";
-import googleAuth from "../../utils/GoogleAuth";
+import googleAuth from "../../../../utils/GoogleAuth";
 
-export default function CloudSharingManager() {
+export default function LinkGoogleLink() {
 
     const onSuccess = async (res) => {
         console.log(res)
@@ -30,11 +30,11 @@ export default function CloudSharingManager() {
         <div>
             <GoogleLogin
                 clientId={googleAuth.clientId}
-                buttonText="Login"
                 onSuccess={onSuccess}
                 onFailure={onFailure}
                 cookiePolicy={"single_host_origin"}
                 isSignedIn={true}
+                buttonText="Link Google account"
             />
         </div>
     )
