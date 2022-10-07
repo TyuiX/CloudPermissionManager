@@ -45,14 +45,13 @@ export const getFileInfo = async (fileId) => {
 // @param: id
 export const getPermissionsStart = async (fileId) => {
     let perm = await getPermissions(fileId).then((resp) => resp.json().then(response => response));
-    console.log(perm)
     return perm.permissions;
 }
 
 async function getPermissions(fileId){
     var accessToken = gapi.auth.getToken().access_token;
     
-    return fetch('https://www.googleapis.com/drive/v3/files/' + fileId + '?q=parents&fields=*', {
+    return fetch('https://www.googleapis.com/drive/v3/files/' + fileId + '/permissions?fields=*', {
         method: "GET",
         headers: new Headers({'Authorization': 'Bearer ' + accessToken})
     })

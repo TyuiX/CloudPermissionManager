@@ -9,6 +9,7 @@ import Login from "./components/pages/Login/Login";
 import OpenFile from "./components/pages/OpenFile/OpenFile";
 import SharedFiles from "./components/pages/SharedFiles/SharedFiles";
 import Home from "./components/pages/Home/Home";
+import * as event from "./components/functions/events"
 
 function App() {
 
@@ -25,7 +26,7 @@ function App() {
               <Route path="/sharedfiles" element={<SharedFiles />} />
               <Route path="/folder/:folderId" element={<div>OpenFolder</div>} />
               <Route path="/file/:fileId" element={<OpenFile />} />
-              <Route path="/filesnapshot" element={<div>FileSnapshot</div>} />
+              <Route path="/filesnapshot" element={<div >FileSnapshot <button onClick={event.handleGetFile}>click me </button></div>} />
               <Route path="/groupsnapshot" element={<div>GroupSnapshot</div>} />
           </Routes>
       </>
