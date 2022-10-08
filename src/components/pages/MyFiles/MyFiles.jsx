@@ -9,7 +9,7 @@ export default function MyFiles() {
     const { myFiles } = useContext(GoogleContext)
     const [filesList, setFilesList] = useState([]);
     const [foldersList, setFoldersList] = useState([]);
-    const [selectedFiles, setSelectedFiles] = useState([])
+    const [selectedFiles, setSelectedFiles] = useState([]);
 
     console.log(selectedFiles);
 
@@ -50,7 +50,11 @@ export default function MyFiles() {
                         <div className="category-list">
                             {
                                 filesList.map((file) => (
-                                    <FileCell key={file.id} fileInfo={file} toggleInfo={handleFileClick} toggled={selectedFiles.includes(file.id)} />
+                                    <FileCell key={file.id}
+                                              fileInfo={file}
+                                              toggleInfo={handleFileClick}
+                                              toggled={selectedFiles.includes(file.id)}
+                                    />
                                 ))
                             }
                         </div>
@@ -62,14 +66,22 @@ export default function MyFiles() {
                         <div className="category-list">
                             {
                                 foldersList.map((folder) => (
-                                    <FileCell key={folder.id} fileInfo={folder} toggleInfo={handleFileClick} toggled={selectedFiles.includes(folder.id)} />
+                                    <FileCell key={folder.id}
+                                              fileInfo={folder}
+                                              toggleInfo={handleFileClick}
+                                              toggled={selectedFiles.includes(folder.id)}
+                                    />
                                 ))
                             }
                         </div>
                     </>
                 }
             </div>
-            <FileInfoSideBar filesIds={selectedFiles} shared={false} closeInfo={handleCloseSidebar} />
+            <FileInfoSideBar
+                filesIds={selectedFiles}
+                shared={false}
+                closeInfo={handleCloseSidebar}
+            />
         </div>
     );
 }

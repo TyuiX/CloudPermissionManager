@@ -57,13 +57,8 @@ async function getPermissions(fileId){
     })
 }
 
-export const updatePermissionsStart = async (fileId, permId) => {
-    let updated = await updatePermissions(fileId, permId);
-    console.log(updated);
-}
-
-async function updatePermissions(fileId, permId, newPerm){
-    var accessToken = gapi.auth.getToken().access_token;
+async function updatePermission(fileId, permId, newPerm){
+    let accessToken = gapi.auth.getToken().access_token;
     
     return fetch(`https://www.googleapis.com/drive/v3/files/${fileId}/permissions/${permId}`, {
         method: 'PATCH',
@@ -93,8 +88,8 @@ export const addPermissionForUser = async(fileId) => {
 const googleAPI = {
     getFiles,
     getPermissionsStart,
-    updatePermissionsStart,
     addPermissionForUser,
+    updatePermission,
     getFileToShow: getFileInfo,
 }
 

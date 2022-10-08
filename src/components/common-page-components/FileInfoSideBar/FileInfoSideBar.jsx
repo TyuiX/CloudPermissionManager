@@ -26,13 +26,13 @@ export default function FileInfoSideBar(props) {
                 <span>File Information</span>
                 <AiOutlineClose className="sidebar-close-button" onClick={closeInfo} />
             </div>
-            {!shared &&
-                //TODO complete button and create modal to update perms
-                <button>Update Access</button>
-            }
+            {/*{!shared &&*/}
+            {/*    //TODO complete button and create modal to update perms*/}
+            {/*    <button>Update Access</button>*/}
+            {/*}*/}
             {
                 filesToDisplay.map((file) => (
-                    <FileInfoBlock fileInfo={file}/>
+                    <FileInfoBlock key={file.id} fileInfo={file} shared={shared} closeInfo={closeInfo}/>
                 ))
             }
         </div>
