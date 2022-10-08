@@ -7,6 +7,7 @@ export const UserContext = createContext({});
 function UserContextProvider(props) {
     const [user, setUser] = useState({});
     const [loggedIn, setLoggedIn] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -18,6 +19,14 @@ function UserContextProvider(props) {
             navigate("/files")
         }
     }, []);
+    
+    const startLoading = useCallback(() => {
+        setIsLoading(true);
+    }, [])
+    
+    const finishLoading = useCallback(() => {
+        setIsLoading(false);
+    }, [])
 
     const createUser = useCallback(async (userInfo) => {
         try {
@@ -61,21 +70,9 @@ function UserContextProvider(props) {
         return navigate("/");
     }, [setUser, setLoggedIn, navigate])
 
-    const testConnect = async () => {
-        try {
-            const res = await api.testConnect();
-            if (res.status === 200) {
-                console.log(res)
-            }
-        }
-        catch (err) {
-            console.error(err.res.data.errorMessage);
-        }
-    }
-
     return (
         <UserContext.Provider value={{
-            user, loggedIn, createUser, loginUser, logoutUser, testConnect
+            user, isLoading, loggedIn, createUser, loginUser, logoutUser, startLoading, finishLoading
         }}>
             {props.children}
         </UserContext.Provider>
