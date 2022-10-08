@@ -31,6 +31,8 @@
 .files-permissions-list {
     border: 1px solid #adadad;
     border-radius: 5px;
+    max-height: 290px;
+    overflow-y: auto;
 }
 
 .update-access-button-container {
