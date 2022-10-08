@@ -1,0 +1,24 @@
+.file-info-sidebar-container {
+    min-width: 400px;
+    border-left: 2px solid black;
+    border-right: 2px solid black;
+}
+
+.info-sidebar-header {
+    font-size: 16px;
+    font-weight: bold;
+    width: 100%;
+    border-bottom: 2px solid #adadad;
+    padding: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.info-sidebar-header span, .info-sidebar-header svg {
+    margin: 0 10px;
+}
+
+.sidebar-close-button:hover {
+    cursor: pointer;
+}
