@@ -13,8 +13,6 @@ function GoogleContextProvider(props) {
     const { loggedIn } = useContext(UserContext)
     const [email, setEmail] = useState();
 
-    console.log(email)
-
     useEffect(() => {
         if (!loggedIn) {
             return
@@ -22,7 +20,6 @@ function GoogleContextProvider(props) {
         const start = () => {
             gapi.client.init(googleAuth).then(async () => {
                     let files = await api.getFiles()
-                    console.log(files);
                     const reformattedFiles = files.map(({id, name, mimeType, ownedByMe, permissions, shared, modifiedTime, createdTime,
                                        owners}) => {
                         let type;
@@ -48,11 +45,8 @@ function GoogleContextProvider(props) {
                             cloudOrigin: "google",
                         }
                     });
-                    console.log(reformattedFiles);
                     let myFiles = reformattedFiles.filter((file) => file.ownedByMe || typeof file.ownedByMe === 'undefined');
                     let sharedFiles = reformattedFiles.filter((file) => file.ownedByMe === false);
-                    console.log(myFiles)
-                    console.log(sharedFiles)
                     setAllFiles(reformattedFiles)
                     setMyFiles(myFiles)
                     setSharedFiles(sharedFiles)
