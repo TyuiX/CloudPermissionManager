@@ -6,10 +6,12 @@ import {GoogleContext} from "../../../utils/context/GoogleContext";
 import FileInfoSideBar from "../../common-page-components/FileInfoSideBar/FileInfoSideBar";
 
 export default function MyFiles() {
-    const { myFiles } = useContext(GoogleContext)
+    const { myFiles } = useContext(GoogleContext);
     const [filesList, setFilesList] = useState([]);
     const [foldersList, setFoldersList] = useState([]);
     const [selectedFiles, setSelectedFiles] = useState([]);
+
+    console.log("yes")
 
     useEffect(() => {
         if (!myFiles) {
