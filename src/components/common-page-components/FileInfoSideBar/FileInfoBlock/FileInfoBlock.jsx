@@ -9,8 +9,7 @@ export default function FileInfoBlock(props) {
     const {fileInfo, shared, closeInfo} = props;
     const {name, cloudOrigin, type, permissions, id} = fileInfo;
     const [openDropdown, setOpenDropdown] = useState(true);
-    const [showModal, setShowModal] = useState(false)
-    console.log(showModal);
+    const [showModal, setShowModal] = useState(false);
 
     const handleToggleModal = () => {
         setShowModal(!showModal)

@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
-import "../index.css";
+import "./UpdateSharingModal.css";
 import {AiOutlineClose} from "react-icons/ai";
 import {GoogleContext} from "../../../utils/context/GoogleContext";
 
@@ -8,10 +8,8 @@ export default function UpdateSharingModal(props) {
     const [newUsers, setNewUsers] = useState([]);
     const [existingUsers, setExistingUsers] = useState([]);
     const [updatedUsers, setUpdatedUsers] = useState([]);
-    const {updateFilePerms} = useContext(GoogleContext)
-
-    console.log(existingUsers);
-    console.log(updatedUsers);
+    const [newEmail, setNewEmail] = useState("");
+    const {updateFilePerms} = useContext(GoogleContext);
 
     useEffect(() => {
         if (!existingPerms) {
@@ -49,11 +47,40 @@ export default function UpdateSharingModal(props) {
         setUpdatedUsers(pendingUsers);
     }
 
+    const updateNewUser = (e, user) => {
+        let addedUsers = JSON.parse(JSON.stringify(newUsers));
+        let userIndex = addedUsers.findIndex(({email}) => email === user.email);
+        addedUsers[userIndex].role = e.target.value;
+        setNewUsers(addedUsers);
+    }
+
+    const removeNewUser = (user) => {
+        let addedUsers = JSON.parse(JSON.stringify(newUsers));
+        let userIndex = addedUsers.findIndex(({email}) => email === user.email);
+        addedUsers.splice(userIndex, 1);
+        setNewUsers(addedUsers);
+    }
+
     const confirmUpdate = (e) => {
         e.preventDefault();
         updateFilePerms(fileId, updatedUsers, newUsers);
         toggleModal();
         closeInfo();
+    }
+
+    const handleSubmitEmail = (e) => {
+        if(e.key === "Enter") {
+            e.preventDefault();
+            let addedUsers = JSON.parse(JSON.stringify(newUsers));
+            addedUsers.push({
+                email: newEmail,
+                origin: origin,
+                role: "writer",
+                type: "user"
+            })
+            setNewUsers(addedUsers);
+            setNewEmail("");
+        }
     }
 
     return (
@@ -65,29 +92,65 @@ export default function UpdateSharingModal(props) {
                 </div>
                 <div className="modal-section">
                     <div className="modal-section-title">Existing Users:</div>
-                    {existingUsers ?
-                        existingUsers.map((user) => {
-                            const {name, id, origin, role} = user;
-                            return (
-                                <div key={id}>
-                                    <div>{name}</div>
-                                    <select defaultValue={role} onChange={(e) => addPendingUpdate(e, user)}>
-                                        <option value="writer">Allowed Writer</option>
-                                        <option value="reader">Allowed Reader</option>
-                                        <option value="unshared" >Unshared</option>
-                                    </select>
-                                </div>
-                            )
-                        })
-                        :
-                        <div>No existing users</div>
-                    }
+                    <div className="modal-users-list">
+                        {existingUsers.length !== 0 ?
+                            existingUsers.map((user) => {
+                                const {name, id, origin, role, email} = user;
+                                return (
+                                    <div className="modal-user-item" key={id}>
+                                        <div>
+                                            <div className="modal-user-name">{name}</div>
+                                            <div className="modal-user-email">{email}</div>
+                                        </div>
+                                        <select defaultValue={role} onChange={(e) => addPendingUpdate(e, user)}>
+                                            <option value="writer">Allowed Writer</option>
+                                            <option value="reader">Allowed Reader</option>
+                                            <option value="unshared" >Unshared</option>
+                                        </select>
+                                    </div>
+                                )
+                            })
+                            :
+                            <div className="no-users-message">No existing users...</div>
+                        }
+                    </div>
                 </div>
-                <div className="modal-section"></div>
-                <div className="modal-section"></div>
+                <div className="modal-section">
+                    <div className="modal-section-title">New Users:</div>
+                    <form onKeyDown={(e) => handleSubmitEmail(e)} className="modal-form">
+                        <input
+                            className="modal-form-input"
+                            type="text"
+                            value={newEmail}
+                            placeholder="Email: e.g. example@email.com"
+                            onChange={({ target }) => setNewEmail(target.value)}
+                        />
+                    </form>
+                    <div className="modal-users-list">
+                        {newUsers.length !== 0 ?
+                            newUsers.map((user) => {
+                                const {role, email} = user;
+                                return (
+                                    <div className="modal-user-item" key={email}>
+                                        <div className="modal-user-info">
+                                            <AiOutlineClose className="modal-user-remove-icon" onClick={() => removeNewUser(user)} />
+                                            <div className="modal-user-name">{email}</div>
+                                        </div>
+                                        <select defaultValue={role} onChange={(e) => updateNewUser(e, user)}>
+                                            <option value="writer">Allowed Writer</option>
+                                            <option value="reader">Allowed Reader</option>
+                                        </select>
+                                    </div>
+                                )
+                            })
+                            :
+                            <div className="no-users-message">No new users...</div>
+                        }
+                    </div>
+                </div>
                 <div className="modal-footer">
-                    <button onClick={(e) => confirmUpdate(e)}>Confirm</button>
-                    <button>Cancel</button>
+                    <button className="modal-button modal-confirm" onClick={(e) => confirmUpdate(e)}>Confirm</button>
+                    <button className="modal-button modal-cancel" onClick={toggleModal}>Cancel</button>
                 </div>
             </div>
         </div>

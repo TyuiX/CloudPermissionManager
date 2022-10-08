@@ -91,17 +91,29 @@ function GoogleContextProvider(props) {
     }, [])
 
     const updateFilePerms = useCallback( async (fileId, updatedUsers, addedUsers) => {
-        try {
-            for (const user of updatedUsers) {
-                const {id, role} = user;
-                const res = await api.updatePermission(fileId, id, role);
-                console.log(res)
+        for (const user of updatedUsers) {
+            const {id, role} = user;
+            try {
+                if (role === "unshared") {
+                    await api.deletePermission(fileId, id);
+                }
+                else {
+                    await api.updatePermission(fileId, id, role);
+                }
+            } catch (err) {
+                console.log(err)
             }
-            await getGoogleFiles();
         }
-        catch (err) {
-            console.log(err)
+        for (const user of addedUsers) {
+            const {email, role} = user;
+            try {
+                const res = await api.addPermission(fileId,  email, role);
+                console.log(res)
+            } catch (err) {
+                console.log(err)
+            }
         }
+        await getGoogleFiles();
     }, [getGoogleFiles])
 
     return (

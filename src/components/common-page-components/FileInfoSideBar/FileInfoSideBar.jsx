@@ -9,8 +9,6 @@ export default function FileInfoSideBar(props) {
     const [filesToDisplay, setFilesToDisplay] = useState([]);
     const {allFiles} = useContext(GoogleContext);
 
-    console.log(filesToDisplay)
-
     useEffect(() => {
         if (!filesIds) {
             return

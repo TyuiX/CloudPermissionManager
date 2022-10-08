@@ -11,8 +11,6 @@ export default function MyFiles() {
     const [foldersList, setFoldersList] = useState([]);
     const [selectedFiles, setSelectedFiles] = useState([]);
 
-    console.log(selectedFiles);
-
     useEffect(() => {
         if (!myFiles) {
             return
