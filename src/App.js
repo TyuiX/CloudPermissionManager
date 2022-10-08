@@ -3,6 +3,7 @@ import PageHeader from "./components/common-page-components/PageHeader/PageHeade
 import { Route, Routes } from "react-router-dom";
 import MyFiles from "./components/pages/MyFiles/MyFiles";
 import CloudSharingManager from "./components/CloudManager/CloudSharingManager";
+import {PageLayout} from "./components/onedriveauth/PageLayout";
 import React from "react";
 import SignUp from "./components/pages/SignUp/SignUp";
 import Login from "./components/pages/Login/Login";
@@ -19,7 +20,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/login/google" element={<CloudSharingManager />} />
-              <Route path="/login/one" element={<div>Login OneDrive</div>} />
+              <Route path="/login/one" element={<PageLayout />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/files" element={<MyFiles />} />
               <Route path="/sharedfiles" element={<SharedFiles />} />
