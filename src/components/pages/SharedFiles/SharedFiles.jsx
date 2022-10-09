@@ -3,11 +3,13 @@ import PageSideBar from "../../common-page-components/PageSidebar/PageSideBar";
 import "../index.css";
 import FileCell from "../../common-page-components/FileCell/FileCell";
 import {GoogleContext} from "../../../utils/context/GoogleContext";
+import FileInfoSideBar from "../../common-page-components/FileInfoSideBar/FileInfoSideBar";
 
 export default function SharedFiles() {
     const { sharedFiles } = useContext(GoogleContext)
     const [filesList, setFilesList] = useState([]);
     const [foldersList, setFoldersList] = useState([]);
+    const [selectedFiles, setSelectedFiles] = useState([]);
 
     useEffect(() => {
         if (!sharedFiles) {
@@ -18,6 +20,22 @@ export default function SharedFiles() {
         setFilesList(file)
         setFoldersList(folder)
     }, [sharedFiles])
+
+    const handleFileClick = (fileId) => {
+        let fileIds = JSON.parse(JSON.stringify(selectedFiles));
+        let indexFound = fileIds.findIndex(id => id === fileId);
+        if (indexFound !== -1) {
+            fileIds.splice(indexFound, 1);
+        }
+        else {
+            fileIds.push(fileId);
+        }
+        setSelectedFiles(fileIds);
+    }
+
+    const handleCloseSidebar = () => {
+        setSelectedFiles([]);
+    }
 
     return (
         <div className="page-container">
@@ -30,7 +48,7 @@ export default function SharedFiles() {
                         <div className="category-list">
                             {
                                 filesList.map((file) => (
-                                    <FileCell key={file.id} fileInfo={file} />
+                                    <FileCell key={file.id} fileInfo={file} toggleInfo={handleFileClick} toggled={selectedFiles.includes(file.id)} />
                                 ))
                             }
                         </div>
@@ -42,13 +60,14 @@ export default function SharedFiles() {
                         <div className="category-list">
                             {
                                 foldersList.map((folder) => (
-                                    <FileCell key={folder.id} fileInfo={folder} />
+                                    <FileCell key={folder.id} fileInfo={folder} toggleInfo={handleFileClick} toggled={selectedFiles.includes(folder.id)} />
                                 ))
                             }
                         </div>
                     </>
                 }
             </div>
+            <FileInfoSideBar filesIds={selectedFiles} shared={true} closeInfo={handleCloseSidebar} />
         </div>
     );
 }
