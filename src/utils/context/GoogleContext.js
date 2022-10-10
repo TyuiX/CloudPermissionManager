@@ -20,39 +20,42 @@ function GoogleContextProvider(props) {
         const start = async () => {
             startLoading();
             await gapi.client.init(googleAuth).then(async () => {
-                let files = await api.getFiles()
-                const reformattedFiles = files.map(({id, name, mimeType, ownedByMe, permissions, shared, modifiedTime,
-                                                        createdTime, owners
-                                                    }) => {
-                    let type;
-                    switch (mimeType) {
-                        case "application/vnd.google-apps.folder":
-                            type = "folder";
-                            break;
-                        default:
-                            type = "file";
-                            break;
-                    }
-                    return {
-                        name: name,
-                        id: id,
-                        type: type,
-                        owner: owners ? owners[0].displayName : undefined,
-                        creator: owners ? owners[owners.length - 1].displayName : undefined,
-                        ownedByMe: ownedByMe,
-                        permissions: permissions,
-                        shared: shared,
-                        lastUpdatedOn: modifiedTime,
-                        createdOn: createdTime,
-                        cloudOrigin: "google",
-                    }
-                });
-                let myFiles = reformattedFiles.filter((file) => file.ownedByMe || typeof file.ownedByMe === 'undefined');
-                let sharedFiles = reformattedFiles.filter((file) => file.ownedByMe === false);
-                setAllFiles(reformattedFiles)
-                setMyFiles(myFiles)
-                setSharedFiles(sharedFiles)
-                setEmail(gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().cu);
+
+                if (gapi.auth.getToken()) {
+                    let files = await api.getFiles()
+                    const reformattedFiles = files.map(({id, name, mimeType, ownedByMe, permissions, shared, modifiedTime,
+                                                            createdTime, owners
+                                                        }) => {
+                        let type;
+                        switch (mimeType) {
+                            case "application/vnd.google-apps.folder":
+                                type = "folder";
+                                break;
+                            default:
+                                type = "file";
+                                break;
+                        }
+                        return {
+                            name: name,
+                            id: id,
+                            type: type,
+                            owner: owners ? owners[0].displayName : undefined,
+                            creator: owners ? owners[owners.length - 1].displayName : undefined,
+                            ownedByMe: ownedByMe,
+                            permissions: permissions,
+                            shared: shared,
+                            lastUpdatedOn: modifiedTime,
+                            createdOn: createdTime,
+                            cloudOrigin: "google",
+                        }
+                    });
+                    let myFiles = reformattedFiles.filter((file) => file.ownedByMe || typeof file.ownedByMe === 'undefined');
+                    let sharedFiles = reformattedFiles.filter((file) => file.ownedByMe === false);
+                    setAllFiles(reformattedFiles)
+                    setMyFiles(myFiles)
+                    setSharedFiles(sharedFiles)
+                    setEmail(gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().cu);
+                }
             })
             finishLoading();
         }
