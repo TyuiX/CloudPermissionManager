@@ -14,7 +14,6 @@ import LoadingScreen from "./components/common-page-components/LoadingScreen/Loa
 
 function App() {
     const {isLoading} = useContext(UserContext)
-    console.log(isLoading)
 
     if (isLoading) {
         return <LoadingScreen />

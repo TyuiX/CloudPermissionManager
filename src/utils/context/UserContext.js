@@ -71,9 +71,25 @@ function UserContextProvider(props) {
         return navigate("/");
     }, [setUser, setLoggedIn, navigate])
 
+    const setGoogleAcc = useCallback( async (accEmail, googleEmail) => {
+        try {
+            const res = await api.setLinkedGoogle({email: accEmail, googleId: googleEmail});
+            if (res.status === 200) {
+                // set the state of the user
+                setUser(res.data.user);
+                // store the user in localStorage
+                localStorage.setItem('user', JSON.stringify(res.data.user))
+            }
+            return navigate("/files");
+        }
+        catch (err) {
+            return err.response.data.errorMessage;
+        }
+    }, [navigate])
+
     return (
         <UserContext.Provider value={{
-            user, isLoading, loggedIn, createUser, loginUser, logoutUser, startLoading, finishLoading
+            user, isLoading, loggedIn, createUser, loginUser, logoutUser, startLoading, finishLoading, setGoogleAcc
         }}>
             {props.children}
         </UserContext.Provider>
