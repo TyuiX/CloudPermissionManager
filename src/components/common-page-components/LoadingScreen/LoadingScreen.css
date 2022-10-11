@@ -1,0 +1,65 @@
+.loading-screen-background {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+}
+
+.loading-screen-header {
+    margin: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.loading-screen-header span {
+    margin-left: 5px;
+}
+
+.spinner-container {
+    position: relative;
+    top: -70px;
+    margin: auto;
+}
+
+.loading-spinner {
+    position: absolute;
+    animation: spinner 1.5s linear infinite;
+    color: #61dafb;
+}
+
+.spin-1 {
+    color: #2d81e3;
+    animation: spinner 3s linear infinite;
+}
+
+.spin-2 {
+    color: #97bde8;
+    animation: spinner 2.5s linear infinite;
+}
+
+.loading-msg {
+    margin-top: 55px;
+    margin-left: 35px;
+    font-weight: bold;
+    color: white;
+}
+
+@keyframes spinner {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}

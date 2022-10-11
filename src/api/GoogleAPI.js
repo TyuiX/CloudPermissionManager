@@ -18,10 +18,9 @@ export const getFiles = async () => {
             files = responseJSON.files;
             nextToken = responseJSON.nextPageToken;
             while (nextToken) {
-                await fetch(`https://www.googleapis.com/drive/v3/files?pageToken=${nextToken}`, {
-                    method: "GET",
-                    headers: new Headers({'Authorization': 'Bearer ' + accessToken})
-                }).then((response) => response.json())
+                await fetch(`https://www.googleapis.com/drive/v3/files?pageToken=${nextToken}`,
+                    getDefaultRequestParams(accessToken))
+                    .then((response) => response.json())
                     .then((responseJSON) => {
                         files = files.concat(responseJSON.files)
                         nextToken = responseJSON.nextPageToken;
@@ -49,7 +48,7 @@ export const getPermissionsStart = async (fileId) => {
 }
 
 async function getPermissions(fileId){
-    var accessToken = gapi.auth.getToken().access_token;
+    let accessToken = gapi.auth.getToken().access_token;
     
     return fetch('https://www.googleapis.com/drive/v3/files/' + fileId + '/permissions?fields=*', {
         method: "GET",
@@ -57,13 +56,8 @@ async function getPermissions(fileId){
     })
 }
 
-export const updatePermissionsStart = async (fileId, permId) => {
-    let updated = await updatePermissions(fileId, permId);
-    console.log(updated);
-}
-
-async function updatePermissions(fileId, permId, newPerm){
-    var accessToken = gapi.auth.getToken().access_token;
+async function updatePermission(fileId, permId, newPerm){
+    let accessToken = gapi.auth.getToken().access_token;
     
     return fetch(`https://www.googleapis.com/drive/v3/files/${fileId}/permissions/${permId}`, {
         method: 'PATCH',
@@ -76,25 +70,42 @@ async function updatePermissions(fileId, permId, newPerm){
     }).then(resp => resp.json().then(res => console.log(res)).catch(err => console.log(err)))
 }
 
-export const addPermissionForUser = async(fileId) => {
-    var accessToken = gapi.auth.getToken().access_token;
+export const addPermission = async(fileId, email, perm) => {
+    let accessToken = gapi.auth.getToken().access_token;
     
-    return fetch('https://www.googleapis.com/drive/v3/files/' + fileId + '/permissions', { //  , + '?sendNotificationEmail=true'
+    return fetch(`https://www.googleapis.com/drive/v3/files/${fileId}/permissions/`, {
         method: 'POST',
-        headers: new Headers({'Authorization': 'Bearer ' + accessToken}),
-        role: "reader",
-        type: "user",
-        permission: ["reader"],
-        emailAddress: "varunvinay.chotalia@stonybrook.edu",
+        headers: new Headers({'Authorization': 'Bearer ' + accessToken,
+            'Content-type': 'application/json; charset=UTF-8',}),
+        body: JSON.stringify({
+            role: perm,
+            type: "user",
+            emailAddress: email,
+        }),
+        domain: "global",
     }).then(resp => resp.json().then(res => console.log(res)).catch(err => console.log(err)))
-    
+}
+
+export const deletePermission = async(fileId, permId) => {
+    let accessToken = gapi.auth.getToken().access_token;
+
+    return fetch(`https://www.googleapis.com/drive/v3/files/${fileId}/permissions/${permId}`, {
+        method: 'DELETE',
+        headers: new Headers({'Authorization': 'Bearer ' + accessToken,
+            'Content-type': 'application/json; charset=UTF-8',}),
+    }).then(resp => {
+        if (resp.status === 200) {
+            resp.json().then(res => console.log(res)).catch(err => console.log(err))
+        }
+    })
 }
 
 const googleAPI = {
     getFiles,
     getPermissionsStart,
-    updatePermissionsStart,
-    addPermissionForUser,
+    addPermission,
+    deletePermission,
+    updatePermission,
     getFileToShow: getFileInfo,
 }
 
