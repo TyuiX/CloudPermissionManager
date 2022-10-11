@@ -19,7 +19,16 @@ export  function handleGetFile(){
         }
         for (let i of data){
             if (i.ownedByMe){
-                await api.getPermissionsStart(i.id).then(data => i.perm = data)
+                await api.getPermissionsStart(i.id).then(resdata => {
+                    let map = new Map()
+                    for (let j of resdata){
+                        map.set(j.id, j)
+                    }
+                    i.perm = map
+                    console.log(data)
+                    console.log("file")
+                    console.log(i.name)
+                })
                 if (snapshot.folders.has(i.parents[0])){
                     snapshot.folders.get(i.parents[0]).set(i.id , i)
                 }
