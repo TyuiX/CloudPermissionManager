@@ -3,7 +3,7 @@ import PageHeader from "./components/common-page-components/PageHeader/PageHeade
 import { Route, Routes } from "react-router-dom";
 import MyFiles from "./components/pages/MyFiles/MyFiles";
 import LinkGoogleLink from "./components/common-page-components/PageSidebar/LinkGoogleLink/LinkGoogleLink";
-import React, {useContext} from "react";
+import React, {useContext, useEffect} from "react";
 import SignUp from "./components/pages/SignUp/SignUp";
 import Login from "./components/pages/Login/Login";
 import SharedFiles from "./components/pages/SharedFiles/SharedFiles";
@@ -11,9 +11,18 @@ import Home from "./components/pages/Home/Home";
 import * as event from "./components/functions/events"
 import {UserContext} from "./utils/context/UserContext";
 import LoadingScreen from "./components/common-page-components/LoadingScreen/LoadingScreen";
+import {getUserProfile} from "./api/ShareManagerAPI";
 
 function App() {
     const {isLoading} = useContext(UserContext)
+    console.log(isLoading)
+
+    const getProfile = async () => {
+        let user = localStorage.getItem('user');
+        const parsedUser = JSON.parse(user)
+        console.log(parsedUser);
+        return await getUserProfile({email: parsedUser.email});
+    }
 
     if (isLoading) {
         return <LoadingScreen />
