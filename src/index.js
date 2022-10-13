@@ -6,6 +6,11 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter} from "react-router-dom";
 import UserContextProvider from "./utils/context/UserContext";
 import GoogleContextProvider from "./utils/context/GoogleContext";
+import { PublicClientApplication } from "@azure/msal-browser";
+import { MsalProvider } from "@azure/msal-react";
+import { msalConfig } from "./components/onedriveauth/authConfig";
+
+const msalInstance = new PublicClientApplication(msalConfig);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -13,7 +18,9 @@ root.render(
       <BrowserRouter>
           <UserContextProvider>
               <GoogleContextProvider>
-                  <App />
+                    <MsalProvider instance={msalInstance}>
+                        <App />
+                    </MsalProvider>
               </GoogleContextProvider>
           </UserContextProvider>
       </BrowserRouter>
