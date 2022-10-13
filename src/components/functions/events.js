@@ -17,32 +17,25 @@ export  function handleGetFile(){
         if (loggedInUser) {
             user = JSON.parse(loggedInUser);
         }
+
+        
         for (let i of data){
             if (i.ownedByMe){
-                await api.getPermissionsStart(i.id).then(resdata => {
-                    let map = new Map()
-                    for (let j of resdata){
-                        map.set(j.id, j)
-                    }
-                    i.perm = map
-                    console.log(data)
-                    console.log("file")
-                    console.log(i.name)
-                })
-                if (snapshot.folders.has(i.parents[0])){
+                await api.getPermissionsStart(i.id).then(data => i.perm = data)
+                if(i.parents !== undefined) { 
+                    if (snapshot.folders.has(i.parents[0])){
                     snapshot.folders.get(i.parents[0]).set(i.id , i)
-                }
-                else{
-                    snapshot.folders.set(i.parents[0], new Map)
-                    snapshot.folders.get(i.parents[0]).set(i.id, i)
-                    rootCandidate.add(i.parents[0])
-                }
-                if (rootCandidate.has(i.id)){
-                    rootCandidate.delete(i.id)
-
+                    }
+                    else{
+                        snapshot.folders.set(i.parents[0], new Map())
+                        snapshot.folders.get(i.parents[0]).set(i.id, i)
+                        rootCandidate.add(i.parents[0])
+                    }
+                    if (rootCandidate.has(i.id)){
+                        rootCandidate.delete(i.id);
+                    }
                 }
             }
-
         }
         snapshot.root = [...rootCandidate][0]
         serverRoute.createSnapshot({snapshot:snapshot, email: user.email})
