@@ -103,8 +103,9 @@ export default function UpdateSharingModal(props) {
                                             <div className="modal-user-email">{email}</div>
                                         </div>
                                         <select defaultValue={role} onChange={(e) => addPendingUpdate(e, user)}>
-                                            <option value="writer">Allowed Writer</option>
-                                            <option value="reader">Allowed Reader</option>
+                                            <option value="writer">Writer</option>
+                                            <option value="reader">Reader</option>
+                                            <option value="commenter">Commenter</option>
                                             <option value="unshared" >Unshared</option>
                                         </select>
                                     </div>

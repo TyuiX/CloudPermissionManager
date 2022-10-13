@@ -1,30 +1,25 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {GoogleLogin} from "react-google-login";
 import googleAuth from "../../../../utils/GoogleAuth";
+import {UserContext} from "../../../../utils/context/UserContext";
+import {gapi} from "gapi-script";
+import {GoogleContext} from "../../../../utils/context/GoogleContext";
 
 export default function LinkGoogleLink() {
+    const {user, setGoogleAcc} = useContext(UserContext);
+    const {getGoogleFiles} = useContext(GoogleContext);
 
     const onSuccess = async (res) => {
         console.log(res)
         console.log("login success: ", res.profileObj);
 
-        // refreshTokenSetup(res)
+        await setGoogleAcc(user.email, gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().cu);
+        await getGoogleFiles();
     }
 
     const onFailure = (res) => {
         console.log("login failed: " + res);
     }
-
-    // const refreshTokenSetup = (res) => {
-    //     let refreshTiming = (res.tokenObj.expires_in || 3600 - 5 * 60) * 1000
-    //
-    //     const refreshToken = async () => {
-    //         const newAuthRes = await res.reloadAuthResponse();
-    //         refreshTiming = (newAuthRes.tokenObj.expires_in || 3600 - 5 * 60) * 1000
-    //         setTimeout(refreshToken, refreshTiming)
-    //     }
-    //     setTimeout(refreshToken, refreshTiming)
-    // }
 
     return (
         <div>
@@ -33,7 +28,6 @@ export default function LinkGoogleLink() {
                 onSuccess={onSuccess}
                 onFailure={onFailure}
                 cookiePolicy={"single_host_origin"}
-                isSignedIn={true}
                 buttonText="Link Google account"
             />
         </div>

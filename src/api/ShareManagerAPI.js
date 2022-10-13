@@ -8,9 +8,9 @@ export const createUser = (payload) => api.post(`/register`, payload)
 export const loginUser = (payload) => api.post(`/login`, payload)
 export const createSnapshot = (payload) => api.post(`/snapshot/add`, payload)
 export const getSnapshots = (payload) => api.post(`/snapshot/list`, payload)
-export const getUserProfile = (payload) => api.get(`/user`, payload)
+export const getUserProfile = (payload) => api.post(`/user`, payload)
 export const getSnapshot = (id) => api.get(`/snapshot/${id}`)
-export const testConnect = () => api.get(`/test`)
+export const setLinkedGoogle = (payload) => api.post(`/google`, payload)
 
 const managerAPI = {
     createUser,
@@ -19,7 +19,7 @@ const managerAPI = {
     getSnapshots,
     getUserProfile,
     getSnapshot,
-    testConnect
+    setLinkedGoogle,
 }
 
 export default managerAPI
