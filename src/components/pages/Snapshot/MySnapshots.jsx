@@ -3,12 +3,11 @@ import SnapCell from "../../common-page-components/SnapCell/SnapCell";
 import "../index.css";
 import {useContext} from "react";
 import {GoogleContext} from "../../../utils/context/GoogleContext";
+import {UserContext} from "../../../utils/context/UserContext";
 
-export default function MySnapshots(props) {
+export default function MySnapshots() {
     const {myFiles} = useContext(GoogleContext);
-    const {newSnap, snapshot} = props;
-
-    console.log(myFiles)
+    const {snapshots, createNewSnapshot} = useContext(UserContext);
 
     const createSnapshotData = () => {
         let snapshot = {
@@ -26,20 +25,15 @@ export default function MySnapshots(props) {
 
         myFiles.forEach((file) => {
             const {id, parents, permissions} = file;
-            console.log(permissions)
-            let fileCopy = JSON.parse(JSON.stringify(file));
-            let newPerms = new Map();
-            if (permissions) {
+            if(parents !== undefined) {
+                let fileCopy = JSON.parse(JSON.stringify(file));
+                let newPerms = new Map();
                 for (let perm of permissions) {
                     newPerms.set(perm.id, perm)
                 }
-                fileCopy.permissions = Object.fromEntries(newPerms)
-            }
-            else {
-                fileCopy.permissions = {}
-            }
+                fileCopy.perm = Object.fromEntries(newPerms)
+                console.log(fileCopy)
 
-            if(parents !== undefined) {
                 if (snapshot.folders.has(parents[0])){
                     snapshot.folders.get(parents[0]).set(id, fileCopy)
                 }
@@ -54,38 +48,41 @@ export default function MySnapshots(props) {
             }
         })
         snapshot.root = [...rootCandidate][0]
-        console.log({snapshot: snapshot, email: user.email})
-        // serverRoute.createSnapshot({snapshot: snapshot, email: user.email})
+        let key = snapshot.folders.keys();
+        for (let i of key){
+            snapshot.folders.set(i , Object.fromEntries(snapshot.folders.get(i)))
+        }
+        snapshot.folders = Object.fromEntries(snapshot.folders)
+        createNewSnapshot(snapshot, user.email)
     }
 
     let firstSnap = null;
     let secondSnap = [];
-    
-    if(snapshot.length !== 0){
-        console.log(snapshot);
-        firstSnap = snapshot.data[0];
-        secondSnap = snapshot.data;
+
+    if(snapshots.length !== 0){
+        console.log(snapshots);
+        firstSnap = snapshots[0];
+        secondSnap = snapshots;
     }
 
-    
-    
     return (
         <div className="page-container">
             <PageSideBar />
             <div className="page-content">
                 <h2 className="page-content-header">My Snapshots</h2>
+                {snapshots &&
                     <>
                         <h3 className="category-title">Recent Snapshot:</h3>
-                        <p className="page-content-all-the-way"> id: {firstSnap?firstSnap._id:""} <br></br> date: {firstSnap?firstSnap.date:""} </p> 
+                        <p className="page-content-all-the-way"> id: {firstSnap?firstSnap._id:""} <br></br> date: {firstSnap?firstSnap.date:""} </p>
                         <h3 className="category-title">Older Snapshots:</h3>
                         <div> {secondSnap.slice(1).map((snap) => (
-                                    <SnapCell key={snap._id}
-                                              snapInfo={snap}
-                                    />
-                                ))} </div>
+                            <SnapCell key={snap._id}
+                                      snapInfo={snap}
+                            />
+                        ))} </div>
                     </>
-                    <h2> <button className="newSnap" onClick={newSnap}>Add Snapshot</button></h2>
-                    {/*<h2> <button className="newSnap" onClick={createSnapshotData}>Add Snapshot</button></h2>*/}
+                }
+                <h2> <button className="newSnap" onClick={createSnapshotData}>Add Snapshot</button></h2>
             </div>
             
            
