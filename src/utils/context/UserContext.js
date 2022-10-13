@@ -18,6 +18,9 @@ function UserContextProvider(props) {
             setLoggedIn(true)
             navigate("/files")
         }
+        else {
+            navigate("/")
+        }
         setIsLoading(false);
     }, []);
     

@@ -28,7 +28,7 @@ function GoogleContextProvider(props) {
                     if (gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().cu === user.googleId) {
                         let files = await api.getFiles()
                         const reformattedFiles = files.map(({id, name, mimeType, ownedByMe, permissions, shared, modifiedTime,
-                                                                createdTime, owners
+                                                                createdTime, owners, parents
                                                             }) => {
                             let type;
                             switch (mimeType) {
@@ -51,6 +51,7 @@ function GoogleContextProvider(props) {
                                 lastUpdatedOn: modifiedTime,
                                 createdOn: createdTime,
                                 cloudOrigin: "google",
+                                parents: parents,
                             }
                         });
                         let myFiles = reformattedFiles.filter((file) => file.ownedByMe || typeof file.ownedByMe === 'undefined');
