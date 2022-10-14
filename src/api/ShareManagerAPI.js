@@ -14,6 +14,7 @@ export const setLinkedGoogle = (payload) => api.post(`/google`, payload)
 export const getFileFolderDif = (id) => api.get(`/fileFolderDiff/${id}`)
 export const snapshotDiff = (payload) => api.post(`/snapShotDiff`, payload)
 export const searchByName = (payload) => api.post(`/searchByName`, payload)
+export const updateFilePerms = (payload) => api.post(`/google/perm/update`, payload)
 
 const managerAPI = {
     createUser,
@@ -25,7 +26,8 @@ const managerAPI = {
     setLinkedGoogle,
     getFileFolderDif,
     snapshotDiff,
-    searchByName
+    searchByName,
+    updateFilePerms
 }
 
 export default managerAPI

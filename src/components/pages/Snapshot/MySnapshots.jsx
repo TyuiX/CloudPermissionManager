@@ -4,14 +4,14 @@ import "../index.css";
 import React, {useContext, useState} from "react";
 import {GoogleContext} from "../../../utils/context/GoogleContext";
 import {UserContext} from "../../../utils/context/UserContext";
-import UpdateSharingModal from "../../modals/UpdateSharingModal/UpdateSharingModal";
 import AnalyzeSharingModal from "../../modals/AnalyzeSharingModal/AnalyzeSharingModal";
 
 export default function MySnapshots() {
     const {myFiles} = useContext(GoogleContext);
-    const {snapshots, createNewSnapshot, getFolderFileDif, getsnapShotDiff} = useContext(UserContext);
+    const {snapshots, createNewSnapshot, getFolderFileDif, getSnapShotDiff} = useContext(UserContext);
     const [showModal, setShowModal] = useState(false);
     const [analysisInfo, setAnalysisInfo] = useState([])
+    const [analysisType, setAnalysisType] = useState("")
 
     const handleToggleModal = () => {
         setShowModal(!showModal)
@@ -30,6 +30,7 @@ export default function MySnapshots() {
         if (loggedInUser) {
             user = JSON.parse(loggedInUser);
         }
+        // console.log(myFiles)
 
         myFiles.forEach((file) => {
             const {id, parents, permissions} = file;
@@ -61,12 +62,22 @@ export default function MySnapshots() {
             snapshot.folders.set(i , Object.fromEntries(snapshot.folders.get(i)))
         }
         snapshot.folders = Object.fromEntries(snapshot.folders)
+        // console.log(snapshot)
         createNewSnapshot(snapshot, user.email)
     }
 
     const handleCompareFileFolder = async () => {
         let data = await getFolderFileDif(firstSnap._id);
         setAnalysisInfo(data)
+        setAnalysisType("file-folder")
+        setShowModal(true)
+    }
+
+    const handleCompareSnapshot = async () => {
+        console.log(firstSnap)
+        let data = await getSnapShotDiff(snapshots[1], firstSnap);
+        setAnalysisInfo(data)
+        setAnalysisType("snapshot-change")
         setShowModal(true)
     }
 
@@ -114,12 +125,13 @@ export default function MySnapshots() {
                     }
                     <h2> <button className="newSnap" onClick={createSnapshotData}>Add Snapshot</button></h2>
                     <h2> <button className="newSnap" onClick={handleCompareFileFolder}>FileFolderDiff</button></h2>
-                    <h2> <button className="newSnap" onClick={() => getsnapShotDiff(snapshots[1], firstSnap._id)}>SnapshotDiff</button></h2>
+                    <h2> <button className="newSnap" onClick={handleCompareSnapshot}>SnapshotDiff</button></h2>
                 </div>
             </div>
             {showModal &&
                 <AnalyzeSharingModal
                     analysisInfo={analysisInfo}
+                    analysisType={analysisType}
                     toggleModal={handleToggleModal}
                 />
             }

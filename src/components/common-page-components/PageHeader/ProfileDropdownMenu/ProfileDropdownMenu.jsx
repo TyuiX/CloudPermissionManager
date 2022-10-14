@@ -40,11 +40,11 @@ export default function ProfileDropdownMenu(props) {
                 onClick={() => setDropdown(!dropdown)}
             />
             <ul className={`user-dropdown ${dropdown ? "user-dropdown-open" : ""}`} submenus={recentSearches}>
-                <li className="user-menu-item">
-                    <span onClick={handleToggleModal}>Recent Searches</span>
+                <li className="user-menu-item" onClick={handleToggleModal}>
+                    <span>Recent Searches</span>
                 </li>
-                <li className="user-menu-item">
-                    <span onClick={logoutUser}>Logout</span>
+                <li className="user-menu-item" onClick={logoutUser}>
+                    <span>Logout</span>
                 </li>
             </ul>
         </div>

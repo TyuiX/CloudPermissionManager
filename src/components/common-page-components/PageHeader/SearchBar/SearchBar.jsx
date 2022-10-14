@@ -7,27 +7,22 @@ import "./SearchBar.css";
 
 export default function SearchBar(props) {
     const [dropdown, setDropdown] = useState(false);
-    // const {snapshots} = useContext(SnapshotContext);
     const {isLoading, snapshots, searchByName} = useContext(UserContext);
     const [currentSnap, setCurrentSnap] = useState(snapshots.length !== 0?snapshots[0]:[]);
     const wrapperRef = useRef(null);
     const [result, setResult] = useState("");
-    // console.log("ins earch");
-    // console.log(props.snapshots);
-    // console.log(isLoading);
 
     useEffect(() => {
-        console.log("in search");
+        // console.log("in search");
         if (!props.snapshots) {
-            console.log("no snap");
+            // console.log("no snap");
             return
         }
-        console.log("filename is");
-        console.log(props.fileName);
-        console.log(snapshots);
-        console.log(snapshots[0]);
+        // console.log("filename is");
+        // console.log(props.fileName);
+        // console.log(snapshots);
         setCurrentSnap(snapshots.length !== 0?snapshots[0]:[]);
-        console.log(currentSnap);
+        // console.log(currentSnap);
         // setSearch(props.fileName);
         document.addEventListener("click", handleClickOutside, false);
         return () => {
@@ -42,6 +37,7 @@ export default function SearchBar(props) {
     }
 
     const handleSnapshotClick = (snap) => {
+        console.log("handle snap");
         setDropdown(false);
         setCurrentSnap(snap);
     }
@@ -77,8 +73,8 @@ export default function SearchBar(props) {
                     {(snapshots && !isLoading && snapshots.length !== 0) &&
                                     (snapshots.map((snap) => {
                                         return (
-                                            <li className="user-menu-item">
-                                                <span value={snap} onClick={() => handleSnapshotClick(snap)}>id: {snap._id}  date: {snap.date}</span>
+                                            <li className="user-menu-item" onClick={() => handleSnapshotClick(snap)}>
+                                                <span value={snap} >id: {snap._id}  date: {snap.date}</span>
                                             </li>
                                         )
                                     }))
