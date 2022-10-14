@@ -13,6 +13,7 @@ export const getSnapshot = (id) => api.get(`/snapshot/${id}`)
 export const setLinkedGoogle = (payload) => api.post(`/google`, payload)
 export const getFileFolderDif = (id) => api.get(`/fileFolderDiff/${id}`)
 export const snapshotDiff = (payload) => api.post(`/snapShotDiff`, payload)
+export const updateFilePerms = (payload) => api.post(`/google/perm/update`, payload)
 
 const managerAPI = {
     createUser,
@@ -23,7 +24,8 @@ const managerAPI = {
     getSnapshot,
     setLinkedGoogle,
     getFileFolderDif,
-    snapshotDiff
+    snapshotDiff,
+    updateFilePerms,
 }
 
 export default managerAPI
