@@ -3,7 +3,6 @@ import {FaGoogleDrive} from "react-icons/fa";
 import {ImOnedrive} from "react-icons/im";
 import "./SideBarDriveLink.css";
 import drives from "../../../../utils/CloudDrives";
-import {Link} from "react-router-dom";
 
 export default function SideBarDriveLink(props) {
     const {driveType, linked, email} = props;
@@ -32,10 +31,10 @@ export default function SideBarDriveLink(props) {
 
     if (!linked) {
         return (
-            <Link to={"/login/" + driveType} className="drive-account drive-login-link">
+            <div className="drive-account drive-login-link">
                 {driveIcon()}
                 <span>Link {drive.name} account</span>
-            </Link>
+            </div>
         )
     }
 

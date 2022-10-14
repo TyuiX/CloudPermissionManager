@@ -123,3 +123,11 @@
     flex-direction: row;
     flex-wrap: wrap;
 }
+
+.newSnap{
+    width: 100%;
+    text-align: center;
+    margin-left: 190%;
+    font-size: 30px;
+    color: blue;
+}
