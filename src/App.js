@@ -63,6 +63,7 @@ function App() {
               {/* <Route path="/filesnapshot" element={<div >FileSnapshot <button onClick={event.handleGetFile}>click me </button></div>} /> */}
               <Route path="/filesnapshot" element={<MySnapshots newSnap={event.handleGetFile} snapshot={snapshots}/>} />
               <Route path="/groupsnapshot" element={<div>GroupSnapshot</div>} />
+              {/* <Route path="/searchresults" element={}/> */}
           </Routes>
       </>
   );

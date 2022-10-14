@@ -8,10 +8,11 @@ import "./SearchBar.css";
 
 export default function SearchBar(props) {
     const [dropdown, setDropdown] = useState(false);
-    const [currentSnap, setCurrentSnap] = useState(props.snapshots.data !== undefined?props.snapshots.data[0]:[]);
     // const {snapshots} = useContext(SnapshotContext);
-    const {isLoading} = useContext(UserContext)
+    const {isLoading, snapshots, searchByName} = useContext(UserContext);
+    const [currentSnap, setCurrentSnap] = useState(snapshots.length !== 0?snapshots[0]:[]);
     const wrapperRef = useRef(null);
+    const [result, setResult] = useState("");
     // console.log("ins earch");
     // console.log(props.snapshots);
     // console.log(isLoading);
@@ -24,6 +25,10 @@ export default function SearchBar(props) {
         }
         console.log("filename is");
         console.log(props.fileName);
+        console.log(snapshots);
+        console.log(snapshots[0]);
+        setCurrentSnap(snapshots.length !== 0?snapshots[0]:[]);
+        console.log(currentSnap);
         // setSearch(props.fileName);
         document.addEventListener("click", handleClickOutside, false);
         return () => {
@@ -37,12 +42,19 @@ export default function SearchBar(props) {
         }
     }
 
-    const handleSnapshotClick = event => {
-
+    const handleSnapshotClick = (snap) => {
+        setDropdown(false);
+        setCurrentSnap(snap);
     }
 
-    const handleSearch = event => {
-
+    //use currentSnap and fileName to filter files and get result
+    const handleSearch = async() => {
+        console.log("in handle search");
+        console.log(currentSnap._id);
+        console.log(props.fileName);
+        let output = await searchByName(currentSnap._id, props.fileName);
+        setResult(output.length===0?"":output[0].name);
+        console.log(output.length === 0? "no len":output[0].name);
     }
 
     return (
@@ -63,8 +75,8 @@ export default function SearchBar(props) {
                 onClick={() => setDropdown(!dropdown)}
             />
                 <ul className={`user-dropdown ${dropdown ? "user-dropdown-open" : ""}`}>
-                    {(props.snapshots && !isLoading && props.snapshots.data !== undefined) &&
-                                    (props.snapshots.data.map((snap) => {
+                    {(snapshots && !isLoading && snapshots.length !== 0) &&
+                                    (snapshots.map((snap) => {
                                         return (
                                             <li className="user-menu-item">
                                                 <span value={snap} onClick={() => handleSnapshotClick(snap)}>id: {snap._id}  date: {snap.date}</span>
@@ -72,14 +84,17 @@ export default function SearchBar(props) {
                                         )
                                     }))
                                 }                
-                    {(!props.snapshots && isLoading && props.snapshots.data == undefined) &&
+                    {(!snapshots || isLoading || snapshots.length === 0) &&
                         <li className="no-snapshots-message">No snapshots!</li>
                     }
                 </ul>
             </div>
             <div className='search'>
-                    <AiOutlineSearch size={30} className="search-button" onClick={() => handleSearch}/>
+                    <AiOutlineSearch size={30} className="search-button" onClick={handleSearch}/>
             </div> 
+            <div>
+            <input className="e-input" type="text" placeholder="Search Results Here" value={result?result:"No Results!"} readOnly={true}/>
+            </div>
         </>
     );
 }
