@@ -127,10 +127,22 @@ function UserContextProvider(props) {
         }
     }, [getSnapshots])
 
+    const getFolderFileDif = useCallback( async (id) => {
+        try {
+            const res = await api.getFileFolderDif(id)
+            if (res.status === 200) {
+                console.log(res)
+            }
+        }
+        catch (err) {
+            return err.response.data.errorMessage;
+        }
+    }, [])
+
     return (
         <UserContext.Provider value={{
             user, snapshots, isLoading, loggedIn, createUser, loginUser, logoutUser, startLoading, finishLoading, 
-            setGoogleAcc, createNewSnapshot
+            setGoogleAcc, createNewSnapshot, getFolderFileDif
         }}>
             {props.children}
         </UserContext.Provider>

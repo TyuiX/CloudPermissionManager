@@ -7,7 +7,7 @@ import {UserContext} from "../../../utils/context/UserContext";
 
 export default function MySnapshots() {
     const {myFiles} = useContext(GoogleContext);
-    const {snapshots, createNewSnapshot} = useContext(UserContext);
+    const {snapshots, createNewSnapshot, getFolderFileDif} = useContext(UserContext);
 
     const createSnapshotData = () => {
         let snapshot = {
@@ -84,6 +84,7 @@ export default function MySnapshots() {
                     </>
                 }
                 <h2> <button className="newSnap" onClick={createSnapshotData}>Add Snapshot</button></h2>
+                <h2> <button className="newSnap" onClick={() => getFolderFileDif(firstSnap._id)}>FildFolderDiff</button></h2>
             </div>
             
            
