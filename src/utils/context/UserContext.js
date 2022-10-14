@@ -140,12 +140,13 @@ function UserContextProvider(props) {
         }
     }, [])
 
-    const getsnapShotDiff = useCallback( async (oldSnapshot, currSnapshot) => {
+    const getSnapShotDiff = useCallback( async (oldSnapshot, currSnapshot) => {
         try {
-            const res = await api.snapshotDiff({oldsnapshot: oldSnapshot, currsnapshot: currSnapshot});
+            const res = await api.snapshotDiff({oldSnapshot: oldSnapshot, currSnapshot: currSnapshot});
             if (res.status === 200) {
                 // set the state of the user
-                console.log(res)
+                console.log(res.data)
+                return res.data
             }
         }
         catch (err) {
@@ -155,7 +156,7 @@ function UserContextProvider(props) {
     return (
         <UserContext.Provider value={{
             user, snapshots, isLoading, loggedIn, createUser, loginUser, logoutUser, startLoading, finishLoading, 
-            setGoogleAcc, createNewSnapshot, getFolderFileDif, getsnapShotDiff
+            setGoogleAcc, createNewSnapshot, getFolderFileDif, getSnapShotDiff
         }}>
             {props.children}
         </UserContext.Provider>
