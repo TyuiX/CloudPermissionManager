@@ -53,6 +53,7 @@ export default function MySnapshots() {
             snapshot.folders.set(i , Object.fromEntries(snapshot.folders.get(i)))
         }
         snapshot.folders = Object.fromEntries(snapshot.folders)
+        console.log(snapshot)
         createNewSnapshot(snapshot, user.email)
     }
 
