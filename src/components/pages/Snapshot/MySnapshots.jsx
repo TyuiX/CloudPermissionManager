@@ -30,6 +30,7 @@ export default function MySnapshots() {
         if (loggedInUser) {
             user = JSON.parse(loggedInUser);
         }
+        // console.log(myFiles)
 
         myFiles.forEach((file) => {
             const {id, parents, permissions} = file;
@@ -61,6 +62,7 @@ export default function MySnapshots() {
             snapshot.folders.set(i , Object.fromEntries(snapshot.folders.get(i)))
         }
         snapshot.folders = Object.fromEntries(snapshot.folders)
+        // console.log(snapshot)
         createNewSnapshot(snapshot, user.email)
     }
 
