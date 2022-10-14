@@ -131,13 +131,15 @@ function UserContextProvider(props) {
         try {
             const res = await api.getFileFolderDif(id)
             if (res.status === 200) {
-                console.log(res)
+                console.log(res.data)
+                return res.data
             }
         }
         catch (err) {
             return err.response.data.errorMessage;
         }
     }, [])
+
     const getsnapShotDiff = useCallback( async (oldSnapshot, currSnapshot) => {
         try {
             const res = await api.snapshotDiff({oldsnapshot: oldSnapshot, currsnapshot: currSnapshot});
