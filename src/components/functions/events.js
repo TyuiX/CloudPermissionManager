@@ -38,6 +38,12 @@ export  function handleGetFile(){
             }
         }
         snapshot.root = [...rootCandidate][0]
+        let key = snapshot.folders.keys();
+        for (let i of key){
+            snapshot.folders.set(i , Object.fromEntries(snapshot.folders.get(i)))
+        }
+        console.log("hi");
+        snapshot.folders = Object.fromEntries(snapshot.folders)
         serverRoute.createSnapshot({snapshot:snapshot, email: user.email})
     
     })

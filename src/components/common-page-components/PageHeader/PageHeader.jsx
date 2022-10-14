@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import "./PageHeader.css"
 import {AiFillSetting, AiOutlineCloudSync} from "react-icons/ai";
 import {Link} from "react-router-dom";
@@ -6,8 +6,9 @@ import SearchBar from "./SearchBar/SearchBar";
 import {UserContext} from "../../../utils/context/UserContext";
 import ProfileDropdownMenu from "./ProfileDropdownMenu/ProfileDropdownMenu";
 
-export default function PageHeader() {
-    const {loggedIn} = useContext(UserContext)
+export default function PageHeader(props) {
+    const {loggedIn} = useContext(UserContext);
+    const [fileName, setFileName] = useState("");
 
     if (!loggedIn) {
         return (
@@ -35,11 +36,11 @@ export default function PageHeader() {
                 <span>Cloud Sharing Manager</span>
             </Link>
             <div className="header-section">
-                <SearchBar />
+                <SearchBar snapshots={props.snapshots} fileName={fileName} setFileName={setFileName}/>
             </div>
             <div className="header-section">
                 <AiFillSetting size={30} />
-                <ProfileDropdownMenu />
+                <ProfileDropdownMenu setFileName={setFileName}/>
             </div>
         </div>
     );

@@ -2,11 +2,14 @@ import React, {useContext, useEffect, useRef, useState} from 'react';
 import {FaUserCircle} from "react-icons/fa";
 import {UserContext} from "../../../../utils/context/UserContext";
 import "./ProfileDropdownMenu.css";
+import RecentSearchModal from "../../../modals/RecentSearchModal/RecentSearchModal";
 
-export default function ProfileDropdownMenu() {
+export default function ProfileDropdownMenu(props) {
     const [dropdown, setDropdown] = useState(false);
-    const {logoutUser} = useContext(UserContext)
+    const {logoutUser} = useContext(UserContext);
     const wrapperRef = useRef(null);
+    const [recentSearches, setRecentSearches] = useState(["mus119_paper", "cleanenergycover"]);
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         document.addEventListener("click", handleClickOutside, false);
@@ -15,6 +18,10 @@ export default function ProfileDropdownMenu() {
         };
     }, []);
 
+    const handleToggleModal = () => {
+        setShowModal(!showModal)
+    }
+
     const handleClickOutside = event => {
         if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
             setDropdown(false);
@@ -22,6 +29,7 @@ export default function ProfileDropdownMenu() {
     }
 
     return (
+        <>
         <div className="profile-dropdown-container"
              ref={wrapperRef}
         >
@@ -30,11 +38,20 @@ export default function ProfileDropdownMenu() {
                 size={30}
                 onClick={() => setDropdown(!dropdown)}
             />
-            <ul className={`user-dropdown ${dropdown ? "user-dropdown-open" : ""}`}>
+            <ul className={`user-dropdown ${dropdown ? "user-dropdown-open" : ""}`} submenus={recentSearches}>
+                <li className="user-menu-item">
+                    <span onClick={handleToggleModal}>Recent Searches</span>
+                </li>
                 <li className="user-menu-item">
                     <span onClick={logoutUser}>Logout</span>
                 </li>
             </ul>
         </div>
+        {showModal &&
+            <RecentSearchModal
+                toggleModal={handleToggleModal} setFileName={props.setFileName}
+            />
+        }
+        </>
     );
 }
