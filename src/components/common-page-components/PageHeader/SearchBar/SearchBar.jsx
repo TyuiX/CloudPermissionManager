@@ -12,6 +12,7 @@ export default function SearchBar(props) {
     // const {snapshots} = useContext(SnapshotContext);
     const {isLoading} = useContext(UserContext)
     const wrapperRef = useRef(null);
+    const [result, setResult] = useState([]);
     // console.log("ins earch");
     // console.log(props.snapshots);
     // console.log(isLoading);
@@ -37,10 +38,11 @@ export default function SearchBar(props) {
         }
     }
 
-    const handleSnapshotClick = event => {
-
+    const handleSnapshotClick = (snap) => {
+        setCurrentSnap(snap);
     }
 
+    //use currentSnap and fileName to filter files and get result
     const handleSearch = event => {
 
     }
