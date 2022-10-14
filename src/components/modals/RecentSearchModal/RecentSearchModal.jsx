@@ -5,29 +5,21 @@ import { getSnapshots, getUserProfile } from '../../../api/ShareManagerAPI';
 
 export default function RecentSearchModal(props) {
     const {toggleModal, fileName} = props;
-    const [recentSearches, setRecentSearches] = useState(["mus119_paper", "cleanenergycover"]);
-    const [snapshots, setSnap] = useState([]);
-
-    useEffect(() => {
-        getProfile().then(res => {
-            getSnap(res.data.snapshot).then(res2 => {
-                setSnap(res2);
-            })
-        });
-    }, []);
+    const [recentSearches, setRecentSearches] = useState(["mus119_paper", "cleanenergycover", "vocab.txt"]);
+    // const [snapshots, setSnap] = useState([]);
+    const [selectedOption, setSelectedOption] = useState();
 
     const confirmUpdate = (e) => {
         e.preventDefault();
+        console.log("confirm");
+        // console.log(selectedOption);
+        props.setFileName(selectedOption);
         toggleModal();
     }
 
-    const getProfile = async () => {
-        console.log("here:");
-        return await getUserProfile();
-    }
-
-    const getSnap = async (msg) => {
-        return await getSnapshots(msg);
+    const handleOptionChange = (e) => {
+        console.log(e.target.value);
+        setSelectedOption(e.target.value);
     }
 
     return (
@@ -43,25 +35,20 @@ export default function RecentSearchModal(props) {
                         {recentSearches.length !== 0 ?
                             recentSearches.map((search) => {
                                 return (
-                                    <div className="modal-user-item">{search}</div>
+                                    <div className="radio">
+                                        <label>
+                                            <input type="radio" value={search} 
+                                                        checked={selectedOption === search} 
+                                                        onChange={handleOptionChange} />
+                                            {search}
+                                        </label>
+                                    </div>
                                 )
                             })
                             :
                             <div className="no-users-message">No recent searches...</div>
                         }
                     </div>
-                    {/* <div className="modal-section-title">Snapshots:</div>
-                    <div className="modal-users-list">
-                        {snapshots.length !== 0 ?
-                            snapshots.map((search) => {
-                                return (
-                                    <div className="modal-user-item">{search}</div>
-                                )
-                            })
-                            :
-                            <div className="no-users-message">No snapshots</div>
-                        }
-                    </div> */}
                 </div>
                 <div className="modal-footer">
                     <button className="modal-button modal-confirm" onClick={(e) => confirmUpdate(e)}>Confirm</button>

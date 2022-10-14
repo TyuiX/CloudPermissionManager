@@ -17,13 +17,14 @@ export default function SearchBar(props) {
     // console.log(isLoading);
 
     useEffect(() => {
-        // lastGetSnapshot();
         console.log("in search");
         if (!props.snapshots) {
             console.log("no snap");
             return
         }
-        console.log(props.snapshots);
+        console.log("filename is");
+        console.log(props.fileName);
+        // setSearch(props.fileName);
         document.addEventListener("click", handleClickOutside, false);
         return () => {
             document.removeEventListener("click", handleClickOutside, false);
@@ -44,16 +45,13 @@ export default function SearchBar(props) {
 
     }
 
-    const updateSearchText = () => {
-        return null;
-    }
-
     return (
         <>
             <div className={"search-bar-container"}>
                 <input
                     type="text"
-                    onChange={updateSearchText}
+                    value={props.fileName}
+                    onChange={({ target }) => props.setFileName(target.value)}
                     placeholder="Search..."
                 />
             </div>
