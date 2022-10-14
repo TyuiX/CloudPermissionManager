@@ -1,13 +1,21 @@
 import PageSideBar from "../../common-page-components/PageSidebar/PageSideBar";
 import SnapCell from "./SnapCell/SnapCell";
 import "../index.css";
-import {useContext} from "react";
+import React, {useContext, useState} from "react";
 import {GoogleContext} from "../../../utils/context/GoogleContext";
 import {UserContext} from "../../../utils/context/UserContext";
+import UpdateSharingModal from "../../modals/UpdateSharingModal/UpdateSharingModal";
+import AnalyzeSharingModal from "../../modals/AnalyzeSharingModal/AnalyzeSharingModal";
 
 export default function MySnapshots() {
     const {myFiles} = useContext(GoogleContext);
     const {snapshots, createNewSnapshot, getFolderFileDif, getsnapShotDiff} = useContext(UserContext);
+    const [showModal, setShowModal] = useState(false);
+    const [analysisInfo, setAnalysisInfo] = useState([])
+
+    const handleToggleModal = () => {
+        setShowModal(!showModal)
+    }
 
     const createSnapshotData = () => {
         let snapshot = {
@@ -56,6 +64,12 @@ export default function MySnapshots() {
         createNewSnapshot(snapshot, user.email)
     }
 
+    const handleCompareFileFolder = async () => {
+        let data = await getFolderFileDif(firstSnap._id);
+        setAnalysisInfo(data)
+        setShowModal(true)
+    }
+
     let firstSnap = null;
     let secondSnap = [];
 
@@ -81,28 +95,34 @@ export default function MySnapshots() {
     }
 
     return (
-        <div className="page-container">
-            <PageSideBar />
-            <div className="page-content">
-                <h2 className="page-content-header">My Snapshots</h2>
-                {snapshots &&
-                    <>
-                        <h3 className="category-title">Recent Snapshot:</h3>
-                        <p className="page-content-all-the-way"> id: {firstSnap?firstSnap._id:""} <br></br> {fullDate} </p>
-                        <h3 className="category-title">Older Snapshots:</h3>
-                        <div> {secondSnap.slice(1).map((snap) => (
-                            <SnapCell key={snap._id}
-                                      snapInfo={snap}
-                            />
-                        ))} </div>
-                    </>
-                }
-                <h2> <button className="newSnap" onClick={createSnapshotData}>Add Snapshot</button></h2>
-                <h2> <button className="newSnap" onClick={() => getFolderFileDif(firstSnap._id)}>FildFolderDiff</button></h2>
-                <h2> <button className="newSnap" onClick={() => getsnapShotDiff(snapshots[1], firstSnap._id)}>SnapshotDiff</button></h2>
+        <>
+            <div className="page-container">
+                <PageSideBar />
+                <div className="page-content">
+                    <h2 className="page-content-header">My Snapshots</h2>
+                    {snapshots &&
+                        <>
+                            <h3 className="category-title">Recent Snapshot:</h3>
+                            <p className="page-content-all-the-way"> id: {firstSnap?firstSnap._id:""} <br></br> {fullDate} </p>
+                            <h3 className="category-title">Older Snapshots:</h3>
+                            <div> {secondSnap.slice(1).map((snap) => (
+                                <SnapCell key={snap._id}
+                                          snapInfo={snap}
+                                />
+                            ))} </div>
+                        </>
+                    }
+                    <h2> <button className="newSnap" onClick={createSnapshotData}>Add Snapshot</button></h2>
+                    <h2> <button className="newSnap" onClick={handleCompareFileFolder}>FileFolderDiff</button></h2>
+                    <h2> <button className="newSnap" onClick={() => getsnapShotDiff(snapshots[1], firstSnap._id)}>SnapshotDiff</button></h2>
+                </div>
             </div>
-
-
-        </div>
+            {showModal &&
+                <AnalyzeSharingModal
+                    analysisInfo={analysisInfo}
+                    toggleModal={handleToggleModal}
+                />
+            }
+        </>
     );
 }
