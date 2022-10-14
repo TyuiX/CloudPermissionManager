@@ -12,6 +12,8 @@ export default function UpdateSharingModal(props) {
     const [newEmail, setNewEmail] = useState("");
     const {updateFilePerms} = useContext(GoogleContext);
 
+    console.log(updatedUsers)
+
     useEffect(() => {
         if (!existingPerms) {
             return;
