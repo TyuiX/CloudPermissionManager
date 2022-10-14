@@ -56,56 +56,9 @@ async function getPermissions(fileId){
     })
 }
 
-async function updatePermission(fileId, permId, newPerm){
-    let accessToken = gapi.auth.getToken().access_token;
-
-    return fetch(`https://www.googleapis.com/drive/v3/files/${fileId}/permissions/${permId}`, {
-        method: 'PATCH',
-        headers: new Headers({'Authorization': 'Bearer ' + accessToken,
-            'Content-type': 'application/json; charset=UTF-8',}),
-        body: JSON.stringify({
-            role: newPerm,
-        }),
-        domain: "global",
-    }).then(resp => resp.json().then(res => console.log(res)).catch(err => console.log(err)))
-}
-
-export const addPermission = async(fileId, email, perm) => {
-    let accessToken = gapi.auth.getToken().access_token;
-
-    return fetch(`https://www.googleapis.com/drive/v3/files/${fileId}/permissions/`, {
-        method: 'POST',
-        headers: new Headers({'Authorization': 'Bearer ' + accessToken,
-            'Content-type': 'application/json; charset=UTF-8',}),
-        body: JSON.stringify({
-            role: perm,
-            type: "user",
-            emailAddress: email,
-        }),
-        domain: "global",
-    }).then(resp => resp.json().then(res => console.log(res)).catch(err => console.log(err)))
-}
-
-export const deletePermission = async(fileId, permId) => {
-    let accessToken = gapi.auth.getToken().access_token;
-
-    return fetch(`https://www.googleapis.com/drive/v3/files/${fileId}/permissions/${permId}`, {
-        method: 'DELETE',
-        headers: new Headers({'Authorization': 'Bearer ' + accessToken,
-            'Content-type': 'application/json; charset=UTF-8',}),
-    }).then(resp => {
-        if (resp.status === 200) {
-            resp.json().then(res => console.log(res)).catch(err => console.log(err))
-        }
-    })
-}
-
 const googleAPI = {
     getFiles,
     getPermissionsStart,
-    addPermission,
-    deletePermission,
-    updatePermission,
     getFileToShow: getFileInfo,
 }
 
