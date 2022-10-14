@@ -1,5 +1,6 @@
 import React, {createContext, useCallback, useContext, useEffect, useState} from "react";
 import api from '../../api/GoogleAPI'
+import sharingAPI from '../../api/ShareManagerAPI'
 import {UserContext} from "./UserContext";
 import {gapi} from "gapi-script";
 import googleAuth from "../GoogleAuth";
@@ -119,29 +120,8 @@ function GoogleContextProvider(props) {
     }, [finishLoading, startLoading])
 
     const updateFilePerms = useCallback( async (fileId, updatedUsers, addedUsers) => {
-        for (const user of updatedUsers) {
-            const {id, role} = user;
-            console.log(role)
-            try {
-                if (role === "unshared") {
-                    await api.deletePermission(fileId, id);
-                }
-                else {
-                    await api.updatePermission(fileId, id, role);
-                }
-            } catch (err) {
-                console.log(err)
-            }
-        }
-        for (const user of addedUsers) {
-            const {email, role} = user;
-            try {
-                const res = await api.addPermission(fileId,  email, role);
-                console.log(res)
-            } catch (err) {
-                console.log(err)
-            }
-        }
+        let accessToken = gapi.auth.getToken().access_token;
+        await sharingAPI.updateFilePerms({fileId: fileId, updatedUsers: updatedUsers, addedUsers: addedUsers, accessToken: accessToken})
         await getGoogleFiles();
     }, [getGoogleFiles])
 
