@@ -194,6 +194,7 @@ function GoogleContextProvider(props) {
     const updateFilePerms = useCallback( async (fileId, updatedUsers, addedUsers) => {
         for (const user of updatedUsers) {
             const {id, role} = user;
+            console.log(role)
             try {
                 if (role === "unshared") {
                     await api.deletePermission(fileId, id);
