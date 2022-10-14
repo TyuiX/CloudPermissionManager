@@ -7,7 +7,7 @@ import "./SearchBar.css";
 
 export default function SearchBar(props) {
     const [dropdown, setDropdown] = useState(false);
-    const {isLoading, snapshots, searchByName} = useContext(UserContext);
+    const {isLoading, snapshots, searchByName, getRecentSearches} = useContext(UserContext);
     const [currentSnap, setCurrentSnap] = useState(snapshots.length !== 0?snapshots[0]:[]);
     const wrapperRef = useRef(null);
     const [result, setResult] = useState("");
@@ -44,12 +44,13 @@ export default function SearchBar(props) {
 
     //use currentSnap and fileName to filter files and get result
     const handleSearch = async() => {
-        console.log("in handle search");
-        console.log(currentSnap._id);
-        console.log(props.fileName);
+        // console.log("in handle search");
+        // console.log(currentSnap._id);
+        // console.log(props.fileName);
         let output = await searchByName(currentSnap._id, props.fileName);
         setResult(output.length===0?"":output[0].name);
-        console.log(output.length === 0? "no len":output[0].name);
+        // console.log(output.length === 0? "no len":output[0].name);
+        getRecentSearches();
     }
 
     return (

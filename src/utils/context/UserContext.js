@@ -33,7 +33,11 @@ function UserContextProvider(props) {
         const loadSnapshots = async () => {
             await getSnapshots()
         }
+        const loadRecentSearches = async () => {
+            await getRecentSearches()
+        }
         loadSnapshots()
+        loadRecentSearches()
     }, [user.email])
     
     const startLoading = useCallback(() => {
@@ -157,7 +161,9 @@ function UserContextProvider(props) {
 
     const searchByName = useCallback( async (id, fileName) => {
         try{
-            const res = await api.searchByName({name: fileName, id: id});
+            console.log("in searchbynam")
+            console.log(user.email)
+            const res = await api.searchByName({name: fileName, id: id, email: user.email});
             if (res.status === 200) {
                 console.log(res.data)
                 return res.data
@@ -166,9 +172,9 @@ function UserContextProvider(props) {
         catch(err){
             return err.response.data.errorMessage;
         }
-    }, [])
+    }, [user.email])
 
-    const getSearchResults = useCallback(async () => {
+    const getRecentSearches = useCallback(async () => {
         try {
             const res = await api.getUserProfile({email: user.email});
             console.log(res.data)
@@ -182,7 +188,7 @@ function UserContextProvider(props) {
     return (
         <UserContext.Provider value={{
             user, snapshots, isLoading, loggedIn, recentSearches, createUser, loginUser, logoutUser, startLoading, finishLoading, 
-            setGoogleAcc, createNewSnapshot, getFolderFileDif, getSnapShotDiff, searchByName
+            setGoogleAcc, createNewSnapshot, getFolderFileDif, getSnapShotDiff, searchByName, getRecentSearches
         }}>
             {props.children}
         </UserContext.Provider>
