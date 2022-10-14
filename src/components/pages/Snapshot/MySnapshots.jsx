@@ -1,5 +1,5 @@
 import PageSideBar from "../../common-page-components/PageSidebar/PageSideBar";
-import SnapCell from "../../common-page-components/SnapCell/SnapCell"; 
+import SnapCell from "./SnapCell/SnapCell";
 import "../index.css";
 import {useContext} from "react";
 import {GoogleContext} from "../../../utils/context/GoogleContext";
@@ -53,7 +53,6 @@ export default function MySnapshots() {
             snapshot.folders.set(i , Object.fromEntries(snapshot.folders.get(i)))
         }
         snapshot.folders = Object.fromEntries(snapshot.folders)
-        console.log(snapshot)
         createNewSnapshot(snapshot, user.email)
     }
 
@@ -66,6 +65,21 @@ export default function MySnapshots() {
         secondSnap = snapshots;
     }
 
+    let fullDate = "";
+    if(firstSnap){
+        let date = firstSnap.date;
+
+        let month = date.substring(5, 7);
+        let day = date.substring(8, 10);
+        let time = date.substring(11, date.length - 5);
+
+        let monthString = "";
+        if(month === "10") { monthString = "October"}
+        else if(month === "11") { monthString = "November"}
+        else if(month === "12") { monthString = "December"}
+        fullDate = "Taken on " + monthString + " " + day + ", " + 2022 + " at " + time;
+    }
+
     return (
         <div className="page-container">
             <PageSideBar />
@@ -74,7 +88,7 @@ export default function MySnapshots() {
                 {snapshots &&
                     <>
                         <h3 className="category-title">Recent Snapshot:</h3>
-                        <p className="page-content-all-the-way"> id: {firstSnap?firstSnap._id:""} <br></br> date: {firstSnap?firstSnap.date:""} </p>
+                        <p className="page-content-all-the-way"> id: {firstSnap?firstSnap._id:""} <br></br> {fullDate} </p>
                         <h3 className="category-title">Older Snapshots:</h3>
                         <div> {secondSnap.slice(1).map((snap) => (
                             <SnapCell key={snap._id}
@@ -87,8 +101,8 @@ export default function MySnapshots() {
                 <h2> <button className="newSnap" onClick={() => getFolderFileDif(firstSnap._id)}>FildFolderDiff</button></h2>
                 <h2> <button className="newSnap" onClick={() => getsnapShotDiff(snapshots[1], firstSnap._id)}>SnapshotDiff</button></h2>
             </div>
-            
-           
+
+
         </div>
     );
 }
