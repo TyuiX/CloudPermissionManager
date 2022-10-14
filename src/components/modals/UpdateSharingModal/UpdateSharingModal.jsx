@@ -1,5 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import "./UpdateSharingModal.css";
+import "../index.css";
 import {AiOutlineClose} from "react-icons/ai";
 import {GoogleContext} from "../../../utils/context/GoogleContext";
 
