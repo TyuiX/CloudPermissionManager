@@ -1,7 +1,6 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import {GoDeviceCamera} from 'react-icons/go';
 import {AiOutlineSearch} from 'react-icons/ai';
-import {SnapshotContext} from "../../../../utils/context/SnapshotContext";
 import {UserContext} from "../../../../utils/context/UserContext";
 import "./SearchBar.css";
 

@@ -8,7 +8,8 @@ export default function ProfileDropdownMenu(props) {
     const [dropdown, setDropdown] = useState(false);
     const {logoutUser} = useContext(UserContext);
     const wrapperRef = useRef(null);
-    const [recentSearches, setRecentSearches] = useState(["mus119_paper", "cleanenergycover"]);
+    // const [recentSearches, setRecentSearches] = useState(["mus119_paper", "cleanenergycover"]);
+    const {recentSearches} = useContext(UserContext);
     const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {

@@ -9,7 +9,7 @@ function UserContextProvider(props) {
     const [snapshots, setSnapshots] = useState([])
     const [loggedIn, setLoggedIn] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    // const [searchNameResult, setSearchNameResult] = useState([]);
+    const [recentSearches, setRecentSearches] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -168,9 +168,20 @@ function UserContextProvider(props) {
         }
     }, [])
 
+    const getSearchResults = useCallback(async () => {
+        try {
+            const res = await api.getUserProfile({email: user.email});
+            console.log(res.data)
+            setRecentSearches(res.data.recentSearches)
+        }
+        catch (err) {
+            return err.response.data.errorMessage;
+        }
+    }, [user.email])
+
     return (
         <UserContext.Provider value={{
-            user, snapshots, isLoading, loggedIn, createUser, loginUser, logoutUser, startLoading, finishLoading, 
+            user, snapshots, isLoading, loggedIn, recentSearches, createUser, loginUser, logoutUser, startLoading, finishLoading, 
             setGoogleAcc, createNewSnapshot, getFolderFileDif, getsnapShotDiff, searchByName
         }}>
             {props.children}
