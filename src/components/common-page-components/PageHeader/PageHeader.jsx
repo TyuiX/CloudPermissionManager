@@ -6,7 +6,7 @@ import SearchBar from "./SearchBar/SearchBar";
 import {UserContext} from "../../../utils/context/UserContext";
 import ProfileDropdownMenu from "./ProfileDropdownMenu/ProfileDropdownMenu";
 
-export default function PageHeader() {
+export default function PageHeader(props) {
     const {loggedIn} = useContext(UserContext)
 
     if (!loggedIn) {
@@ -35,7 +35,7 @@ export default function PageHeader() {
                 <span>Cloud Sharing Manager</span>
             </Link>
             <div className="header-section">
-                <SearchBar />
+                <SearchBar snapshots={props.snapshots}/>
             </div>
             <div className="header-section">
                 <AiFillSetting size={30} />

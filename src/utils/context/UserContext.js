@@ -18,6 +18,7 @@ function UserContextProvider(props) {
             setLoggedIn(true)
             navigate("/files")
         }
+        setIsLoading(false);
     }, []);
     
     const startLoading = useCallback(() => {

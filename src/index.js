@@ -8,7 +8,7 @@ import UserContextProvider from "./utils/context/UserContext";
 import GoogleContextProvider from "./utils/context/GoogleContext";
 import { PublicClientApplication } from "@azure/msal-browser";
 import { MsalProvider } from "@azure/msal-react";
-import { msalConfig } from "./components/onedriveauth/authConfig";
+import { msalConfig } from "./components/pages/OneDriveAuth/authConfig";
 
 const msalInstance = new PublicClientApplication(msalConfig);
 
