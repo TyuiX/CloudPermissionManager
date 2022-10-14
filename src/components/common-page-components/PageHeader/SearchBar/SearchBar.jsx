@@ -13,17 +13,10 @@ export default function SearchBar(props) {
     const [result, setResult] = useState("");
 
     useEffect(() => {
-        // console.log("in search");
         if (!props.snapshots) {
-            // console.log("no snap");
             return
         }
-        // console.log("filename is");
-        // console.log(props.fileName);
-        // console.log(snapshots);
         setCurrentSnap(snapshots.length !== 0?snapshots[0]:[]);
-        // console.log(currentSnap);
-        // setSearch(props.fileName);
         document.addEventListener("click", handleClickOutside, false);
         return () => {
             document.removeEventListener("click", handleClickOutside, false);
@@ -42,15 +35,12 @@ export default function SearchBar(props) {
         setCurrentSnap(snap);
     }
 
-    //use currentSnap and fileName to filter files and get result
     const handleSearch = async() => {
-        // console.log("in handle search");
-        // console.log(currentSnap._id);
-        // console.log(props.fileName);
-        let output = await searchByName(currentSnap._id, props.fileName);
-        setResult(output.length===0?"":output[0].name);
-        // console.log(output.length === 0? "no len":output[0].name);
-        getRecentSearches();
+        if(snapshots && !isLoading && snapshots.length !== 0){
+            let output = await searchByName(currentSnap._id, props.fileName);
+            setResult(output.length===0?"":output[0].name);
+            getRecentSearches();
+        }
     }
 
     return (

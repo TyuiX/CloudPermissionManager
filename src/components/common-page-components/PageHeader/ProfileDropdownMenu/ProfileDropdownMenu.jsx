@@ -8,8 +8,6 @@ export default function ProfileDropdownMenu(props) {
     const [dropdown, setDropdown] = useState(false);
     const {logoutUser} = useContext(UserContext);
     const wrapperRef = useRef(null);
-    // const [recentSearches, setRecentSearches] = useState(["mus119_paper", "cleanenergycover"]);
-    const {recentSearches} = useContext(UserContext);
     const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
@@ -39,7 +37,7 @@ export default function ProfileDropdownMenu(props) {
                 size={30}
                 onClick={() => setDropdown(!dropdown)}
             />
-            <ul className={`user-dropdown ${dropdown ? "user-dropdown-open" : ""}`} submenus={recentSearches}>
+            <ul className={`user-dropdown ${dropdown ? "user-dropdown-open" : ""}`}>
                 <li className="user-menu-item" onClick={handleToggleModal}>
                     <span>Recent Searches</span>
                 </li>

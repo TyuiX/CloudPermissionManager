@@ -161,8 +161,6 @@ function UserContextProvider(props) {
 
     const searchByName = useCallback( async (id, fileName) => {
         try{
-            console.log("in searchbynam")
-            console.log(user.email)
             const res = await api.searchByName({name: fileName, id: id, email: user.email});
             if (res.status === 200) {
                 console.log(res.data)

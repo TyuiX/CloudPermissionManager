@@ -33,7 +33,7 @@ export default function RecentSearchModal(props) {
                 <div className="modal-section">
                     <div className="modal-section-title">Recent Searches:</div>
                     <div className="modal-users-list">
-                        {recentSearches.length !== 0 ?
+                        {recentSearches !== undefined && recentSearches.length !== 0?
                             recentSearches.map((search) => {
                                 return (
                                     <div className="radio">
