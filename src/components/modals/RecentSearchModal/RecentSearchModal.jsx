@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import "./RecentSearchModal.css";
 import {AiOutlineClose} from "react-icons/ai";
-// import { getSnapshots, getUserProfile } from '../../../api/ShareManagerAPI';
 
 export default function RecentSearchModal(props) {
     const {toggleModal, fileName} = props;

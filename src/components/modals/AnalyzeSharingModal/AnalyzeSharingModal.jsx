@@ -14,7 +14,7 @@ export default function AnalyzeSharingModal(props) {
                     <AiOutlineClose className="sidebar-close-button" onClick={toggleModal} />
                 </div>
                 <div className="modal-section">
-                    <div className="modal-section-title">File Folder Sharing Differences:</div>
+                    <div className="modal-section-title">{analysisType === "file-folder" ? "File Folder" : "Snapshot"} Sharing Differences:</div>
                     {analysisInfo &&
                         <>
                             {analysisType === "file-folder" ?

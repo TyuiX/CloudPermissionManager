@@ -152,7 +152,8 @@ function UserContextProvider(props) {
         catch (err) {
             return err.response.data.errorMessage;
         }
-    }, [navigate])
+    }, [])
+
     return (
         <UserContext.Provider value={{
             user, snapshots, isLoading, loggedIn, createUser, loginUser, logoutUser, startLoading, finishLoading, 
