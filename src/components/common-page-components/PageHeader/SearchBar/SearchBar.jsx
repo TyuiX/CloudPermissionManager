@@ -30,14 +30,20 @@ export default function SearchBar(props) {
     }
 
     const handleSnapshotClick = (snap) => {
-        console.log("handle snap");
         setDropdown(false);
         setCurrentSnap(snap);
     }
 
     const handleSearch = async() => {
+        let output;
         if(snapshots && !isLoading && snapshots.length !== 0){
-            let output = await searchByName(currentSnap._id, props.fileName);
+            //fixes issue of search not working after first snap
+            if(snapshots.length === 1){
+                output = await searchByName(snapshots[0]._id, props.fileName);
+            }
+            else{
+                output = await searchByName(currentSnap._id, props.fileName);
+            }
             setResult(output.length===0?"":output[0].name);
             getRecentSearches();
         }
