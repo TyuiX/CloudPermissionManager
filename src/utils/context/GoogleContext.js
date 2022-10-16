@@ -119,18 +119,27 @@ function GoogleContextProvider(props) {
         finishLoading();
     }, [finishLoading, startLoading])
 
-    const updateFilePerms = useCallback( async (fileId, updatedUsers, addedUsers) => {
+    const updateFilePerms = useCallback( async (fileId, updatedUsers, addedUsers, updateMultiple) => {
         let accessToken = gapi.auth.getToken().access_token;
         await sharingAPI.updateFilePerms({
             fileId: fileId, updatedUsers: updatedUsers, addedUsers: addedUsers,
             accessToken: accessToken, userEmail: user.email
         })
-        await getGoogleFiles();
+        if (!updateMultiple) {
+            await getGoogleFiles();
+        }
     }, [getGoogleFiles, user.email])
+
+    const updateMultipleFiles = useCallback( async (files) => {
+        for (const {fileId, updatedUsers, newUsers} of files) {
+            await updateFilePerms(fileId, updatedUsers, newUsers, true);
+        }
+        await getGoogleFiles();
+    }, [getGoogleFiles, updateFilePerms])
 
     return (
         <GoogleContext.Provider value={{
-            allFiles, myFiles, sharedFiles, email, getGoogleFiles, updateFilePerms
+            allFiles, myFiles, sharedFiles, email, getGoogleFiles, updateFilePerms, updateMultipleFiles
         }}>
             {props.children}
         </GoogleContext.Provider>

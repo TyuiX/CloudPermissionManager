@@ -1,0 +1,13 @@
+.existing-user-file-title {
+    display: inline-block;
+    width: 30px;
+    overflow: hidden;
+}
+
+.existing-user-files {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 280px;
+    display: inline-block;
+}
