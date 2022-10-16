@@ -1,18 +1,16 @@
 import React, {useContext, useEffect, useState} from 'react';
-import "./UpdateSharingModal.css";
+import "./UpdateSingleSharingModal.css";
 import "../index.css";
 import {AiOutlineClose} from "react-icons/ai";
 import {GoogleContext} from "../../../utils/context/GoogleContext";
 
-export default function UpdateSharingModal(props) {
+export default function UpdateSingleSharingModal(props) {
     const {existingPerms, toggleModal, closeInfo, fileId, fileName, origin} = props;
     const [newUsers, setNewUsers] = useState([]);
     const [existingUsers, setExistingUsers] = useState([]);
     const [updatedUsers, setUpdatedUsers] = useState([]);
     const [newEmail, setNewEmail] = useState("");
     const {updateFilePerms} = useContext(GoogleContext);
-
-    console.log(updatedUsers)
 
     useEffect(() => {
         if (!existingPerms) {
@@ -66,7 +64,7 @@ export default function UpdateSharingModal(props) {
 
     const confirmUpdate = (e) => {
         e.preventDefault();
-        updateFilePerms(fileId, updatedUsers, newUsers);
+        updateFilePerms(fileId, updatedUsers, newUsers, false);
         toggleModal();
         closeInfo();
     }
@@ -141,8 +139,9 @@ export default function UpdateSharingModal(props) {
                                             <div className="modal-user-name">{email}</div>
                                         </div>
                                         <select defaultValue={role} onChange={(e) => updateNewUser(e, user)}>
-                                            <option value="writer">Allowed Writer</option>
-                                            <option value="reader">Allowed Reader</option>
+                                            <option value="writer">Writer</option>
+                                            <option value="reader">Reader</option>
+                                            <option value="commenter">Commenter</option>
                                         </select>
                                     </div>
                                 )
