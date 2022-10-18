@@ -14,6 +14,8 @@ import * as event from "./components/functions/events"
 import {UserContext} from "./utils/context/UserContext";
 import LoadingScreen from "./components/common-page-components/LoadingScreen/LoadingScreen";
 import { getSnapshots, getUserProfile } from './api/ShareManagerAPI';
+import SearchResults from "/Users/emirhanakkaya/cse416-frontend/src/components/pages/SearchResults/SearchResults.jsx";
+
 
 function App() {
     const {isLoading} = useContext(UserContext)
@@ -63,7 +65,7 @@ function App() {
               {/* <Route path="/filesnapshot" element={<div >FileSnapshot <button onClick={event.handleGetFile}>click me </button></div>} /> */}
               <Route path="/filesnapshot" element={<MySnapshots newSnap={event.handleGetFile} snapshot={snapshots}/>} />
               <Route path="/groupsnapshot" element={<div>GroupSnapshot</div>} />
-              {/* <Route path="/searchresults" element={}/> */}
+              <Route path="/searchresults" element={<SearchResults/>}/>
           </Routes>
       </>
   );
