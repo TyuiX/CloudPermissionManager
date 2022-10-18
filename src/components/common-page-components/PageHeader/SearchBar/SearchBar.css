@@ -79,3 +79,13 @@
     cursor: pointer;
     color: cornflowerblue;
 }
+
+.forQuery{
+    background-color: white;
+    width: 100%;
+}
+
+.forQuery:hover{
+    background-color: lightblue;
+    transition: 0.3s;
+}

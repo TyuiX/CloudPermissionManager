@@ -24,7 +24,7 @@ export default function SearchResults(props) {
     else{
         toPrint = 
             <li className="user-menu-item"  key={null}>
-                <span>{"No Result!"}</span>
+                <span>{"No Result"}</span>
             </li>
     }
 

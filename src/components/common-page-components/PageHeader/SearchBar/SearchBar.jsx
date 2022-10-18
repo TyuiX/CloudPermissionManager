@@ -4,6 +4,7 @@ import {AiOutlineSearch} from 'react-icons/ai';
 import {UserContext} from "../../../../utils/context/UserContext";
 import "./SearchBar.css";
 import {useNavigate,  Navigate} from "react-router-dom";
+import { Button } from 'react-bootstrap';
 
 
 export default function SearchBar(props) {
@@ -52,6 +53,13 @@ export default function SearchBar(props) {
         }
     }
 
+    const queryBuilderHelper = () => {
+        navigate('/querybuilder', {state : {
+            snapshots: snapshots,
+        }})
+    }
+
+    
     return (
         <>
             <div className={"search-bar-container"}>
@@ -61,6 +69,8 @@ export default function SearchBar(props) {
                     onChange={({ target }) => props.setFileName(target.value)}
                     placeholder="Search..."
                 />
+                <br></br>
+                <button className={"forQuery"}onClick={queryBuilderHelper}> queryBuilder </button> 
             </div>
             <div className="profile-dropdown-container"
             ref={wrapperRef}>
