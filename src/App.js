@@ -14,8 +14,8 @@ import * as event from "./components/functions/events"
 import {UserContext} from "./utils/context/UserContext";
 import LoadingScreen from "./components/common-page-components/LoadingScreen/LoadingScreen";
 import { getSnapshots, getUserProfile } from './api/ShareManagerAPI';
-import SearchResults from "/Users/emirhanakkaya/cse416-frontend/src/components/pages/SearchResults/SearchResults.jsx";
 import QueryBuilder from './components/pages/QueryBuilder/QueryBuilder';
+import SearchResults from './components/pages/SearchResults/SearchResults';
 
 function App() {
     const {isLoading} = useContext(UserContext)
