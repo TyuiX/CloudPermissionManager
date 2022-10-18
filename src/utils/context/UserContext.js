@@ -40,6 +40,7 @@ function UserContextProvider(props) {
         loadRecentSearches()
     }, [user.email])
     
+    
     const startLoading = useCallback(() => {
         setIsLoading(true);
     }, [])

@@ -3,6 +3,7 @@ import {GoDeviceCamera} from 'react-icons/go';
 import {AiOutlineSearch} from 'react-icons/ai';
 import {UserContext} from "../../../../utils/context/UserContext";
 import "./SearchBar.css";
+import {useNavigate,  Navigate} from "react-router-dom";
 
 
 export default function SearchBar(props) {
@@ -11,9 +12,10 @@ export default function SearchBar(props) {
     const [currentSnap, setCurrentSnap] = useState(snapshots.length !== 0?snapshots[0]:[]);
     const wrapperRef = useRef(null);
     const [result, setResult] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
-        if (!props.snapshots) {
+        if (!snapshots) {
             return
         }
         setCurrentSnap(snapshots.length !== 0?snapshots[0]:[]);
@@ -46,6 +48,7 @@ export default function SearchBar(props) {
             }
             setResult(output.length===0?"":output[0].name);
             getRecentSearches();
+            navigate('/searchresults', {state: {results:output}});
         }
     }
 
@@ -70,7 +73,7 @@ export default function SearchBar(props) {
                     {(snapshots && !isLoading && snapshots.length !== 0) &&
                                     (snapshots.map((snap) => {
                                         return (
-                                            <li className="user-menu-item" onClick={() => handleSnapshotClick(snap)}>
+                                            <li className="user-menu-item" key={snap._id} onClick={() => handleSnapshotClick(snap)}>
                                                 <span value={snap} >id: {snap._id}  date: {snap.date}</span>
                                             </li>
                                         )
@@ -85,7 +88,7 @@ export default function SearchBar(props) {
                     <AiOutlineSearch size={30} className="search-button" onClick={handleSearch}/>
             </div> 
             <div>
-            <input className="e-input" type="text" placeholder="Search Results Here" value={result?result:"No Results!"} readOnly={true}/>
+            {/* <input className="e-input" type="text" placeholder="Search Results Here" value={result?result:"No Results!"} readOnly={true}/> */}
             </div>
         </>
     );
