@@ -1,4 +1,4 @@
-import React, {useLocation} from 'react-router-dom';
+import React, {Navigate, useLocation} from 'react-router-dom';
 import "./QueryBuilder.css";
 import PageSideBar from '../../common-page-components/PageSidebar/PageSideBar';
 
@@ -25,11 +25,11 @@ export default function QueryBuilder(props) {
 
     const forOnClick = (event) => {
         console.log(event);
+        
     }
 
     return (
         <>
-        
         <div className="page-container">
             <PageSideBar/>
             <div className="parentDiv">
@@ -40,6 +40,7 @@ export default function QueryBuilder(props) {
                             <button onClick={forOnClick} value={value} className={"listOfButtons"} href="#">
                                 <p>{value}</p>
                             </button>
+                            
                             <br></br>
                             </>
                         );
