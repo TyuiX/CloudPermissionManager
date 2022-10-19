@@ -1,9 +1,16 @@
 import React, {useLocation} from 'react-router-dom';
+import {useState} from 'react';
 import "./QueryBuilder.css";
 import PageSideBar from '../../common-page-components/PageSidebar/PageSideBar';
+import QBDriveModal from '../../modals/QBDriveModal/QBDriveModal';
+import QBGenericModal from '../../modals/QBGenericModal/QBGenericModal';
 
 export default function QueryBuilder(props) {
-   
+    const [qMap, setQMap] = useState(new Map());
+    const [currentValue, setCurrentValue] = useState("");
+    const [showDriveModal, setShowDriveModal] = useState(false);
+    const [showGenericModal, setShowGenericModal] = useState(false);
+
     let qBuilder = [];
     qBuilder.push("drive:drive");
     qBuilder.push("owner:user");
@@ -23,8 +30,25 @@ export default function QueryBuilder(props) {
     qBuilder.push("sharing:individual");
     qBuilder.push("sharing:domain");
 
-    const forOnClick = (event) => {
-        console.log(event);
+    const forOnClick = (value) => {
+        setCurrentValue(value);
+        if(value === "drive:drive"){
+            handleToggleDriveModal();
+        }
+        else{
+            handleToggleGenericModal();
+            console.log("qmap");
+            console.log(qMap);
+        }
+
+    }
+
+    const handleToggleDriveModal = () => {
+        setShowDriveModal(!showDriveModal);
+    }
+
+    const handleToggleGenericModal = () => {
+        setShowGenericModal(!showGenericModal);
     }
 
     return (
@@ -37,7 +61,7 @@ export default function QueryBuilder(props) {
                     {qBuilder.map((value) => {
                         return (
                             <>
-                            <button onClick={forOnClick} value={value} className={"listOfButtons"} href="#">
+                            <button onClick={()=>forOnClick(value)}  className={"listOfButtons"} href="#">
                                 <p>{value}</p>
                             </button>
                             <br></br>
@@ -48,7 +72,16 @@ export default function QueryBuilder(props) {
             </div>
 
         </div>
-
+        {showDriveModal &&
+            <QBDriveModal
+                toggleModal={handleToggleDriveModal} setQMap={setQMap} qMap={qMap}
+            />
+        }
+        {showGenericModal &&
+            <QBGenericModal 
+                toggleModal={handleToggleGenericModal} setQMap={setQMap} qMap={qMap} currentValue={currentValue}
+            />
+        }
         </>
     )
 }
