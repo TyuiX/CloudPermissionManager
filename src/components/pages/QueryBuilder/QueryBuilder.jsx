@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-import React, {Navigate, useLocation} from 'react-router-dom';
-=======
 import React, {useLocation} from 'react-router-dom';
 import {useState} from 'react';
->>>>>>> 68f3e0ddf1add5bb2a7e1f8697e81ef7b17bf2aa
 import "./QueryBuilder.css";
 import PageSideBar from '../../common-page-components/PageSidebar/PageSideBar';
 import QBDriveModal from '../../modals/QBDriveModal/QBDriveModal';
