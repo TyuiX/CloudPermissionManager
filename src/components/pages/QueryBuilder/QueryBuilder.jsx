@@ -1,16 +1,24 @@
-import React, {useLocation} from 'react-router-dom';
+import React, {useLocation, useNavigate} from 'react-router-dom';
 import {useState} from 'react';
 import "./QueryBuilder.css";
 import PageSideBar from '../../common-page-components/PageSidebar/PageSideBar';
 import QBDriveModal from '../../modals/QBDriveModal/QBDriveModal';
 import QBGenericModal from '../../modals/QBGenericModal/QBGenericModal';
+import SearchBar from '../../common-page-components/PageHeader/SearchBar/SearchBar';
 
 export default function QueryBuilder(props) {
+    const { state } = useLocation();
     const [qMap, setQMap] = useState(new Map());
     const [currentValue, setCurrentValue] = useState("");
     const [showDriveModal, setShowDriveModal] = useState(false);
     const [showGenericModal, setShowGenericModal] = useState(false);
+    const [fileName, setFileName] = useState("");
+    const navigate = useNavigate();
 
+    // setFileName("wegr");
+    state.value = fileName;
+    console.log(state);
+    
     let qBuilder = [];
     qBuilder.push("drive:drive");
     qBuilder.push("owner:user");
@@ -80,6 +88,7 @@ export default function QueryBuilder(props) {
         {showGenericModal &&
             <QBGenericModal 
                 toggleModal={handleToggleGenericModal} setQMap={setQMap} qMap={qMap} currentValue={currentValue}
+                setFileName = {setFileName}
             />
         }
         </>

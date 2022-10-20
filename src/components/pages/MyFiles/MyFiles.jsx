@@ -1,4 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
+import {useLocation} from 'react-router-dom';
 import PageSideBar from "../../common-page-components/PageSidebar/PageSideBar";
 import "../index.css";
 import FileCell from "../../common-page-components/FileCell/FileCell";
@@ -10,6 +11,11 @@ export default function MyFiles() {
     const [filesList, setFilesList] = useState([]);
     const [foldersList, setFoldersList] = useState([]);
     const [selectedFiles, setSelectedFiles] = useState([]);
+    const { state } = useLocation();
+
+    if(state !== undefined){
+        console.log(state);
+    }
 
     useEffect(() => {
         if (!myFiles) {

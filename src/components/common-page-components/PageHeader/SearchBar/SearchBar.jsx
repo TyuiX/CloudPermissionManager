@@ -5,6 +5,7 @@ import {UserContext} from "../../../../utils/context/UserContext";
 import "./SearchBar.css";
 import {useNavigate,  Navigate} from "react-router-dom";
 import { Button } from 'react-bootstrap';
+import QueryBuilder from '../../../pages/QueryBuilder/QueryBuilder';
 
 
 export default function SearchBar(props) {
@@ -14,6 +15,7 @@ export default function SearchBar(props) {
     const wrapperRef = useRef(null);
     const [result, setResult] = useState("");
     const navigate = useNavigate();
+    const {value} = props;
 
     useEffect(() => {
         if (!snapshots) {
@@ -53,23 +55,35 @@ export default function SearchBar(props) {
         }
     }
 
-    const queryBuilderHelper = () => {
+    const queryBuilderHelper = (event) => {
         navigate('/querybuilder', {state : {
             snapshots: snapshots,
+            value: props.fileName,
+            
         }})
     }
-
     
+    console.log(value);
     return (
         <>
             <div className={"search-bar-container"}>
-                <input
-                    type="text"
-                    value={props.fileName}
-                    onChange={({ target }) => props.setFileName(target.value)}
-                    placeholder="Search..."
-                />
+                {value === undefined &&
+                    <input
+                        type="text"
+                        value={props.fileName}
+                        onChange={({ target }) => props.setFileName(target.value)}
+                        placeholder="Search..."
+                    />
+                }
                 <br></br>
+                {value !== undefined &&
+                    <input
+                        type="text"
+                        value={props.fileName}
+                        onChange={({ target }) => props.setFileName(target.value)}
+                        placeholder={value}
+                    />
+                }
                 <button className={"forQuery"}onClick={queryBuilderHelper}> queryBuilder </button> 
             </div>
             <div className="profile-dropdown-container"

@@ -3,7 +3,7 @@ import "./QBGenericModal.css";
 import {AiOutlineClose} from "react-icons/ai";
 
 export default function QBGenericModal(props){
-    const {toggleModal, qMap, setQMap, currentValue} = props;
+    const {toggleModal, qMap, setQMap, currentValue, setFileName} = props;
     const [selectedOption, setSelectedOption] = useState();
 
     const confirmUpdate = (e) => {
@@ -11,6 +11,10 @@ export default function QBGenericModal(props){
         setQMap(qMap.set(currentValue, selectedOption));
         console.log(qMap);
         toggleModal();
+        let tempString = "";
+        tempString = currentValue.substring(0, currentValue.indexOf(":") + 1);
+        tempString += selectedOption
+        setFileName(tempString)
     }
 
     return (

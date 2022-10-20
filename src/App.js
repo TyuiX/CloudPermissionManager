@@ -16,6 +16,7 @@ import LoadingScreen from "./components/common-page-components/LoadingScreen/Loa
 import { getSnapshots, getUserProfile } from './api/ShareManagerAPI';
 import QueryBuilder from './components/pages/QueryBuilder/QueryBuilder';
 import SearchResults from './components/pages/SearchResults/SearchResults';
+import SearchBar from './components/common-page-components/PageHeader/SearchBar/SearchBar';
 
 function App() {
     const {isLoading} = useContext(UserContext)
@@ -54,6 +55,7 @@ function App() {
       <>
           <PageHeader snapshots={snapshots} />
           <Routes>
+          <Route path="/searchBar" element={<SearchBar />} />
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/login/google" element={<LinkGoogleLink />} />
