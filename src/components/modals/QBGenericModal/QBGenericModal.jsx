@@ -1,10 +1,13 @@
 import React, {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import "./QBGenericModal.css";
 import {AiOutlineClose} from "react-icons/ai";
 
 export default function QBGenericModal(props){
     const {toggleModal, qMap, setQMap, currentValue, setFileName} = props;
     const [selectedOption, setSelectedOption] = useState();
+
+    const navigate = useNavigate();
 
     const confirmUpdate = (e) => {
         e.preventDefault();

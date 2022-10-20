@@ -55,7 +55,6 @@ function App() {
       <>
           <PageHeader snapshots={snapshots} />
           <Routes>
-          <Route path="/searchBar" element={<SearchBar />} />
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/login/google" element={<LinkGoogleLink />} />

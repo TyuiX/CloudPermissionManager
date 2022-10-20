@@ -7,9 +7,11 @@ import {useNavigate,  Navigate} from "react-router-dom";
 import { Button } from 'react-bootstrap';
 import QueryBuilder from '../../../pages/QueryBuilder/QueryBuilder';
 
+export const ThemeContext = React.createContext();
 
 export default function SearchBar(props) {
     const [dropdown, setDropdown] = useState(false);
+    const [showQueryBuilder, setShowQueryBuilder] = useState(false);
     const {isLoading, snapshots, searchByName, getRecentSearches} = useContext(UserContext);
     const [currentSnap, setCurrentSnap] = useState(snapshots.length !== 0?snapshots[0]:[]);
     const wrapperRef = useRef(null);
@@ -55,12 +57,13 @@ export default function SearchBar(props) {
         }
     }
 
-    const queryBuilderHelper = (event) => {
+    const queryBuilderHelper = () => {
         navigate('/querybuilder', {state : {
             snapshots: snapshots,
-            value: props.fileName,
-            
+            value: props.fileName,      
         }})
+        console.log("in here!");
+        // setShowQueryBuilder(true);
     }
     
     console.log(value);
@@ -114,6 +117,11 @@ export default function SearchBar(props) {
             <div>
             {/* <input className="e-input" type="text" placeholder="Search Results Here" value={result?result:"No Results!"} readOnly={true}/> */}
             </div>
+            {showQueryBuilder &&
+                <ThemeContext.Provider value = {props.setFileName}>
+                    <QueryBuilder />
+                </ThemeContext.Provider>
+            }
         </>
     );
 }

@@ -5,6 +5,7 @@ import PageSideBar from '../../common-page-components/PageSidebar/PageSideBar';
 import QBDriveModal from '../../modals/QBDriveModal/QBDriveModal';
 import QBGenericModal from '../../modals/QBGenericModal/QBGenericModal';
 import SearchBar from '../../common-page-components/PageHeader/SearchBar/SearchBar';
+import { ThemeContext } from '../../common-page-components/PageHeader/SearchBar/SearchBar';
 
 export default function QueryBuilder(props) {
     const { state } = useLocation();
@@ -14,10 +15,6 @@ export default function QueryBuilder(props) {
     const [showGenericModal, setShowGenericModal] = useState(false);
     const [fileName, setFileName] = useState("");
     const navigate = useNavigate();
-
-    // setFileName("wegr");
-    state.value = fileName;
-    console.log(state);
     
     let qBuilder = [];
     qBuilder.push("drive:drive");
@@ -48,7 +45,6 @@ export default function QueryBuilder(props) {
             console.log("qmap");
             console.log(qMap);
         }
-
     }
 
     const handleToggleDriveModal = () => {
@@ -58,8 +54,53 @@ export default function QueryBuilder(props) {
     const handleToggleGenericModal = () => {
         setShowGenericModal(!showGenericModal);
     }
+    console.log(qMap);
 
+    let queryOps = [];
+    let params = 0;
+    while(params < qBuilder.length){
+        if(qMap.get(qBuilder[params]) !== undefined){
+            queryOps.push(qMap.get(qBuilder[params]));
+        }
+        params += 1;
+    }
+
+    console.log(queryOps);
+    console.log(qMap.get('owner:user'));
+    
+    let snapIndex = 0;
+    let files = [];
+    while(snapIndex < state.snapshots.length){
+        let folderIndex = 0;
+        let foldersIterate = state.snapshots[snapIndex].folders;
+        // console.log(Object.values(foldersIterate)[0]);
+        while(folderIndex < Object.keys(foldersIterate).length){
+            let fileIndex = 0;
+            while(fileIndex < Object.keys(foldersIterate)[folderIndex].length){
+                // console.log(Object.values(Object.values(foldersIterate)[j])[k]);
+                if(Object.values(Object.values(foldersIterate)[folderIndex])[fileIndex] !== undefined){
+                    // console.log(Object.values(Object.values(foldersIterate)[j])[k].owner);
+                    let file = Object.values(Object.values(foldersIterate)[folderIndex])[fileIndex];
+                    let operators = 0;
+                    while(operators < queryOps.length){
+                        if(file.owner === queryOps[operators]){
+                            files.push(file);
+                        }
+                        operators += 1;
+                    }
+                }
+                fileIndex += 1;
+            }
+            folderIndex += 1;
+        }
+        snapIndex += 1;
+    }
+
+    console.log(files);
+    // console.log(files.woiebg.owiergb);
+    //<ThemeContext.Consumer >
     return (
+        
         <>
         <div className="page-container">
             <PageSideBar/>
@@ -78,7 +119,6 @@ export default function QueryBuilder(props) {
                     })}
                 </div> 
             </div>
-
         </div>
         {showDriveModal &&
             <QBDriveModal
@@ -92,5 +132,6 @@ export default function QueryBuilder(props) {
             />
         }
         </>
+        // </ThemeContext.Consumer>
     )
 }
