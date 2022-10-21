@@ -3,7 +3,7 @@ import {GoDeviceCamera} from 'react-icons/go';
 import {AiOutlineSearch} from 'react-icons/ai';
 import {UserContext} from "../../../../utils/context/UserContext";
 import "./SearchBar.css";
-import {useNavigate,  Navigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 
 export default function SearchBar(props) {
