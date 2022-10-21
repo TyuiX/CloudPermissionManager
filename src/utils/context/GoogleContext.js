@@ -1,6 +1,5 @@
 import React, {createContext, useCallback, useContext, useEffect, useState} from "react";
 import api from '../../api/GoogleAPI'
-import sharingAPI from '../../api/ShareManagerAPI'
 import {UserContext} from "./UserContext";
 import {gapi} from "gapi-script";
 import googleAuth from "../GoogleAuth";
@@ -27,7 +26,9 @@ function GoogleContextProvider(props) {
                     console.log(gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().cu === user.googleId)
 
                     if (gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().cu === user.googleId) {
-                        let files = await api.getFiles()
+                        let accessToken = gapi.auth.getToken().access_token;
+                        let res = await api.getFiles({accessToken: accessToken})
+                        let files = res.data.files
                         console.log(files)
                         const reformattedFiles = files.map(({id, name, mimeType, ownedByMe, permissions, shared, modifiedTime,
                                                                 createdTime, owners, parents
@@ -78,7 +79,9 @@ function GoogleContextProvider(props) {
 
     const getGoogleFiles = useCallback( async () => {
         const getGoogleFiles = async () => {
-            let files = await api.getFiles()
+            let accessToken = gapi.auth.getToken().access_token;
+            let res = await api.getFiles({accessToken: accessToken})
+            let files = res.data.files
             const reformattedFiles = files.map(({id, name, mimeType, ownedByMe, permissions, shared, modifiedTime,
                                                     createdTime, owners, parents
                                                 }) => {
@@ -121,7 +124,7 @@ function GoogleContextProvider(props) {
 
     const updateFilePerms = useCallback( async (fileId, updatedUsers, addedUsers, updateMultiple) => {
         let accessToken = gapi.auth.getToken().access_token;
-        await sharingAPI.updateFilePerms({
+        await api.updateFilePerms({
             fileId: fileId, updatedUsers: updatedUsers, addedUsers: addedUsers,
             accessToken: accessToken, userEmail: user.email
         })
