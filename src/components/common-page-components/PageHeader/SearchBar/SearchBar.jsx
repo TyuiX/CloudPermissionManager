@@ -13,6 +13,7 @@ export default function SearchBar(props) {
     const [currentSnap, setCurrentSnap] = useState(snapshots.length !== 0?snapshots[0]:[]);
     const wrapperRef = useRef(null);
     const [result, setResult] = useState("");
+    const [qMap, setQMap] = useState(new Map());
     const navigate = useNavigate();
 
     useEffect(() => {

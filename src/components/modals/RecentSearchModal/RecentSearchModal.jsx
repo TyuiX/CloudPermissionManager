@@ -38,7 +38,7 @@ export default function RecentSearchModal(props) {
                                 return (
                                     <div className="radio">
                                         <label>
-                                            <input type="radio" value={search} 
+                                            <input type="radio" value={search}
                                                         checked={selectedOption === search} 
                                                         onChange={handleOptionChange} />
                                             {search}

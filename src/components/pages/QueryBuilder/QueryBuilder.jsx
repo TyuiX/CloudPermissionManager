@@ -6,6 +6,8 @@ import QBDriveModal from '../../modals/QBDriveModal/QBDriveModal';
 import QBGenericModal from '../../modals/QBGenericModal/QBGenericModal';
 
 export default function QueryBuilder(props) {
+    // const {state} = useLocation();
+    // const{qMap, setQMap} = state;
     const [qMap, setQMap] = useState(new Map());
     const [currentValue, setCurrentValue] = useState("");
     const [showDriveModal, setShowDriveModal] = useState(false);
@@ -37,7 +39,7 @@ export default function QueryBuilder(props) {
         }
         else{
             handleToggleGenericModal();
-            console.log("qmap");
+            // console.log("qmap");
             console.log(qMap);
         }
 
