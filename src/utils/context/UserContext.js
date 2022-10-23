@@ -30,14 +30,11 @@ function UserContextProvider(props) {
         if (!user.email) {
             return
         }
-        const loadSnapshots = async () => {
+        const loadResources = async () => {
             await getSnapshots()
-        }
-        const loadRecentSearches = async () => {
             await getRecentSearches()
         }
-        loadSnapshots()
-        loadRecentSearches()
+        loadResources()
     }, [user.email])
     
     
