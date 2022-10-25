@@ -25,7 +25,6 @@ export default function QueryBuilder(props) {
     qBuilder.push("readable:user");
     qBuilder.push("writeable:user");
     qBuilder.push("shareable:user");
-    qBuilder.push("owner:user");
     qBuilder.push("name:regexp");
     qBuilder.push("inFolder:regexp");
     qBuilder.push("folder:regexp");
@@ -67,33 +66,95 @@ export default function QueryBuilder(props) {
 
     console.log(queryOps);
     console.log(qMap.get('owner:user'));
+    console.log(qMap);
     
-    let snapIndex = 0;
     let files = [];
-    while(snapIndex < state.snapshots.length){
-        let folderIndex = 0;
-        let foldersIterate = state.snapshots[snapIndex].folders;
-        // console.log(Object.values(foldersIterate)[0]);
-        while(folderIndex < Object.keys(foldersIterate).length){
-            let fileIndex = 0;
-            while(fileIndex < Object.keys(foldersIterate)[folderIndex].length){
-                // console.log(Object.values(Object.values(foldersIterate)[j])[k]);
-                if(Object.values(Object.values(foldersIterate)[folderIndex])[fileIndex] !== undefined){
-                    // console.log(Object.values(Object.values(foldersIterate)[j])[k].owner);
-                    let file = Object.values(Object.values(foldersIterate)[folderIndex])[fileIndex];
-                    let operators = 0;
-                    while(operators < queryOps.length){
-                        if(file.owner === queryOps[operators]){
-                            files.push(file);
+    console.log(qMap);
+    console.log(state.snapshots)
+
+    // snapshot.folders.forEach(folder => {
+    //     folder.forEach(file => {
+    //       if (file.owner === qMap.get('owner:user')) {
+    //         files.push(file)
+    //       }
+    //     }
+    // )})
+    
+    let folderIndex = 0;
+    let foldersIterate = state.snapshots[0].folders;
+    let set = new Set();
+    // console.log(Object.values(foldersIterate)[0]);
+    console.log(queryOps);
+    while(folderIndex < Object.keys(foldersIterate).length){
+        let fileIndex = 0;
+        while(fileIndex < Object.keys(foldersIterate)[folderIndex].length){
+            // console.log(Object.values(Object.values(foldersIterate)[j])[k]);
+            if(Object.values(Object.values(foldersIterate)[folderIndex])[fileIndex] !== undefined){
+                // console.log(Object.values(Object.values(foldersIterate)[j])[k].owner);
+                let file = Object.values(Object.values(foldersIterate)[folderIndex])[fileIndex];
+                console.log(file);
+                qMap.forEach((key, value) => {
+                    // console.log("key: " + key + ", value: " + value);
+                    if(value === "owner:user"){
+                        if(file.owner === key){
+                            if(!set.has(file.name)){
+                                set.add(file.name);
+                                files.push(file);
+                            }
                         }
-                        operators += 1;
+                    } else if(value === "creator:user"){
+                        if(file.creator === key){
+                            if(!set.has(file.name)){
+                                set.add(file.name);
+                                files.push(file);
+                            }
+                        }
+                    } else if(value === "readable:user"){
+                        let permIndex = 0;
+                        while(permIndex < file.permissions.length){
+                            // console.log(file.permissions[permIndex]);
+                            if(file.permissions[permIndex].displayName === key){
+                                if(file.permissions[permIndex].role === "reader"){
+                                    if(!set.has(file.name)){
+                                        set.add(file.name);
+                                        files.push(file);
+                                    }
+                                }
+                            }
+                            permIndex += 1;
+                        }
+                    } else if(value === "writeable:user"){
+                        let permIndex = 0;
+                        while(permIndex < file.permissions.length){
+                            // console.log(file.permissions[permIndex]);
+                            if(file.permissions[permIndex].displayName === key){
+                                if(file.permissions[permIndex].role === "writer"){
+                                    if(!set.has(file.name)){
+                                        set.add(file.name);
+                                        files.push(file);
+                                    }
+                                }
+                            }
+                            permIndex += 1;
+                        }
+                    } else if(value === "to:user"){
+                        let permIndex = 0;
+                        while(permIndex < file.permissions.length){
+                            // console.log(file.permissions[permIndex]);
+                            if(file.permissions[permIndex].displayName === key){
+                                if(!set.has(file.name)){
+                                    set.add(file.name);
+                                    files.push(file);
+                                }
+                            }
+                            permIndex += 1;
+                        }
                     }
-                }
-                fileIndex += 1;
+                })
             }
-            folderIndex += 1;
+            fileIndex += 1;
         }
-        snapIndex += 1;
+        folderIndex += 1;
     }
 
     console.log(files);

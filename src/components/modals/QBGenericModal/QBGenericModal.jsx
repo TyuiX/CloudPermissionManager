@@ -11,7 +11,10 @@ export default function QBGenericModal(props){
 
     const confirmUpdate = (e) => {
         e.preventDefault();
+        console.log(selectedOption);
+        console.log(currentValue);
         setQMap(qMap.set(currentValue, selectedOption));
+        console.log(qMap);
         console.log(qMap);
         toggleModal();
         let tempString = "";
