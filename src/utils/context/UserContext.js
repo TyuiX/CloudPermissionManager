@@ -181,10 +181,20 @@ function UserContextProvider(props) {
         }
     }, [user.email])
 
+    const createNewControlReq = useCallback(async (newControlReq) => {
+        try {
+            const res = await api.createNewControlReqs({newReq: newControlReq, email: user.email})
+            console.log(res.data)
+        }
+        catch (err) {
+            return err.response.data.errorMessage;
+        }
+    }, [user.email])
+
     return (
         <UserContext.Provider value={{
             user, snapshots, isLoading, loggedIn, recentSearches, createUser, loginUser, logoutUser, startLoading, finishLoading, 
-            setGoogleAcc, createNewSnapshot, getFolderFileDif, getSnapShotDiff, searchByName, getRecentSearches
+            setGoogleAcc, createNewSnapshot, getFolderFileDif, getSnapShotDiff, searchByName, getRecentSearches, createNewControlReq
         }}>
             {props.children}
         </UserContext.Provider>

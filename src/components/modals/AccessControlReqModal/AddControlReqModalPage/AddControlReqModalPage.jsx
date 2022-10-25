@@ -1,9 +1,11 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import AddControlReqTypeSection from "./AddControlReqTypeSection/AddControlReqTypeSection";
 import "./AddControlReqModalPage.css";
+import {UserContext} from "../../../../utils/context/UserContext";
 
 export default function AddControlReqModalPage(props) {
     const {toggleModal} = props;
+    const {createNewControlReq} = useContext(UserContext)
     const [searchQuery, setSearchQuery] = useState("");
     const [allowedWriters, setAllowedWriters] = useState({emails: [], domains: [], size: 0});
     const [allowedReaders, setAllowedReaders] = useState({emails: [], domains: [], size: 0});
@@ -13,14 +15,15 @@ export default function AddControlReqModalPage(props) {
 
     const confirmUpdate = (e) => {
         e.preventDefault();
-        console.log({
+        let newReq = {
             query: searchQuery,
             aw: allowedWriters,
             ar: allowedReaders,
             dw: deniedWriters,
             dr: deniedReaders,
             group: checkGroups
-        })
+        }
+        createNewControlReq(newReq)
     }
 
     const handleChecked = (e) => {
