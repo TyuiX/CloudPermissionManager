@@ -109,9 +109,15 @@ export default function UpdateMultipleSharingModal(props) {
         closeInfo();
     }
 
-    const handleSubmitEmail = (e) => {
+    const handleEnterPress = (e) => {
         if(e.key === "Enter") {
-            e.preventDefault();
+            handleSubmitEmail(e)
+        }
+    }
+
+    const handleSubmitEmail = (e) => {
+        e.preventDefault();
+        if (newEmail.length !== 0) {
             let addedUsers = JSON.parse(JSON.stringify(newUsers));
             addedUsers.push({
                 email: newEmail,
@@ -176,7 +182,7 @@ export default function UpdateMultipleSharingModal(props) {
                 </div>
                 <div className="modal-section">
                     <div className="modal-section-title">New Users:</div>
-                    <form onKeyDown={(e) => handleSubmitEmail(e)} className="modal-form">
+                    <form onKeyDown={(e) => handleEnterPress(e)} className="modal-form">
                         <input
                             className="modal-form-input"
                             type="text"
@@ -184,6 +190,7 @@ export default function UpdateMultipleSharingModal(props) {
                             placeholder="Email: e.g. example@email.com"
                             onChange={({ target }) => setNewEmail(target.value)}
                         />
+                        <button className="modal-add-text-button" onClick={(e) => handleSubmitEmail(e)}>Add</button>
                     </form>
                     <div className="modal-users-list">
                         {newUsers.length !== 0 ?
