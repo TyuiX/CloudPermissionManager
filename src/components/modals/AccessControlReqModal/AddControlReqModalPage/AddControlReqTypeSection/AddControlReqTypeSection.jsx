@@ -1,10 +1,10 @@
-import React, {useState} from 'react';
-import "../../index.css"
+import React, {useEffect, useState} from 'react';
+import "../../../index.css"
 import AddedControlReqTag from "../AddedUsersControlTag/AddedControlReqTag";
 import "./AddControlReqTypeSection.css";
 
 export default function AddControlReqTypeSection(props) {
-    const {title} = props;
+    const {title, updateList} = props;
     const [newEmail, setNewEmail] = useState("");
     const [newDomain, setNewDomain] = useState("");
     const [newEmails, setNewEmails] = useState([]);
@@ -24,6 +24,14 @@ export default function AddControlReqTypeSection(props) {
             }
         }
     }
+
+    useEffect(() => {
+        updateList({
+            emails: newEmails, 
+            domains: newDomains,
+            size: newEmails.length + newDomains.length
+        });
+    },[newEmails, newDomains, updateList])
 
     const handleSubmitEmail = (e) => {
         e.preventDefault();
