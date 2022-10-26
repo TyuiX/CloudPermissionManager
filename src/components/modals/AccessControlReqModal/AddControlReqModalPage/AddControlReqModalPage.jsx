@@ -2,6 +2,7 @@ import React, {useContext, useState} from 'react';
 import AddControlReqTypeSection from "./AddControlReqTypeSection/AddControlReqTypeSection";
 import "./AddControlReqModalPage.css";
 import {UserContext} from "../../../../utils/context/UserContext";
+import ErrorPopupModal from "../../ErrorPopupModal/ErrorPopupModal";
 
 export default function AddControlReqModalPage(props) {
     const {toggleModal} = props;
@@ -12,18 +13,30 @@ export default function AddControlReqModalPage(props) {
     const [deniedWriters, setDeniedWriters] = useState({emails: [], domains: [], size: 0});
     const [deniedReaders, setDeniedReaders] = useState({emails: [], domains: [], size: 0});
     const [checkGroups, setCheckGroups] = useState(false);
+    const [errorMsg, setErrorMsg] = useState("");
 
     const confirmUpdate = (e) => {
         e.preventDefault();
-        let newReq = {
-            query: searchQuery,
-            aw: allowedWriters,
-            ar: allowedReaders,
-            dw: deniedWriters,
-            dr: deniedReaders,
-            group: checkGroups
+        if (searchQuery.trim().length === 0) {
+            setErrorMsg("Cannot create without an Access Control Requirement without a search query!")
         }
-        createNewControlReq(newReq)
+        else {
+            let sizeSum = allowedWriters.size + allowedReaders.size + deniedWriters.size + deniedReaders.size;
+            if (sizeSum <= 0) {
+                setErrorMsg("At least one of Allowed Writers, Allowed Readers, Denied Writers, or Denied Readers must not be empty!")
+            }
+            else {
+                let newReq = {
+                    query: searchQuery,
+                    aw: allowedWriters,
+                    ar: allowedReaders,
+                    dw: deniedWriters,
+                    dr: deniedReaders,
+                    group: checkGroups
+                }
+                createNewControlReq(newReq)
+            }
+        }
     }
 
     const handleChecked = (e) => {
@@ -63,6 +76,9 @@ export default function AddControlReqModalPage(props) {
                     <button className="modal-button modal-cancel" onClick={toggleModal}>Cancel</button>
                 </div>
             </div>
+            {errorMsg &&
+                <ErrorPopupModal msg={errorMsg} updateText={setErrorMsg} />
+            }
         </>
     );
 }

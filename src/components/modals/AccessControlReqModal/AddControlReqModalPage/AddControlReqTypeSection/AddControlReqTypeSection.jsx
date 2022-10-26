@@ -35,20 +35,24 @@ export default function AddControlReqTypeSection(props) {
 
     const handleSubmitEmail = (e) => {
         e.preventDefault();
-        if (newEmail.length !== 0) {
+        if (newEmail.trim().length !== 0) {
             let addedEmails = [...newEmails];
-            addedEmails.push(newEmail)
-            setNewEmails(addedEmails);
+            if (!addedEmails.includes(newEmail)) {
+                addedEmails.push(newEmail)
+                setNewEmails(addedEmails);
+            }
             setNewEmail("");
         }
     }
 
     const handleSubmitDomain = (e) => {
         e.preventDefault();
-        if (newDomain.length !== 0) {
+        if (newDomain.trim().length !== 0) {
             let addedDomains = [...newDomains];
-            addedDomains.push(newDomain)
-            setNewDomains(addedDomains);
+            if (!addedDomains.includes(newDomain)) {
+                addedDomains.push(newDomain)
+                setNewDomains(addedDomains);
+            }
             setNewDomain("");
         }
     }
