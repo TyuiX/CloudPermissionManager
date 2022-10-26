@@ -6,7 +6,8 @@ export const UserContext = createContext({});
 
 function UserContextProvider(props) {
     const [user, setUser] = useState({});
-    const [snapshots, setSnapshots] = useState([])
+    const [snapshots, setSnapshots] = useState([]);
+    const [controlReqs, setControlReqs] = useState([]);
     const [loggedIn, setLoggedIn] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [recentSearches, setRecentSearches] = useState([]);
@@ -33,6 +34,7 @@ function UserContextProvider(props) {
         const loadResources = async () => {
             await getSnapshots()
             await getRecentSearches()
+            await getControlReqs()
         }
         loadResources()
     }, [user.email])
@@ -180,6 +182,27 @@ function UserContextProvider(props) {
             return err.response.data.errorMessage;
         }
     }, [user.email])
+    
+    const getControlReqs = useCallback(async () => {
+        try {
+            const res = await api.getUserProfile({email: user.email});
+            const res2 = await api.getControlReqs(res.data.accessControlReqs)
+            setControlReqs(res2.data.reqs)
+        }
+        catch (err) {
+            return err.response.data.errorMessage;
+        }
+    },[user.email])
+
+    const deleteControlReq = useCallback(async (id) => {
+        try {
+            console.log(user.email)
+            const res = await api.deleteControlReq({id: id, email: user.email});
+        }
+        catch (err) {
+            return err.response.data.errorMessage;
+        }
+    },[user.email])
 
     const createNewControlReq = useCallback(async (newControlReq) => {
         try {
@@ -194,7 +217,8 @@ function UserContextProvider(props) {
     return (
         <UserContext.Provider value={{
             user, snapshots, isLoading, loggedIn, recentSearches, createUser, loginUser, logoutUser, startLoading, finishLoading, 
-            setGoogleAcc, createNewSnapshot, getFolderFileDif, getSnapShotDiff, searchByName, getRecentSearches, createNewControlReq
+            setGoogleAcc, createNewSnapshot, getFolderFileDif, getSnapShotDiff, searchByName, getRecentSearches, createNewControlReq,
+            controlReqs, deleteControlReq
         }}>
             {props.children}
         </UserContext.Provider>

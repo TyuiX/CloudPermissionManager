@@ -34,7 +34,8 @@ export default function AddControlReqModalPage(props) {
                     dr: deniedReaders,
                     group: checkGroups
                 }
-                createNewControlReq(newReq)
+                createNewControlReq(newReq);
+                toggleModal();
             }
         }
     }

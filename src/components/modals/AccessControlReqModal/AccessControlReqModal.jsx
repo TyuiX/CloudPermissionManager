@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {AiOutlineClose} from "react-icons/ai";
+import ExistingControlReqModalPage from "./ExistingControlReqModalPage/ExistingControlReqModalPage";
 import AddControlReqModalPage from "./AddControlReqModalPage/AddControlReqModalPage";
 import "./AccessControlReqModal.css";
 
@@ -24,12 +25,24 @@ export default function AccessControlReqModal(props) {
                 </div>
                 <div className="modal-split-container">
                     <div className="modal-sidebar">
-                        <button className="modal-sidebar-link" onClick={handleToggleExistingModalPage}>Existing Control Requirements</button>
-                        <button className="modal-sidebar-link" onClick={handleToggleAddModalPage}>Create New Control Requirement</button>
+                        <button
+                            className={"modal-sidebar-link " + (contentToShow === "existing" ? "modal-link-selected" : "")}
+                            onClick={handleToggleExistingModalPage}
+                        >
+                            Existing Control Requirements
+                        </button>
+                        <button
+                            className={"modal-sidebar-link " + (contentToShow === "new" ? "modal-link-selected" : "")}
+                            onClick={handleToggleAddModalPage}
+                        >
+                            Create New Control Requirement
+                        </button>
                     </div>
                     <div className="modal-content">
                         {contentToShow === "existing" &&
-                            <div>Existing</div>
+                            <ExistingControlReqModalPage
+                                toggleModal={toggleModal}
+                            />
                         }
                         {contentToShow === "new" &&
                             <AddControlReqModalPage

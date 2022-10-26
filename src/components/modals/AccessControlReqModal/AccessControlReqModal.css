@@ -28,6 +28,10 @@
 
 .modal-sidebar-link:hover {
     cursor: pointer;
+    background-color: #bebebe;
+}
+
+.modal-link-selected {
     background-color: #d9d9d9;
 }
 

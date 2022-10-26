@@ -15,6 +15,7 @@ export const getFileFolderDif = (id) => api.get(`/fileFolderDiff/${id}`)
 export const snapshotDiff = (payload) => api.post(`/snapShotDiff`, payload)
 export const searchByName = (payload) => api.post(`/searchByName`, payload)
 export const getControlReqs = (payload) => api.post(`/control/requirements`, payload)
+export const deleteControlReq = (payload) => api.delete(`/control/requirements`, {data: payload})
 export const createNewControlReqs = (payload) => api.post(`/control/requirements/add`, payload)
 
 const managerAPI = {
@@ -29,6 +30,7 @@ const managerAPI = {
     snapshotDiff,
     searchByName,
     getControlReqs,
+    deleteControlReq,
     createNewControlReqs,
 }
 
