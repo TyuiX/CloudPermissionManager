@@ -188,6 +188,7 @@ function UserContextProvider(props) {
             const res = await api.getUserProfile({email: user.email});
             const res2 = await api.getControlReqs(res.data.accessControlReqs)
             setControlReqs(res2.data.reqs)
+            console.log(setControlReqs);
         }
         catch (err) {
             return err.response.data.errorMessage;
