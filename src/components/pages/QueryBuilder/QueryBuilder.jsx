@@ -4,8 +4,13 @@ import "./QueryBuilder.css";
 import PageSideBar from '../../common-page-components/PageSidebar/PageSideBar';
 import QBDriveModal from '../../modals/QBDriveModal/QBDriveModal';
 import QBGenericModal from '../../modals/QBGenericModal/QBGenericModal';
-import SearchBar from '../../common-page-components/PageHeader/SearchBar/SearchBar';
-import { ThemeContext } from '../../common-page-components/PageHeader/SearchBar/SearchBar';
+
+const QUERIES =
+    [
+        "drive:drive", "owner:user", "creator:user", "from:user", "to:user", "readable:user", "writeable:user",
+        "shareable:user", "name:regexp", "inFolder:regexp", "folder:regexp", "path:path", "sharing:none",
+        "sharing:anyone", "sharing:individual", "sharing:domain"
+    ]
 
 export default function QueryBuilder(props) {
     const { state } = useLocation();
@@ -15,24 +20,6 @@ export default function QueryBuilder(props) {
     const [showGenericModal, setShowGenericModal] = useState(false);
     const [fileName, setFileName] = useState("");
     const navigate = useNavigate();
-    
-    let qBuilder = [];
-    qBuilder.push("drive:drive");
-    qBuilder.push("owner:user");
-    qBuilder.push("creator:user");
-    qBuilder.push("from:user");
-    qBuilder.push("to:user");
-    qBuilder.push("readable:user");
-    qBuilder.push("writeable:user");
-    qBuilder.push("shareable:user");
-    qBuilder.push("name:regexp");
-    qBuilder.push("inFolder:regexp");
-    qBuilder.push("folder:regexp");
-    qBuilder.push("path:path");
-    qBuilder.push("sharing:none");
-    qBuilder.push("sharing:anyone");
-    qBuilder.push("sharing:individual");
-    qBuilder.push("sharing:domain");
 
     const forOnClick = (value) => {
         setCurrentValue(value);
@@ -57,9 +44,9 @@ export default function QueryBuilder(props) {
 
     let queryOps = [];
     let params = 0;
-    while(params < qBuilder.length){
-        if(qMap.get(qBuilder[params]) !== undefined){
-            queryOps.push(qMap.get(qBuilder[params]));
+    while(params < QUERIES.length){
+        if(qMap.get(QUERIES[params]) !== undefined){
+            queryOps.push(qMap.get(QUERIES[params]));
         }
         params += 1;
     }
@@ -167,41 +154,37 @@ export default function QueryBuilder(props) {
     }
 
     console.log(files);
-    // console.log(files.woiebg.owiergb);
-    //<ThemeContext.Consumer >
     return (
-        
         <>
-        <div className="page-container">
-            <PageSideBar/>
-            <div className="parentDiv">
-                <div className={"dataResult"}>
-                    {qBuilder.map((value) => {
-                        return (
-                            <>
-                            <button onClick={()=>forOnClick(value)}  className={"listOfButtons"} href="#">
-                                <p>{value}</p>
-                            </button>
-                            
-                            <br></br>
-                            </>
-                        );
-                    })}
-                </div> 
+            <div className="page-container">
+                <PageSideBar/>
+                <div className="parentDiv">
+                    <div className={"dataResult"}>
+                        {QUERIES.map((value) => {
+                            return (
+                                <>
+                                    <button onClick={()=>forOnClick(value)}  className={"listOfButtons"} href="#">
+                                        <p>{value}</p>
+                                    </button>
+
+                                    <br></br>
+                                </>
+                            );
+                        })}
+                    </div>
+                </div>
             </div>
-        </div>
-        {showDriveModal &&
-            <QBDriveModal
-                toggleModal={handleToggleDriveModal} setQMap={setQMap} qMap={qMap}
-            />
-        }
-        {showGenericModal &&
-            <QBGenericModal 
-                toggleModal={handleToggleGenericModal} setQMap={setQMap} qMap={qMap} currentValue={currentValue}
-                setFileName = {setFileName}
-            />
-        }
+            {showDriveModal &&
+                <QBDriveModal
+                    toggleModal={handleToggleDriveModal} setQMap={setQMap} qMap={qMap}
+                />
+            }
+            {showGenericModal &&
+                <QBGenericModal
+                    toggleModal={handleToggleGenericModal} setQMap={setQMap} qMap={qMap} currentValue={currentValue}
+                    setFileName = {setFileName}
+                />
+            }
         </>
-        // </ThemeContext.Consumer>
     )
 }
