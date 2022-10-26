@@ -3,16 +3,21 @@ import {GoDeviceCamera} from 'react-icons/go';
 import {AiOutlineSearch} from 'react-icons/ai';
 import {UserContext} from "../../../../utils/context/UserContext";
 import "./SearchBar.css";
-import {useNavigate} from "react-router-dom";
+import {useNavigate,  Navigate} from "react-router-dom";
+import { Button } from 'react-bootstrap';
+import QueryBuilder from '../../../pages/QueryBuilder/QueryBuilder';
 
+export const ThemeContext = React.createContext();
 
 export default function SearchBar(props) {
     const [dropdown, setDropdown] = useState(false);
+    const [showQueryBuilder, setShowQueryBuilder] = useState(false);
     const {isLoading, snapshots, searchByName, getRecentSearches} = useContext(UserContext);
     const [currentSnap, setCurrentSnap] = useState(snapshots.length !== 0?snapshots[0]:[]);
     const wrapperRef = useRef(null);
     const [result, setResult] = useState("");
     const navigate = useNavigate();
+    const {value} = props;
 
     useEffect(() => {
         if (!snapshots) {
@@ -52,15 +57,37 @@ export default function SearchBar(props) {
         }
     }
 
+    const queryBuilderHelper = () => {
+        navigate('/querybuilder', {state : {
+            snapshots: snapshots,
+            value: props.fileName,      
+        }})
+        console.log("in here!");
+        // setShowQueryBuilder(true);
+    }
+    
+    console.log(value);
     return (
         <>
             <div className={"search-bar-container"}>
-                <input
-                    type="text"
-                    value={props.fileName}
-                    onChange={({ target }) => props.setFileName(target.value)}
-                    placeholder="Search..."
-                />
+                {value === undefined &&
+                    <input
+                        type="text"
+                        value={props.fileName}
+                        onChange={({ target }) => props.setFileName(target.value)}
+                        placeholder="Search..."
+                    />
+                }
+                <br></br>
+                {value !== undefined &&
+                    <input
+                        type="text"
+                        value={props.fileName}
+                        onChange={({ target }) => props.setFileName(target.value)}
+                        placeholder={value}
+                    />
+                }
+                <button className={"forQuery"}onClick={queryBuilderHelper}> queryBuilder </button> 
             </div>
             <div className="profile-dropdown-container"
             ref={wrapperRef}>
@@ -90,6 +117,11 @@ export default function SearchBar(props) {
             <div>
             {/* <input className="e-input" type="text" placeholder="Search Results Here" value={result?result:"No Results!"} readOnly={true}/> */}
             </div>
+            {showQueryBuilder &&
+                <ThemeContext.Provider value = {props.setFileName}>
+                    <QueryBuilder />
+                </ThemeContext.Provider>
+            }
         </>
     );
 }
