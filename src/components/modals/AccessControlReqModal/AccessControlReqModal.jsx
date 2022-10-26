@@ -1,12 +1,14 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {AiOutlineClose} from "react-icons/ai";
 import ExistingControlReqModalPage from "./ExistingControlReqModalPage/ExistingControlReqModalPage";
 import AddControlReqModalPage from "./AddControlReqModalPage/AddControlReqModalPage";
 import "./AccessControlReqModal.css";
+import {UserContext} from "../../../utils/context/UserContext";
 
 export default function AccessControlReqModal(props) {
     const {toggleModal} = props;
     const [contentToShow, setContentToShow] = useState("existing")
+    const {setIsLoading} = useContext(UserContext)
 
     const handleToggleAddModalPage = () => {
         setContentToShow("new")
@@ -14,6 +16,11 @@ export default function AccessControlReqModal(props) {
 
     const handleToggleExistingModalPage = () => {
         setContentToShow("existing")
+    }
+
+    const handlePostUpdateControlReq = async () => {
+        setContentToShow("existing")
+        setIsLoading(false)
     }
 
     return (
@@ -41,12 +48,13 @@ export default function AccessControlReqModal(props) {
                     <div className="modal-content">
                         {contentToShow === "existing" &&
                             <ExistingControlReqModalPage
-                                toggleModal={toggleModal}
+                                postUpdate={handlePostUpdateControlReq}
                             />
                         }
                         {contentToShow === "new" &&
                             <AddControlReqModalPage
                                 toggleModal={toggleModal}
+                                postUpdate={handlePostUpdateControlReq}
                             />
                         }
                     </div>

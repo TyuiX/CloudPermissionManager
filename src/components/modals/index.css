@@ -67,6 +67,7 @@
     display: flex;
     justify-content: flex-end;
     margin-right: 10px;
+    margin-bottom: 10px;
 }
 
 .modal-button {
@@ -90,6 +91,21 @@
 
 .modal-confirm:hover {
     background-color: cornflowerblue;
+}
+
+.modal-delete {
+    margin-top: 5px;
+    margin-bottom: 10px;
+    position: relative;
+    bottom: 0;
+    left: 480px;
+    color: white;
+    background-color: indianred;
+    transition: 0.3s;
+}
+
+.modal-delete:hover {
+    background-color: #ce1b1b;
 }
 
 .modal-cancel {

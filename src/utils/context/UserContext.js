@@ -197,7 +197,8 @@ function UserContextProvider(props) {
     const deleteControlReq = useCallback(async (id) => {
         try {
             console.log(user.email)
-            const res = await api.deleteControlReq({id: id, email: user.email});
+            await api.deleteControlReq({id: id, email: user.email});
+            await getControlReqs()
         }
         catch (err) {
             return err.response.data.errorMessage;
@@ -208,6 +209,7 @@ function UserContextProvider(props) {
         try {
             const res = await api.createNewControlReqs({newReq: newControlReq, email: user.email})
             console.log(res.data)
+            await getControlReqs()
         }
         catch (err) {
             return err.response.data.errorMessage;
@@ -218,7 +220,7 @@ function UserContextProvider(props) {
         <UserContext.Provider value={{
             user, snapshots, isLoading, loggedIn, recentSearches, createUser, loginUser, logoutUser, startLoading, finishLoading, 
             setGoogleAcc, createNewSnapshot, getFolderFileDif, getSnapShotDiff, searchByName, getRecentSearches, createNewControlReq,
-            controlReqs, deleteControlReq
+            controlReqs, deleteControlReq, setIsLoading, getControlReqs
         }}>
             {props.children}
         </UserContext.Provider>

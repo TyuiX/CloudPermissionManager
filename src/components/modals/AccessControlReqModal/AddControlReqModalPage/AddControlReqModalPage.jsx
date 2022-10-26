@@ -5,8 +5,8 @@ import {UserContext} from "../../../../utils/context/UserContext";
 import ErrorPopupModal from "../../ErrorPopupModal/ErrorPopupModal";
 
 export default function AddControlReqModalPage(props) {
-    const {toggleModal} = props;
-    const {createNewControlReq} = useContext(UserContext)
+    const {toggleModal, postUpdate} = props;
+    const {createNewControlReq, setIsLoading} = useContext(UserContext)
     const [searchQuery, setSearchQuery] = useState("");
     const [allowedWriters, setAllowedWriters] = useState({emails: [], domains: [], size: 0});
     const [allowedReaders, setAllowedReaders] = useState({emails: [], domains: [], size: 0});
@@ -26,6 +26,7 @@ export default function AddControlReqModalPage(props) {
                 setErrorMsg("At least one of Allowed Writers, Allowed Readers, Denied Writers, or Denied Readers must not be empty!")
             }
             else {
+                setIsLoading(true)
                 let newReq = {
                     query: searchQuery,
                     aw: allowedWriters,
@@ -35,7 +36,7 @@ export default function AddControlReqModalPage(props) {
                     group: checkGroups
                 }
                 createNewControlReq(newReq);
-                toggleModal();
+                postUpdate()
             }
         }
     }
