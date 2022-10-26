@@ -6,7 +6,8 @@ export const UserContext = createContext({});
 
 function UserContextProvider(props) {
     const [user, setUser] = useState({});
-    const [snapshots, setSnapshots] = useState([])
+    const [snapshots, setSnapshots] = useState([]);
+    const [controlReqs, setControlReqs] = useState([]);
     const [loggedIn, setLoggedIn] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [recentSearches, setRecentSearches] = useState([]);
@@ -30,14 +31,12 @@ function UserContextProvider(props) {
         if (!user.email) {
             return
         }
-        const loadSnapshots = async () => {
+        const loadResources = async () => {
             await getSnapshots()
-        }
-        const loadRecentSearches = async () => {
             await getRecentSearches()
+            await getControlReqs()
         }
-        loadSnapshots()
-        loadRecentSearches()
+        loadResources()
     }, [user.email])
     
     
@@ -183,11 +182,45 @@ function UserContextProvider(props) {
             return err.response.data.errorMessage;
         }
     }, [user.email])
+    
+    const getControlReqs = useCallback(async () => {
+        try {
+            const res = await api.getUserProfile({email: user.email});
+            const res2 = await api.getControlReqs(res.data.accessControlReqs)
+            setControlReqs(res2.data.reqs)
+        }
+        catch (err) {
+            return err.response.data.errorMessage;
+        }
+    },[user.email])
+
+    const deleteControlReq = useCallback(async (id) => {
+        try {
+            console.log(user.email)
+            await api.deleteControlReq({id: id, email: user.email});
+            await getControlReqs()
+        }
+        catch (err) {
+            return err.response.data.errorMessage;
+        }
+    },[user.email])
+
+    const createNewControlReq = useCallback(async (newControlReq) => {
+        try {
+            const res = await api.createNewControlReqs({newReq: newControlReq, email: user.email})
+            console.log(res.data)
+            await getControlReqs()
+        }
+        catch (err) {
+            return err.response.data.errorMessage;
+        }
+    }, [user.email])
 
     return (
         <UserContext.Provider value={{
             user, snapshots, isLoading, loggedIn, recentSearches, createUser, loginUser, logoutUser, startLoading, finishLoading, 
-            setGoogleAcc, createNewSnapshot, getFolderFileDif, getSnapShotDiff, searchByName, getRecentSearches
+            setGoogleAcc, createNewSnapshot, getFolderFileDif, getSnapShotDiff, searchByName, getRecentSearches, createNewControlReq,
+            controlReqs, deleteControlReq, setIsLoading, getControlReqs
         }}>
             {props.children}
         </UserContext.Provider>

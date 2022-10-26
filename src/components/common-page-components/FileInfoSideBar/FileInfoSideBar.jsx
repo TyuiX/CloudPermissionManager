@@ -32,7 +32,7 @@ export default function FileInfoSideBar(props) {
                         <span>File Information</span>
                         <AiOutlineClose className="sidebar-close-button" onClick={closeInfo} />
                     </div>
-                    {filesToDisplay.length > 1 &&
+                    {filesToDisplay.length > 1 && !shared &&
                         <div className="sidebar-update-all-button-container">
                             <button
                                 className="sidebar-update-all-button"
