@@ -1,6 +1,5 @@
 import React, {createContext, useCallback, useContext, useEffect, useState} from "react";
 import api from '../../api/GoogleAPI'
-import sharingAPI from '../../api/ShareManagerAPI'
 import {UserContext} from "./UserContext";
 import {gapi} from "gapi-script";
 import googleAuth from "../GoogleAuth";
@@ -27,41 +26,7 @@ function GoogleContextProvider(props) {
                     console.log(gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().cu === user.googleId)
 
                     if (gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().cu === user.googleId) {
-                        let files = await api.getFiles()
-                        console.log(files)
-                        const reformattedFiles = files.map(({id, name, mimeType, ownedByMe, permissions, shared, modifiedTime,
-                                                                createdTime, owners, parents
-                                                            }) => {
-                            let type;
-                            switch (mimeType) {
-                                case "application/vnd.google-apps.folder":
-                                    type = "folder";
-                                    break;
-                                default:
-                                    type = "file";
-                                    break;
-                            }
-                            return {
-                                name: name,
-                                id: id,
-                                type: type,
-                                owner: owners ? owners[0].displayName : undefined,
-                                creator: owners ? owners[owners.length - 1].displayName : undefined,
-                                ownedByMe: ownedByMe,
-                                permissions: permissions,
-                                shared: shared,
-                                lastUpdatedOn: modifiedTime,
-                                createdOn: createdTime,
-                                cloudOrigin: "google",
-                                parents: parents,
-                            }
-                        });
-                        let myFiles = reformattedFiles.filter((file) => file.ownedByMe || typeof file.ownedByMe === 'undefined');
-                        let sharedFiles = reformattedFiles.filter((file) => file.ownedByMe === false);
-                        setAllFiles(reformattedFiles)
-                        setMyFiles(myFiles)
-                        setSharedFiles(sharedFiles)
-                        setEmail(gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().cu);
+                        await getGoogleFiles()
                     }
                     else {
                         setAllFiles([])
@@ -78,7 +43,9 @@ function GoogleContextProvider(props) {
 
     const getGoogleFiles = useCallback( async () => {
         const getGoogleFiles = async () => {
-            let files = await api.getFiles()
+            let accessToken = gapi.auth.getToken().access_token;
+            let res = await api.getFiles({accessToken: accessToken})
+            let files = res.data.files
             const reformattedFiles = files.map(({id, name, mimeType, ownedByMe, permissions, shared, modifiedTime,
                                                     createdTime, owners, parents
                                                 }) => {
@@ -121,7 +88,7 @@ function GoogleContextProvider(props) {
 
     const updateFilePerms = useCallback( async (fileId, updatedUsers, addedUsers, updateMultiple) => {
         let accessToken = gapi.auth.getToken().access_token;
-        await sharingAPI.updateFilePerms({
+        await api.updateFilePerms({
             fileId: fileId, updatedUsers: updatedUsers, addedUsers: addedUsers,
             accessToken: accessToken, userEmail: user.email
         })

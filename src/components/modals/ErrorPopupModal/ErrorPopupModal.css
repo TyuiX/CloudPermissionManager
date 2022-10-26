@@ -1,0 +1,25 @@
+.error-modal {
+    height: auto;
+}
+
+.error-icon {
+    color: indianred;
+}
+
+.error-msg {
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.error-msg-text {
+    margin-left: 10px;
+    padding-right: 20px;
+}
+
+.error-confirm {
+    position: relative;
+    bottom: 10px;
+    left: 490px;
+}
