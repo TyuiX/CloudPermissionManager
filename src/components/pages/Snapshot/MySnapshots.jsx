@@ -8,6 +8,7 @@ import AnalyzeSharingModal from "../../modals/AnalyzeSharingModal/AnalyzeSharing
 
 export default function MySnapshots() {
     const {myFiles} = useContext(GoogleContext);
+    const {allFiles} = useContext(GoogleContext);
     const {snapshots, createNewSnapshot, getFolderFileDif, getSnapShotDiff} = useContext(UserContext);
     const [showModal, setShowModal] = useState(false);
     const [analysisInfo, setAnalysisInfo] = useState([])

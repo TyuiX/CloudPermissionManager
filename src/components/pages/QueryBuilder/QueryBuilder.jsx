@@ -81,6 +81,7 @@ export default function QueryBuilder(props) {
     // )})
     
     let folderIndex = 0;
+    console.log(state.snapshots);
     let foldersIterate = state.snapshots[0].folders;
     let set = new Set();
     // console.log(Object.values(foldersIterate)[0]);
@@ -148,6 +149,14 @@ export default function QueryBuilder(props) {
                                 }
                             }
                             permIndex += 1;
+                        }
+                    } else if(value === "name:regexp"){
+                        let regexp = new RegExp(key);
+                        if(regexp.exec(file.name)){ // key is the regular expression.
+                            if(!set.has(file.name)){
+                                set.add(file.name);
+                                files.push(file);
+                            }
                         }
                     }
                 })
