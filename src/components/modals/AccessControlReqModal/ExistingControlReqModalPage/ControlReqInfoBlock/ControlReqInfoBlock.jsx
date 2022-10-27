@@ -7,7 +7,7 @@ import {UserContext} from "../../../../../utils/context/UserContext";
 
 export default function ControlReqInfoBlock(props) {
     const {deleteControlReq} = useContext(UserContext)
-    const {reqInfo, postUpdate} = props;
+    const {reqInfo, postUpdate, index} = props;
     const {query, aw, ar, dw, dr, grp, _id} = reqInfo;
     const [openDropdown, setOpenDropdown] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -27,7 +27,7 @@ export default function ControlReqInfoBlock(props) {
                 <div className="req-info-header"
                      onClick={() => setOpenDropdown(!openDropdown)}
                 >
-                    <span className="control-req-header-title">Query: {query}</span>
+                    <span className="control-req-header-title">Access Control Requirement: {index}</span>
                     {openDropdown ?
                         <IoIosArrowUp size={20}/>
                         :

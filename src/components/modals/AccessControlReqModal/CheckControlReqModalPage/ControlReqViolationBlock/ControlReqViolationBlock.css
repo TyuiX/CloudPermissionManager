@@ -1,0 +1,36 @@
+.control-req-violation-container {
+    width: 100%;
+}
+
+.violation-block-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid black;
+    padding: 5px 10px;
+}
+
+.violations-icon {
+    color: indianred;
+}
+
+.violation-block-header:hover {
+    cursor: pointer;
+}
+
+.violation-info-block {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: normal;
+    margin: 5px 10px;
+}
+
+.violation-info-msg {
+    margin-left: 10px;
+}
+
+.violation-subtext {
+    font-size: 12px;
+    color: #888888;
+}
