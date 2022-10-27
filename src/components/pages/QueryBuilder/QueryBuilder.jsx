@@ -83,7 +83,24 @@ export default function QueryBuilder(props) {
                 console.log(file);
                 qMap.forEach((key, value) => {
                     // console.log("key: " + key + ", value: " + value);
-                    if(value === "owner:user"){
+                    if(value === "drive:drive"){
+                        if(key === "My Drive"){
+                            if(file.ownedByMe === true){
+                                if(!set.has(file.name)){
+                                    set.add(file.name);
+                                    files.push(file);
+                                }
+                            }
+                        } else{
+                            if(file.ownedByMe === false){
+                                if(!set.has(file.name)){
+                                    set.add(file.name);
+                                    files.push(file);
+                                }
+                            }
+                        }
+                    }
+                    else if(value === "owner:user"){
                         if(file.owner === key){
                             if(!set.has(file.name)){
                                 set.add(file.name);
@@ -137,6 +154,13 @@ export default function QueryBuilder(props) {
                             }
                             permIndex += 1;
                         }
+                    } else if(value === "from:user"){
+                        if(file.owner === key){
+                            if(!set.has(file.name)){
+                                set.add(file.name);
+                                files.push(file);
+                            }
+                        }
                     } else if(value === "name:regexp"){
                         let regexp = new RegExp(key);
                         if(regexp.exec(file.name)){ // key is the regular expression.
@@ -154,6 +178,7 @@ export default function QueryBuilder(props) {
     }
 
     console.log(files);
+    console.log(qMap);
     return (
         <>
             <div className="page-container">
