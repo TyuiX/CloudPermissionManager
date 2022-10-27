@@ -1,19 +1,15 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
-import {GoDeviceCamera} from 'react-icons/go';
-import {AiOutlineSearch} from 'react-icons/ai';
-import { Route, Routes, useLocation } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import React, {useContext} from 'react';
 import PageSideBar from '../../common-page-components/PageSidebar/PageSideBar';
+import {UserContext} from "../../../utils/context/UserContext";
 
 
-export default function SearchResults(props) {
+export default function SearchResults() {
+    const {searchResults} = useContext(UserContext)
+    console.log(searchResults)
 
-    const {state} = useLocation();
-    const{results} = state;
-
-    let toPrint = null;
-    if(results && results.length !== 0) {
-        toPrint = (results.map((result) => {
+    let toPrint;
+    if(searchResults.length !== 0) {
+        toPrint = (searchResults.map((result) => {
             return (
                 <li className="user-menu-item"  key={result.id}>
                     <span>{result.name}</span>
@@ -22,7 +18,7 @@ export default function SearchResults(props) {
         }))
     }
     else{
-        toPrint = 
+        toPrint =
             <li className="user-menu-item"  key={null}>
                 <span>{"No Result"}</span>
             </li>

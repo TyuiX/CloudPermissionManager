@@ -11,6 +11,7 @@ function UserContextProvider(props) {
     const [loggedIn, setLoggedIn] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [recentSearches, setRecentSearches] = useState([]);
+    const [searchResults, setSearchResults] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -164,7 +165,7 @@ function UserContextProvider(props) {
             const res = await api.searchByName({name: fileName, id: id, email: user.email});
             if (res.status === 200) {
                 console.log(res.data)
-                return res.data
+                setSearchResults(res.data)
             }
         }
         catch(err){
@@ -216,11 +217,82 @@ function UserContextProvider(props) {
         }
     }, [user.email])
 
+    const searchCheckFile = (operator, operand, addedFiles, file, addedFilesSet) => {
+        if(operator === "owner:user"){
+            if(file.owner === operand){
+                if(!addedFilesSet.has(file.name)){
+                    addedFilesSet.add(file.name);
+                    addedFiles.push(file);
+                }
+            }
+        } else if(operator === "creator:user"){
+            if(file.creator === operand){
+                if(!addedFilesSet.has(file.name)){
+                    addedFilesSet.add(file.name);
+                    addedFiles.push(file);
+                }
+            }
+        } else if(operator === "readable:user"){
+            file.permissions.forEach((perm) => {
+                if (perm.emailAddress === operand) {
+                    if(perm.role === "reader"){
+                        if(!addedFilesSet.has(file.name)){
+                            addedFilesSet.add(file.name);
+                            addedFiles.push(file);
+                        }
+                    }
+                }
+            })
+        } else if(operator === "writeable:user"){
+            file.permissions.forEach((perm) => {
+                console.log(perm)
+                if (perm.emailAddress === operand) {
+                    if(perm.role === "writer"){
+                        if(!addedFilesSet.has(file.name)){
+                            addedFilesSet.add(file.name);
+                            addedFiles.push(file);
+                        }
+                    }
+                }
+            })
+        } else if(operator === "to:user"){
+            file.permissions.forEach((perm) => {
+                if (perm.emailAddress === operand) {
+                    if(!addedFilesSet.has(file.name)){
+                        addedFilesSet.add(file.name);
+                        addedFiles.push(file);
+                    }
+                }
+            })
+        } else if(operator === "name:regexp"){
+            let regexp = new RegExp(operand);
+            if(regexp.exec(file.name)){ // key is the regular expression.
+                if(!addedFilesSet.has(file.name)){
+                    addedFilesSet.add(file.name);
+                    addedFiles.push(file);
+                }
+            }
+        }
+    }
+
+    const performSearch = useCallback (async (snapshot, queries) => {
+        let files = [];
+        let set = new Set();
+        Object.values(snapshot.folders).forEach((folder) => {
+            Object.values(folder).forEach((file) => {
+                queries.forEach((key, value) => {
+                    searchCheckFile(value, key, files, file, set);
+                })
+            })
+        })
+        setSearchResults(files)
+    },[])
+
     return (
         <UserContext.Provider value={{
             user, snapshots, isLoading, loggedIn, recentSearches, createUser, loginUser, logoutUser, startLoading, finishLoading, 
             setGoogleAcc, createNewSnapshot, getFolderFileDif, getSnapShotDiff, searchByName, getRecentSearches, createNewControlReq,
-            controlReqs, deleteControlReq, setIsLoading, getControlReqs
+            controlReqs, deleteControlReq, setIsLoading, getControlReqs, performSearch, searchResults
         }}>
             {props.children}
         </UserContext.Provider>

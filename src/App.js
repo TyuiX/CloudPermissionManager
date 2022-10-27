@@ -12,10 +12,8 @@ import SharedFiles from "./components/pages/SharedFiles/SharedFiles";
 import Home from "./components/pages/Home/Home";
 import {UserContext} from "./utils/context/UserContext";
 import LoadingScreen from "./components/common-page-components/LoadingScreen/LoadingScreen";
-import { getSnapshots, getUserProfile } from './api/ShareManagerAPI';
 import QueryBuilder from './components/pages/QueryBuilder/QueryBuilder';
 import SearchResults from './components/pages/SearchResults/SearchResults';
-import SearchBar from './components/common-page-components/PageHeader/SearchBar/SearchBar';
 
 function App() {
     const {isLoading} = useContext(UserContext)
