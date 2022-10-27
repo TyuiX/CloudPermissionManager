@@ -4,7 +4,7 @@ import {AiOutlineSearch} from 'react-icons/ai';
 import {UserContext} from "../../../../utils/context/UserContext";
 import "./SearchBar.css";
 import {useNavigate} from "react-router-dom";
-import QueryBuilder from "../../../pages/QueryBuilder/QueryBuilder";
+import QueryBuilder from "./QueryBuilder/QueryBuilder";
 import {FaFilter} from "react-icons/fa";
 
 export default function SearchBar(props) {

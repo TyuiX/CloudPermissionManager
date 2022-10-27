@@ -275,7 +275,7 @@ function UserContextProvider(props) {
         }
     }
 
-    const performSearch = useCallback (async (snapshot, queries) => {
+    const performSearch = useCallback (async (snapshot, queries, save) => {
         let files = [];
         let set = new Set();
         Object.values(snapshot.folders).forEach((folder) => {
@@ -285,7 +285,12 @@ function UserContextProvider(props) {
                 })
             })
         })
-        setSearchResults(files)
+        if (save) {
+            setSearchResults(files)
+        }
+        else {
+            return files;
+        }
     },[])
 
     return (
