@@ -219,7 +219,24 @@ function UserContextProvider(props) {
     }, [user.email])
 
     const searchCheckFile = (operator, operand, addedFiles, file, addedFilesSet) => {
-        if(operator === "owner:user"){
+        console.log(file);
+        if(operator === "drive:drive"){
+            if(operand === "My Drive"){
+                if(file.ownedByMe === true){
+                    if(!addedFilesSet.has(file.name)){
+                        addedFilesSet.add(file.name);
+                        addedFiles.push(file);
+                    }
+                }
+            } else{
+                if(file.ownedByMe === false){
+                    if(!addedFilesSet.has(file.name)){
+                        addedFilesSet.add(file.name);
+                        addedFiles.push(file);
+                    }
+                }
+            }
+        } else if(operator === "owner:user"){
             if(file.owner === operand){
                 if(!addedFilesSet.has(file.name)){
                     addedFilesSet.add(file.name);
@@ -257,6 +274,7 @@ function UserContextProvider(props) {
                 }
             })
         } else if(operator === "to:user"){
+            console.log("in here");
             file.permissions.forEach((perm) => {
                 if (perm.emailAddress === operand) {
                     if(!addedFilesSet.has(file.name)){
@@ -277,6 +295,7 @@ function UserContextProvider(props) {
     }
 
     const performSearch = useCallback (async (snapshot, queries, save) => {
+        console.log("wergiobwegroibegr");
         let files = [];
         let set = new Set();
         Object.values(snapshot.folders).forEach((folder) => {
@@ -286,6 +305,7 @@ function UserContextProvider(props) {
                 })
             })
         })
+        console.log(files);
         if (save) {
             setSearchResults(files)
         }

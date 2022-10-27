@@ -10,9 +10,10 @@ export default function SearchResults() {
     let toPrint;
     if(searchResults.length !== 0) {
         toPrint = (searchResults.map((result) => {
+            console.log(result);
             return (
                 <li className="user-menu-item"  key={result.id}>
-                    <span>{result.name}</span>
+                    <span>{result.name} </span>
                 </li>
             )
         }))

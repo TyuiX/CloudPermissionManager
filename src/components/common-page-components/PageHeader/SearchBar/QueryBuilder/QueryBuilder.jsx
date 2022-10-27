@@ -38,15 +38,20 @@ export default function QueryBuilder(props) {
     }
 
     const handleToggleGenericModal = () => {
+        console.log("in here");
         setShowGenericModal(!showGenericModal);
     }
 
     const confirmQuery = () => {
+        console.log("wger");
         performSearch(currentSnap, existingQueriesMap, true);
         toggleDropdown()
         navigate('/searchresults');
     }
 
+    console.log(existingQueriesMap);
+    console.log(selectedQueryOp);
+    console.log(showGenericModal);
     return (
         <>
             <div className="dataResult">
