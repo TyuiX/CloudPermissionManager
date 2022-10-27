@@ -1,9 +1,9 @@
 import React, {useNavigate} from 'react-router-dom';
 import {useContext, useState} from 'react';
 import "./QueryBuilder.css";
-import QBDriveModal from '../../modals/QBDriveModal/QBDriveModal';
-import QBGenericModal from '../../modals/QBGenericModal/QBGenericModal';
-import {UserContext} from "../../../utils/context/UserContext";
+import QBDriveModal from '../../../../modals/QBDriveModal/QBDriveModal';
+import QBGenericModal from '../../../../modals/QBGenericModal/QBGenericModal';
+import {UserContext} from "../../../../../utils/context/UserContext";
 
 const QUERIES =
     [
@@ -42,7 +42,7 @@ export default function QueryBuilder(props) {
     }
 
     const confirmQuery = () => {
-        performSearch(currentSnap, existingQueriesMap);
+        performSearch(currentSnap, existingQueriesMap, true);
         toggleDropdown()
         navigate('/searchresults');
     }
