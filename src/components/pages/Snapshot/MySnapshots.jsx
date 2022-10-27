@@ -33,15 +33,50 @@ export default function MySnapshots() {
         }
         // console.log(myFiles)
 
-        myFiles.forEach((file) => {
+        allFiles.forEach((file) => {
             const {id, parents, permissions} = file;
-            if(parents !== undefined) {
+            console.log(permissions);
+            console.log(file);
+            if(parents === undefined){
+                if(!snapshot.folders.has("orphan")){
+                    snapshot.folders.set("orphan", new Map());
+                }
                 let fileCopy = JSON.parse(JSON.stringify(file));
                 let newPerms = new Map();
-                for (let perm of permissions) {
-                    newPerms.set(perm.id, perm)
+                
+                if(!permissions){
+                    fileCopy.perm = {};
+                    fileCopy.permissions = [];
                 }
-                fileCopy.perm = Object.fromEntries(newPerms)
+                else{
+                    for (let perm of permissions) {
+                        newPerms.set(perm.id, perm);
+                    }
+                    fileCopy.perm = Object.fromEntries(newPerms)
+                }
+                console.log(newPerms);
+                fileCopy.perm = Object.fromEntries(newPerms);
+                snapshot.folders.get("orphan").set(id, fileCopy);
+                
+                if (rootCandidate.has(id)){
+                    rootCandidate.delete(id);
+                }
+            }
+
+            else if(parents !== undefined) {
+                let fileCopy = JSON.parse(JSON.stringify(file));
+                let newPerms = new Map();
+                
+                if(!permissions){
+                    fileCopy.perm = {};
+                    fileCopy.permissions = [];
+                }
+                else{
+                    for (let perm of permissions) {
+                        newPerms.set(perm.id, perm);
+                    }
+                    fileCopy.perm = Object.fromEntries(newPerms)
+                }
                 console.log(fileCopy)
 
                 if (snapshot.folders.has(parents[0])){
@@ -57,13 +92,14 @@ export default function MySnapshots() {
                 }
             }
         })
-        snapshot.root = [...rootCandidate][0]
+        snapshot.root = [...rootCandidate][0];
         let key = snapshot.folders.keys();
         for (let i of key){
             snapshot.folders.set(i , Object.fromEntries(snapshot.folders.get(i)))
         }
         snapshot.folders = Object.fromEntries(snapshot.folders)
-        // console.log(snapshot)
+        console.log(snapshot)
+        // uncomment below
         createNewSnapshot(snapshot, user.email)
     }
 
