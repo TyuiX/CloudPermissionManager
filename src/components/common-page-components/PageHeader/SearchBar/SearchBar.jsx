@@ -1,127 +1,86 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {GoDeviceCamera} from 'react-icons/go';
 import {AiOutlineSearch} from 'react-icons/ai';
 import {UserContext} from "../../../../utils/context/UserContext";
 import "./SearchBar.css";
-import {useNavigate,  Navigate} from "react-router-dom";
-import { Button } from 'react-bootstrap';
-import QueryBuilder from '../../../pages/QueryBuilder/QueryBuilder';
-
-export const ThemeContext = React.createContext();
+import {useNavigate} from "react-router-dom";
+import QueryBuilder from "./QueryBuilder/QueryBuilder";
+import {FaFilter} from "react-icons/fa";
 
 export default function SearchBar(props) {
-    const [dropdown, setDropdown] = useState(false);
+    const [showSnapshots, setShowSnapshots] = useState(false);
     const [showQueryBuilder, setShowQueryBuilder] = useState(false);
     const {isLoading, snapshots, searchByName, getRecentSearches} = useContext(UserContext);
-    const [currentSnap, setCurrentSnap] = useState(snapshots.length !== 0?snapshots[0]:[]);
-    const wrapperRef = useRef(null);
+    const [currentSnap, setCurrentSnap] = useState(snapshots.length !== 0 ? snapshots[0] : {});
     const [result, setResult] = useState("");
     const navigate = useNavigate();
-    const {value} = props;
+    const {setFileName, fileName} = props;
 
     useEffect(() => {
         if (!snapshots) {
             return
         }
-        setCurrentSnap(snapshots.length !== 0?snapshots[0]:[]);
-        document.addEventListener("click", handleClickOutside, false);
-        return () => {
-            document.removeEventListener("click", handleClickOutside, false);
-        };
-    }, []);
+        setCurrentSnap(snapshots.length !== 0 ? snapshots[0] : {});
+    }, [snapshots]);
 
-    const handleClickOutside = event => {
-        if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
-            setDropdown(false);
+    const handleSnapshotClick = (e) => {
+        e.preventDefault()
+        console.log(e.target.value)
+        let found = snapshots.find(({_id}) => _id ===  e.target.value)
+        if (found) {
+            setCurrentSnap(found);
         }
-    }
-
-    const handleSnapshotClick = (snap) => {
-        setDropdown(false);
-        setCurrentSnap(snap);
     }
 
     const handleSearch = async() => {
-        let output;
         if(snapshots && !isLoading && snapshots.length !== 0){
-            //fixes issue of search not working after first snap
-            if(snapshots.length === 1){
-                output = await searchByName(snapshots[0]._id, props.fileName);
-            }
-            else{
-                output = await searchByName(currentSnap._id, props.fileName);
-            }
-            setResult(output.length===0?"":output[0].name);
+            await searchByName(currentSnap._id, fileName);
             getRecentSearches();
-            navigate('/searchresults', {state: {results:output}});
+            navigate('/searchresults');
         }
     }
 
-    const queryBuilderHelper = () => {
-        navigate('/querybuilder', {state : {
-            snapshots: snapshots,
-            value: props.fileName,      
-        }})
-        console.log("in here!");
-        // setShowQueryBuilder(true);
+    const handleEnterPress = (e) => {
+        if(e.key === "Enter") {
+            e.preventDefault()
+            handleSearch()
+        }
     }
-    
-    console.log(value);
+
+    const toggleQueryBuilderDisplay = () => {
+        setShowQueryBuilder(!showQueryBuilder);
+    }
+
     return (
-        <>
-            <div className={"search-bar-container"}>
-                {value === undefined &&
+        <div className="header-center-content-container">
+            <div className="search-bar-container">
+                <form onKeyDown={(e) => handleEnterPress(e)} className="modal-form">
                     <input
+                        className="header-search-bar"
                         type="text"
-                        value={props.fileName}
-                        onChange={({ target }) => props.setFileName(target.value)}
+                        value={fileName}
+                        onChange={({ target }) => setFileName(target.value)}
                         placeholder="Search..."
                     />
-                }
-                <br></br>
-                {value !== undefined &&
-                    <input
-                        type="text"
-                        value={props.fileName}
-                        onChange={({ target }) => props.setFileName(target.value)}
-                        placeholder={value}
-                    />
-                }
-                <button className={"forQuery"}onClick={queryBuilderHelper}> queryBuilder </button> 
+                </form>
+                <AiOutlineSearch size={30} className="search-button" onClick={handleSearch}/>
+                <FaFilter onClick={toggleQueryBuilderDisplay} size={20} className="search-filter-button" />
             </div>
-            <div className="profile-dropdown-container"
-            ref={wrapperRef}>
-            <GoDeviceCamera
-                className="snapshot-button"
-                size={30}
-                onClick={() => setDropdown(!dropdown)}
-            />
-                <ul className={`user-dropdown ${dropdown ? "user-dropdown-open" : ""}`}>
-                    {(snapshots && !isLoading && snapshots.length !== 0) &&
-                                    (snapshots.map((snap) => {
-                                        return (
-                                            <li className="user-menu-item" key={snap._id} onClick={() => handleSnapshotClick(snap)}>
-                                                <span value={snap} >id: {snap._id}  date: {snap.date}</span>
-                                            </li>
-                                        )
-                                    }))
-                                }                
-                    {(!snapshots || isLoading || snapshots.length === 0) &&
-                        <li className="no-snapshots-message">No snapshots!</li>
-                    }
-                </ul>
+            <div className="snapshot-selection-container">
+                <GoDeviceCamera
+                    className="snapshot-icon"
+                    size={30}
+                    onClick={() => setShowSnapshots(!showSnapshots)}
+                />
+                <select onChange={(e) => handleSnapshotClick(e)}>
+                    {snapshots.length > 0 && snapshots.map(({_id}) => (
+                        <option key={_id} value={_id}>{_id}</option>
+                    ))}
+                </select>
             </div>
-            <div className='search'>
-                    <AiOutlineSearch size={30} className="search-button" onClick={handleSearch}/>
-            </div> 
-            <div>
-            {/* <input className="e-input" type="text" placeholder="Search Results Here" value={result?result:"No Results!"} readOnly={true}/> */}
+            <div className={`search-dropdown ${showQueryBuilder ? "search-dropdown-open" : ""}`}>
+                <QueryBuilder currentSnap={currentSnap} toggleDropdown={toggleQueryBuilderDisplay} />
             </div>
-            {showQueryBuilder &&
-                <ThemeContext.Provider value = {props.setFileName}>
-                    <QueryBuilder />
-                </ThemeContext.Provider>
-            }
-        </>
+        </div>
     );
 }
