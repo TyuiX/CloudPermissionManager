@@ -4,8 +4,9 @@ import ExistingControlReqModalPage from "./ExistingControlReqModalPage/ExistingC
 import AddControlReqModalPage from "./AddControlReqModalPage/AddControlReqModalPage";
 import "./AccessControlReqModal.css";
 import {UserContext} from "../../../utils/context/UserContext";
+import CheckControlReqModalPage from "./CheckControlReqModalPage/CheckControlReqModalPage";
 
-export default function AccessControlReqModal(props) {
+export default function AccessControlReqModal(props) {  
     const {toggleModal} = props;
     const [contentToShow, setContentToShow] = useState("existing")
     const {setIsLoading} = useContext(UserContext)
@@ -16,6 +17,10 @@ export default function AccessControlReqModal(props) {
 
     const handleToggleExistingModalPage = () => {
         setContentToShow("existing")
+    }
+
+    const handleToggleCheckingModalPage = () => {
+        setContentToShow("check")
     }
 
     const handlePostUpdateControlReq = async () => {
@@ -44,6 +49,12 @@ export default function AccessControlReqModal(props) {
                         >
                             Create New Control Requirement
                         </button>
+                        <button
+                            className={"modal-sidebar-link " + (contentToShow === "check" ? "modal-link-selected" : "")}
+                            onClick={handleToggleCheckingModalPage}
+                        >
+                            Check Requirements
+                        </button>
                     </div>
                     <div className="modal-content">
                         {contentToShow === "existing" &&
@@ -55,6 +66,11 @@ export default function AccessControlReqModal(props) {
                             <AddControlReqModalPage
                                 toggleModal={toggleModal}
                                 postUpdate={handlePostUpdateControlReq}
+                            />
+                        }
+                        {contentToShow === "check" &&
+                            <CheckControlReqModalPage
+                                toggleModal={toggleModal}
                             />
                         }
                     </div>
