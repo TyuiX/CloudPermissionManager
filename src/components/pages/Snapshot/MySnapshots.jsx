@@ -5,9 +5,10 @@ import React, {useContext, useState} from "react";
 import {GoogleContext} from "../../../utils/context/GoogleContext";
 import {UserContext} from "../../../utils/context/UserContext";
 import AnalyzeSharingModal from "../../modals/AnalyzeSharingModal/AnalyzeSharingModal";
+import "./MySnapshots.css";
+import {AiOutlinePlus} from "react-icons/ai";
 
 export default function MySnapshots() {
-    const {myFiles} = useContext(GoogleContext);
     const {allFiles} = useContext(GoogleContext);
     const {snapshots, createNewSnapshot, getFolderFileDif, getSnapShotDiff} = useContext(UserContext);
     const [showModal, setShowModal] = useState(false);
@@ -37,18 +38,18 @@ export default function MySnapshots() {
             const {id, parents, permissions} = file;
             console.log(permissions);
             console.log(file);
-            if(parents === undefined){
-                if(!snapshot.folders.has("orphan")){
+            if (!parents){
+                if (!snapshot.folders.has("orphan")){
                     snapshot.folders.set("orphan", new Map());
                 }
                 let fileCopy = JSON.parse(JSON.stringify(file));
                 let newPerms = new Map();
                 
-                if(!permissions){
+                if (!permissions){
                     fileCopy.perm = {};
                     fileCopy.permissions = [];
                 }
-                else{
+                else {
                     for (let perm of permissions) {
                         newPerms.set(perm.id, perm);
                     }
@@ -63,15 +64,15 @@ export default function MySnapshots() {
                 }
             }
 
-            else if(parents !== undefined) {
+            else if (parents) {
                 let fileCopy = JSON.parse(JSON.stringify(file));
                 let newPerms = new Map();
                 
-                if(!permissions){
+                if (!permissions){
                     fileCopy.perm = {};
                     fileCopy.permissions = [];
                 }
-                else{
+                else {
                     for (let perm of permissions) {
                         newPerms.set(perm.id, perm);
                     }
@@ -82,7 +83,7 @@ export default function MySnapshots() {
                 if (snapshot.folders.has(parents[0])){
                     snapshot.folders.get(parents[0]).set(id, fileCopy)
                 }
-                else{
+                else {
                     snapshot.folders.set(parents[0], new Map())
                     snapshot.folders.get(parents[0]).set(id, fileCopy)
                     rootCandidate.add(parents[0])
@@ -121,14 +122,14 @@ export default function MySnapshots() {
     let firstSnap = null;
     let secondSnap = [];
 
-    if(snapshots.length !== 0){
+    if (snapshots.length !== 0){
         console.log(snapshots);
         firstSnap = snapshots[0];
         secondSnap = snapshots;
     }
 
     let fullDate = "";
-    if(firstSnap){
+    if (firstSnap){
         let date = firstSnap.date;
 
         let month = date.substring(5, 7);
@@ -136,9 +137,9 @@ export default function MySnapshots() {
         let time = date.substring(11, date.length - 5);
 
         let monthString = "";
-        if(month === "10") { monthString = "October"}
-        else if(month === "11") { monthString = "November"}
-        else if(month === "12") { monthString = "December"}
+        if (month === "10") { monthString = "October"}
+        else if (month === "11") { monthString = "November"}
+        else if (month === "12") { monthString = "December"}
         fullDate = "Taken on " + monthString + " " + day + ", " + 2022 + " at " + time;
     }
 
@@ -148,11 +149,19 @@ export default function MySnapshots() {
                 <PageSideBar />
                 <div className="page-content">
                     <h2 className="page-content-header">My Snapshots</h2>
+                    <div className="snapshot-page-buttons">
+                        <button className="snapshot-page-button" onClick={handleCompareFileFolder}>FileFolderDiff</button>
+                        <button className="snapshot-page-button" onClick={handleCompareSnapshot}>SnapshotDiff</button>
+                        <button className="snapshot-page-button" onClick={createSnapshotData}>
+                            <AiOutlinePlus size={20} />
+                            Add Snapshot
+                        </button>
+                    </div>
                     {snapshots &&
                         <>
-                            <h3 className="category-title">Recent Snapshot:</h3>
-                            <p className="page-content-all-the-way"> id: {firstSnap?firstSnap._id:""} <br></br> {fullDate} </p>
-                            <h3 className="category-title">Older Snapshots:</h3>
+                            <h3 className="category-title">Current Snapshot:</h3>
+                            <SnapCell snapInfo={firstSnap}/>
+                            <h3 className="category-title">Snapshot History:</h3>
                             <div> {secondSnap.slice(1).map((snap) => (
                                 <SnapCell key={snap._id}
                                           snapInfo={snap}
@@ -160,9 +169,6 @@ export default function MySnapshots() {
                             ))} </div>
                         </>
                     }
-                    <h2> <button className="newSnap" onClick={createSnapshotData}>Add Snapshot</button></h2>
-                    <h2> <button className="newSnap" onClick={handleCompareFileFolder}>FileFolderDiff</button></h2>
-                    <h2> <button className="newSnap" onClick={handleCompareSnapshot}>SnapshotDiff</button></h2>
                 </div>
             </div>
             {showModal &&

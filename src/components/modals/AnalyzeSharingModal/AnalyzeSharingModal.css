@@ -1,3 +1,8 @@
+.analysis-list-container {
+    height: 526px;
+    overflow-y: auto;
+}
+
 .analysis-block {
     margin-bottom: 10px;
 }

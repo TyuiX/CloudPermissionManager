@@ -238,6 +238,7 @@ function UserContextProvider(props) {
                 }
             }
         } else if(operator === "owner:user"){
+            console.log(file)
             if(file.owner === operand){
                 if(!addedFilesSet.has(file.name)){
                     addedFilesSet.add(file.name);
