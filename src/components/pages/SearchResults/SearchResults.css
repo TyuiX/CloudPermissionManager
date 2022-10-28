@@ -9,8 +9,6 @@ table{
     border: 3px solid black;
 }
 
-
-
 .file-info-block {
     border-bottom: 2px solid #adadad;
     padding: 5px;
@@ -34,38 +32,9 @@ table{
     color: white;
 }
 
-.file-info-key {
-    display: inline-block;
-    font-weight: bold;
-    padding: 5px;
-    width: 100px;
-}
-
-.files-permissions-list {
-    border: 1px solid #adadad;
-    border-radius: 5px;
-    max-height: 290px;
-    overflow-y: auto;
-}
-
 .update-access-button-container {
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 10px;
-}
-
-.update-access-button {
-    border: none;
-    border-radius: 5px;
-    background-color: cornflowerblue;
-    color: white;
-    font-weight: bold;
-    padding: 10px;
-    transition: 0.2s;
-}
-
-.update-access-button:hover {
-    cursor: pointer;
-    background-color: royalblue;
 }
