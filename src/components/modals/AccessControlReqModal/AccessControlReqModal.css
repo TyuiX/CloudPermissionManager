@@ -40,4 +40,5 @@
     width: 100%;
     height: 737px;
     overflow-y: auto;
+    overflow-x: hidden;
 }

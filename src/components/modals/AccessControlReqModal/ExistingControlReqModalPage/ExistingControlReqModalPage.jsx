@@ -7,15 +7,19 @@ export default function ExistingControlReqModalPage(props) {
     const {controlReqs, deleteControlReq} = useContext(UserContext);
     const {postUpdate} = props;
 
-    console.log(controlReqs)
-
     return (
         <>
             <div className="modal-section">
                 <div className="modal-section-title">Existing Access Control Requirements</div>
                 {controlReqs.length !== 0 ?
-                    controlReqs.map((req) => (
-                        <ControlReqInfoBlock reqInfo={req} deleteControlReq={deleteControlReq} postUpdate={postUpdate} />
+                    controlReqs.map((req, index) => (
+                        <ControlReqInfoBlock
+                            key={index}
+                            reqInfo={req}
+                            index={index + 1}
+                            deleteControlReq={deleteControlReq}
+                            postUpdate={postUpdate}
+                        />
                     ))
                     :
                     <div className="no-existing-reqs">
