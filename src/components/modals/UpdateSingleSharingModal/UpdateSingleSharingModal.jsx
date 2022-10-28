@@ -4,6 +4,8 @@ import "../index.css";
 import {AiOutlineClose} from "react-icons/ai";
 import {GoogleContext} from "../../../utils/context/GoogleContext";
 import ErrorPopupModal from "../ErrorPopupModal/ErrorPopupModal";
+import {UserContext} from "../../../utils/context/UserContext";
+import ConfirmActionModal from "../ConfirmActionModal/ConfirmActionModal";
 
 export default function UpdateSingleSharingModal(props) {
     const {existingPerms, toggleModal, closeInfo, fileId, fileName, origin} = props;
@@ -13,6 +15,8 @@ export default function UpdateSingleSharingModal(props) {
     const [newEmail, setNewEmail] = useState("");
     const [errorMsg, setErrorMsg] = useState("");
     const {updateFilePerms} = useContext(GoogleContext);
+    const {checkReqsBeforeUpdate, snapshots} = useContext(UserContext)
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
 
     useEffect(() => {
         if (!existingPerms) {
@@ -30,6 +34,16 @@ export default function UpdateSingleSharingModal(props) {
         })
         setExistingUsers(users);
     },[existingPerms, origin])
+
+    const handleToggleModal = () => {
+        setShowConfirmModal(!showConfirmModal)
+    }
+
+    const executeUpdate = () => {
+        updateFilePerms(fileId, updatedUsers, newUsers, false);
+        toggleModal();
+        closeInfo();
+    }
 
     const addPendingUpdate = (e, user) => {
         let pendingUsers = JSON.parse(JSON.stringify(updatedUsers));
@@ -64,15 +78,23 @@ export default function UpdateSingleSharingModal(props) {
         setNewUsers(addedUsers);
     }
 
-    const confirmUpdate = (e) => {
+    const confirmUpdate = async (e) => {
         e.preventDefault();
-        if (updatedUsers.length === 0 || newUsers.length === 0) {
+        if (updatedUsers.length === 0 && newUsers.length === 0) {
             setErrorMsg("No changes have been made!")
-        }
-        else {
-            updateFilePerms(fileId, updatedUsers, newUsers, false);
-            toggleModal();
-            closeInfo();
+        } else {
+            if (snapshots.length > 0) {
+                let violates = await checkReqsBeforeUpdate([{
+                    "fileId": fileId, "updatedUsers": updatedUsers, "newUsers": newUsers, "name": fileName
+                }])
+                if (violates) {
+                    setShowConfirmModal(true)
+                } else {
+                    executeUpdate()
+                }
+            } else {
+                executeUpdate()
+            }
         }
     }
 
@@ -179,6 +201,13 @@ export default function UpdateSingleSharingModal(props) {
             </div>
             {errorMsg &&
                 <ErrorPopupModal msg={errorMsg} updateText={setErrorMsg} />
+            }
+            {showConfirmModal &&
+                <ConfirmActionModal
+                msg={"These changes will result in Access Control Requirements being violated. Do you wish to proceed."}
+                toggleModal={handleToggleModal}
+                performOperation={executeUpdate}
+                />
             }
         </>
     );

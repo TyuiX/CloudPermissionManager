@@ -69,9 +69,7 @@ export default function AccessControlReqModal(props) {
                             />
                         }
                         {contentToShow === "check" &&
-                            <CheckControlReqModalPage
-                                toggleModal={toggleModal}
-                            />
+                            <CheckControlReqModalPage />
                         }
                     </div>
                 </div>
