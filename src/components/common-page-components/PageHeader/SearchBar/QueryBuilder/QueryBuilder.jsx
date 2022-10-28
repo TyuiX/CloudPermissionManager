@@ -4,13 +4,7 @@ import "./QueryBuilder.css";
 import QBDriveModal from '../../../../modals/QBDriveModal/QBDriveModal';
 import QBGenericModal from '../../../../modals/QBGenericModal/QBGenericModal';
 import {UserContext} from "../../../../../utils/context/UserContext";
-
-const QUERIES =
-    [
-        "drive:drive", "owner:user", "creator:user", "from:user", "to:user", "readable:user", "writeable:user",
-        "shareable:user", "name:regexp", "inFolder:regexp", "folder:regexp", "path:path", "sharing:none",
-        "sharing:anyone", "sharing:individual", "sharing:domain"
-    ]
+import ControlReqQueriesLists from "../../../../../utils/ControlReqQueriesLists";
 
 export default function QueryBuilder(props) {
     const {currentSnap, toggleDropdown} = props;
@@ -55,7 +49,7 @@ export default function QueryBuilder(props) {
     return (
         <>
             <div className="dataResult">
-                {QUERIES.map((query) => (
+                {ControlReqQueriesLists.QUERIES.map((query) => (
                     <>
                         <button onClick={()=>handleSelectQueryOp(query)}  className="listOfButtons">
                             {query}

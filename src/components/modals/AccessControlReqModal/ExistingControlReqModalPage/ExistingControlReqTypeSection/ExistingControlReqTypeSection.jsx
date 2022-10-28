@@ -13,16 +13,16 @@ export default function ExistingControlReqTypeSection(props) {
             <div className="control-req-domain-container">
                 <div className="control-req-domain-header">Emails:</div>
                 <div className="existing-access-req-user-tag-list">
-                    {emails.map(email => (
-                        <div className="existing-access-req-user-tag">{email}</div>
+                    {emails.map((email, index) => (
+                        <div key={index} className="existing-access-req-user-tag">{email}</div>
                     ))}
                 </div>
             </div>
             <div className="control-req-domain-container">
                 <div className="control-req-domain-header">Domains:</div>
                 <div className="existing-access-req-user-tag-list">
-                    {domains.map(domain => (
-                        <div className="existing-access-req-user-tag">{domain}</div>
+                    {domains.map((domain, index) => (
+                        <div key={index} className="existing-access-req-user-tag">{domain}</div>
                     ))}
                 </div>
             </div>

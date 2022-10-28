@@ -21,8 +21,8 @@ export default function ControlReqViolationBlock(props) {
             </div>
             {
                 openDropdown &&
-                violations.map(({file, user, role, violation}) => (
-                    <div className="violation-info-block">
+                violations.map(({file, user, role, violation}, index) => (
+                    <div key={index} className="violation-info-block">
                         <MdOutlineError className="violations-icon" size={25} />
                         <div className="violation-info-msg">
                             <div>{`In file ${file}, ${user} has role ${role}.`}</div>

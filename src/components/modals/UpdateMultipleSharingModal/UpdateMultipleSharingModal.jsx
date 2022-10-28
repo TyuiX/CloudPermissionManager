@@ -4,6 +4,8 @@ import "./UpdateMultipleSharingModal.css";
 import {AiOutlineClose} from "react-icons/ai";
 import {GoogleContext} from "../../../utils/context/GoogleContext";
 import ErrorPopupModal from "../ErrorPopupModal/ErrorPopupModal";
+import {UserContext} from "../../../utils/context/UserContext";
+import ConfirmActionModal from "../ConfirmActionModal/ConfirmActionModal";
 
 export default function UpdateMultipleSharingModal(props) {
     const {files, toggleModal, closeInfo} = props;
@@ -13,6 +15,9 @@ export default function UpdateMultipleSharingModal(props) {
     const [newEmail, setNewEmail] = useState("");
     const [errorMsg, setErrorMsg] = useState("");
     const {updateMultipleFiles} = useContext(GoogleContext);
+    const {checkReqsBeforeUpdate, snapshots} = useContext(UserContext)
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [storedFilesToUpdate, setStoredFilesToUpdate] = useState([])
 
     useEffect(() => {
         if (!files) {
@@ -45,6 +50,17 @@ export default function UpdateMultipleSharingModal(props) {
         })
         setExistingUsers(existingPerms);
     },[files])
+
+
+    const handleToggleModal = () => {
+        setShowConfirmModal(!showConfirmModal)
+    }
+
+    const executeUpdate = (filesToUpdate) => {
+        updateMultipleFiles(filesToUpdate);
+        toggleModal();
+        closeInfo();
+    }
 
     const addPendingUpdate = (e, user) => {
         let pendingUsers = JSON.parse(JSON.stringify(updatedUsers));
@@ -79,12 +95,11 @@ export default function UpdateMultipleSharingModal(props) {
         setNewUsers(addedUsers);
     }
 
-    const confirmUpdate = (e) => {
+    const confirmUpdate = async (e) => {
         e.preventDefault();
-        if (updatedUsers.length === 0 || newUsers.length === 0) {
+        if (updatedUsers.length === 0 && newUsers.length === 0) {
             setErrorMsg("No changes have been made!")
-        }
-        else {
+        } else {
             let filesToUpdate = files.map((file) => (
                 {
                     name: file.name,
@@ -98,8 +113,7 @@ export default function UpdateMultipleSharingModal(props) {
                 filesToUpdate.forEach((fileToUpdate) => {
                     if (user.inFiles.some((file) => file.id === fileToUpdate.fileId)) {
                         fileToUpdate.updatedUsers.push(user)
-                    }
-                    else {
+                    } else {
                         fileToUpdate.newUsers.push(user)
                     }
                 })
@@ -110,9 +124,19 @@ export default function UpdateMultipleSharingModal(props) {
                     fileToUpdate.newUsers.push(user)
                 })
             })
-            updateMultipleFiles(filesToUpdate);
-            toggleModal();
-            closeInfo();
+            if (snapshots.length > 0) {
+                let violates = await checkReqsBeforeUpdate(filesToUpdate)
+                if (violates) {
+                    setShowConfirmModal(true)
+                    setStoredFilesToUpdate(filesToUpdate)
+                } else {
+                    executeUpdate(filesToUpdate)
+                }
+            } else {
+                executeUpdate(filesToUpdate)
+            }
+
+
         }
     }
 
@@ -236,6 +260,13 @@ export default function UpdateMultipleSharingModal(props) {
             </div>
             {errorMsg &&
                 <ErrorPopupModal msg={errorMsg} updateText={setErrorMsg} />
+            }
+            {showConfirmModal &&
+                <ConfirmActionModal
+                    msg={"These changes will result in Access Control Requirements being violated. Do you wish to proceed."}
+                    toggleModal={handleToggleModal}
+                    performOperation={() => executeUpdate(storedFilesToUpdate)}
+                />
             }
         </>
     );
