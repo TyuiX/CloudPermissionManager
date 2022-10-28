@@ -62,7 +62,7 @@ function GoogleContextProvider(props) {
                     name: name,
                     id: id,
                     type: type,
-                    owner: owners ? owners[0].emailAdress : undefined,
+                    owner: owners ? owners[0].emailAddress : undefined,
                     creator: owners ? owners[owners.length - 1].emailAddress : undefined,
                     ownedByMe: ownedByMe,
                     permissions: permissions,
