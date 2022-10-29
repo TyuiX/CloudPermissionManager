@@ -34,6 +34,24 @@ a{
 .listOfButtons{
     font-size: 15px;
     margin-top: 5%;
+    background-color: white;
+    margin-left: 40%;
+    text-align: left;
+    border: thick double #32a1ce;
+}
+
+.executeButton{
+    font-size: 15px;
+    margin-top: 5%;
+    background-color: lightgray;
+    margin-left: 40%;
+    text-align: left;
+    border: thick double black;
+}
+
+.executeButton:hover{
+    background-color: lightblue;
+    transition: 0.3s;
 }
 
 .listOfButtons:hover{

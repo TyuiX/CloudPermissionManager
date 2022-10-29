@@ -14,7 +14,7 @@ const QUERIES =
 
 export default function QueryBuilder(props) {
     const {currentSnap, toggleDropdown} = props;
-    const {performSearch} = useContext(UserContext)
+    const {performSearch} = useContext(UserContext);
     const [existingQueriesMap, setExistingQueriesMap] = useState(new Map());
     const [selectedQueryOp, setSelectedQueryOp] = useState("");
     const [showDriveModal, setShowDriveModal] = useState(false);
@@ -79,7 +79,7 @@ export default function QueryBuilder(props) {
                     currentValue={selectedQueryOp}
                 />
             }
-            <button onClick={confirmQuery}>execute search</button>
+            <button onClick={confirmQuery} className="executeButton">execute search</button>
         </>
     )
 }
