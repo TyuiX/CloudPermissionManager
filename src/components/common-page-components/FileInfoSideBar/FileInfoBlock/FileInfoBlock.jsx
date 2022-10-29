@@ -3,7 +3,7 @@ import drives from "../../../../utils/CloudDrives";
 import "./FileInfoBlock.css";
 import PermissionsCell from "../PermissionsCell/PermissionsCell";
 import {IoIosArrowDown, IoIosArrowUp} from "react-icons/io";
-import UpdateSharingModal from "../../../modals/UpdateSharingModal/UpdateSharingModal";
+import UpdateSingleSharingModal from "../../../modals/UpdateSingleSharingModal/UpdateSingleSharingModal";
 
 export default function FileInfoBlock(props) {
     const {fileInfo, shared, closeInfo} = props;
@@ -66,7 +66,7 @@ export default function FileInfoBlock(props) {
                 }
             </div>
             {showModal &&
-                <UpdateSharingModal
+                <UpdateSingleSharingModal
                     existingPerms={permissions}
                     fileId={id}
                     fileName={name}

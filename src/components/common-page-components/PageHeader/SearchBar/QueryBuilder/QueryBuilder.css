@@ -1,0 +1,42 @@
+.parentDiv{
+    margin-left: 15%;
+    margin-top: 10%;
+    width: 50%;
+    margin-right: 15%;
+}
+
+.dataResult{
+    padding: 5px;
+    width: 600px;
+    height: 300px;
+    overflow-y: auto;
+}
+
+.dataResult ::-webkit-scrollbar{
+    display: none;
+}
+
+.dataResult .dataItem{
+    width: 100px;
+    height: 50px;
+    align-items: center;
+    color: black;
+}
+
+.dataItem p{
+    margin-left: 10px;
+}
+
+a{
+    text-decoration: none;
+}
+
+.listOfButtons{
+    font-size: 15px;
+    margin-top: 5%;
+}
+
+.listOfButtons:hover{
+    background-color: lightblue;
+    transition: 0.3s;
+}

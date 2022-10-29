@@ -1,0 +1,32 @@
+.snapshot-cell {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    margin-left: 10px;
+}
+
+.snapshot-cell-icon-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #adadad;
+    padding: 10px;
+    border-radius: 50%;
+    height: 25px;
+    width: 25px;
+}
+
+.snapshot-cell-icon {
+    color: white;
+}
+
+.snapshot-info {
+    margin-left: 20px;
+    font-size: 16px;
+    color: black;
+}
+
+.snapshot-info-subtext {
+    font-size: 14px;
+    color: #adadad;
+}

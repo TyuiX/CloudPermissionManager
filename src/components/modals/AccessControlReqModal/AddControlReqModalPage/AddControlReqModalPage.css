@@ -1,0 +1,18 @@
+.add-req-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    padding-left: 10px;
+}
+
+.add-req-footer-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.check-group-mem-checkbox-label {
+    font-weight: normal;
+    font-size: 14px;
+}

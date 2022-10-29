@@ -1,12 +1,14 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import "./RecentSearchModal.css";
 import {AiOutlineClose} from "react-icons/ai";
+import {UserContext} from "../../../utils/context/UserContext";
 
 export default function RecentSearchModal(props) {
     const {toggleModal, fileName} = props;
-    const [recentSearches, setRecentSearches] = useState(["mus119_paper", "cleanenergycover", "vocab.txt"]);
-    // const [snapshots, setSnap] = useState([]);
+    // const [recentSearches, setRecentSearches] = useState(["mus119_paper", "cleanenergycover", "vocab.txt"]);
+    const {recentSearches} = useContext(UserContext);
     const [selectedOption, setSelectedOption] = useState();
+    console.log(recentSearches);
 
     const confirmUpdate = (e) => {
         e.preventDefault();
@@ -31,7 +33,7 @@ export default function RecentSearchModal(props) {
                 <div className="modal-section">
                     <div className="modal-section-title">Recent Searches:</div>
                     <div className="modal-users-list">
-                        {recentSearches.length !== 0 ?
+                        {recentSearches !== undefined && recentSearches.length !== 0?
                             recentSearches.map((search) => {
                                 return (
                                     <div className="radio">

@@ -1,4 +1,5 @@
 .page-container {
+    width: 100%;
     display: flex;
     flex-direction: row;
 }
@@ -91,6 +92,7 @@
 }
 
 .page-content {
+    width: 100%;
     margin-left: 10px;
 }
 
@@ -106,14 +108,6 @@
     font-weight: bold;
 }
 
-.page-content-all-the-way {
-    width: 480%;
-    background-color: #d9d9d9;
-    text-align: center;
-    font-size: 18px;
-    font-weight: bold;
-}
-
 .category-title {
     font-size: 16px;
 }
@@ -122,12 +116,4 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-}
-
-.newSnap{
-    width: 100%;
-    text-align: center;
-    margin-left: 190%;
-    font-size: 30px;
-    color: blue;
 }

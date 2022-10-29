@@ -16,7 +16,7 @@ export default function AnalyzeSharingModal(props) {
                 <div className="modal-section">
                     <div className="modal-section-title">{analysisType === "file-folder" ? "File Folder" : "Snapshot"} Sharing Differences:</div>
                     {analysisInfo &&
-                        <>
+                        <div className="analysis-list-container">
                             {analysisType === "file-folder" ?
                                 analysisInfo.map(({type, folder, file, folder_role, file_role, perm_name}) =>
                                     <div key={perm_name} className="analysis-block">
@@ -55,7 +55,7 @@ export default function AnalyzeSharingModal(props) {
                                     </div>
                                 )
                             }
-                        </>
+                        </div>
                     }
                 </div>
                 {/*<div className="modal-section">*/}

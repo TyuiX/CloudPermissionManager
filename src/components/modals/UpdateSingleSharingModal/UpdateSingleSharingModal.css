@@ -1,0 +1,41 @@
+.modal-user-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 10px;
+}
+
+.modal-user-name {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.modal-user-email {
+    font-size: 12px;
+}
+
+.modal-user-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-user-remove-icon {
+    margin-right: 10px;
+}
+
+.modal-user-remove-icon:hover {
+    cursor: pointer;
+}
+
+.modal-users-list {
+    height: 180px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.no-users-message {
+    font-size: 14px;
+    padding: 10px;
+    background-color: #e1e1e1;
+}
