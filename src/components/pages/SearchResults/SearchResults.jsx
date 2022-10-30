@@ -30,7 +30,6 @@ export default function SearchResults() {
             let permissions = [];
             result.permissions.map(perms => {
                 // console.log("perms: ");
-                console.log(perms);
                 permissions.push(perms.emailAddress + ", " + perms.role);
                 permissions.push(<br></br>)
             })
@@ -82,7 +81,7 @@ export default function SearchResults() {
     else{
         toPrint =
             <li className="user-menu-item"  key={null}>
-                <div>{"No Result"}</div>
+                <span>{"No Result"}</span>
             </li>
     }
 
