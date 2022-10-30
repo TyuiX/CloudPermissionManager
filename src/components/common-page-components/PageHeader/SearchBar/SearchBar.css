@@ -73,3 +73,11 @@
     background-color: slategray;
     color: white;
 }
+
+.switchStatement{
+    background-color: lightgray;
+    margin-right: 1%;
+    font-size: 20px;
+    white-space: nowrap;
+    font-family: cursive;
+}
