@@ -12,8 +12,6 @@ import SharedFiles from "./components/pages/SharedFiles/SharedFiles";
 import Home from "./components/pages/Home/Home";
 import {UserContext} from "./utils/context/UserContext";
 import LoadingScreen from "./components/common-page-components/LoadingScreen/LoadingScreen";
-import { getSnapshots, getUserProfile } from './api/ShareManagerAPI';
-import QueryBuilder from './components/pages/QueryBuilder/QueryBuilder';
 import SearchResults from './components/pages/SearchResults/SearchResults';
 
 function App() {
@@ -39,7 +37,6 @@ function App() {
               <Route path="/filesnapshot" element={<MySnapshots />} />
               <Route path="/groupsnapshot" element={<div>GroupSnapshot</div>} />
               <Route path="/searchresults" element={<SearchResults/>}/>
-              <Route path="/querybuilder" element={<QueryBuilder/>}/>
           </Routes>
       </>
   );

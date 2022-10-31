@@ -1,4 +1,6 @@
 import React from 'react';
+import "./SnapCell.css";
+import {FaFolder} from "react-icons/fa";
 
 export default function FileCell(props) {
     const {snapInfo} = props;
@@ -16,8 +18,14 @@ export default function FileCell(props) {
     let fullDate = "Taken on " + monthString + " " + day + ", " + 2022 + " at " + time;
 
     return (
-        <div>
-            <p className="page-content-all-the-way">id: {snapInfo._id} <br></br> {fullDate}</p>
+        <div className="snapshot-cell">
+            <div className="snapshot-cell-icon-container">
+                <FaFolder className="snapshot-cell-icon" size={25} />
+            </div>
+            <div className="snapshot-info">
+                <div>Id: {snapInfo._id}</div>
+                <div className="snapshot-info-subtext">{fullDate}</div>
+            </div>
         </div>
     );
 }

@@ -1,0 +1,51 @@
+.check-req-header {
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+    padding: 5px 0;
+    background-color: cornflowerblue;
+}
+
+.check-req-snapshot-container {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    font-size: 14px;
+}
+
+.check-req-snapshot-container div {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.check-req-button {
+    padding: 5px;
+    border: none;
+    background-color: white;
+    transition: 0.2s;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+.check-req-button:hover {
+    cursor: pointer;
+    color: cornflowerblue;
+}
+
+.no-violations-msg {
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.no-violations-icon {
+    color: mediumseagreen;
+}
+
+.no-violations-msg-text {
+    margin-left: 10px;
+    padding-right: 20px;
+}

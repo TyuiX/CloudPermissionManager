@@ -1,106 +1,132 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {GoDeviceCamera} from 'react-icons/go';
 import {AiOutlineSearch} from 'react-icons/ai';
 import {UserContext} from "../../../../utils/context/UserContext";
 import "./SearchBar.css";
-import {useNavigate,  Navigate} from "react-router-dom";
-import { Button } from 'react-bootstrap';
-
+import {useNavigate} from "react-router-dom";
+import QueryBuilder from "./QueryBuilder/QueryBuilder";
+import {FaFilter} from "react-icons/fa";
+import { ToggleSlider }  from "react-toggle-slider";
 
 export default function SearchBar(props) {
-    const [dropdown, setDropdown] = useState(false);
-    const {isLoading, snapshots, searchByName, getRecentSearches} = useContext(UserContext);
-    const [currentSnap, setCurrentSnap] = useState(snapshots.length !== 0?snapshots[0]:[]);
-    const wrapperRef = useRef(null);
-    const [result, setResult] = useState("");
-    const [qMap, setQMap] = useState(new Map());
+    const [showSnapshots, setShowSnapshots] = useState(false);
+    const [showQueryBuilder, setShowQueryBuilder] = useState(false);
+    const [textSearch, setTextSearch] = useState(true);
+    const {isLoading, snapshots, searchByName, getRecentSearches, performSearch} = useContext(UserContext);
+    const [currentSnap, setCurrentSnap] = useState(snapshots.length !== 0 ? snapshots[0] : {});
     const navigate = useNavigate();
+    const {setFileName, fileName} = props;
 
     useEffect(() => {
         if (!snapshots) {
             return
         }
-        setCurrentSnap(snapshots.length !== 0?snapshots[0]:[]);
-        document.addEventListener("click", handleClickOutside, false);
-        return () => {
-            document.removeEventListener("click", handleClickOutside, false);
-        };
-    }, []);
+        setCurrentSnap(snapshots.length !== 0 ? snapshots[0] : {});
+    }, [snapshots]);
 
-    const handleClickOutside = event => {
-        if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
-            setDropdown(false);
+    const handleSnapshotClick = (e) => {
+        e.preventDefault()
+        let found = snapshots.find(({_id}) => _id ===  e.target.value)
+        if (found) {
+            setCurrentSnap(found);
         }
-    }
-
-    const handleSnapshotClick = (snap) => {
-        setDropdown(false);
-        setCurrentSnap(snap);
     }
 
     const handleSearch = async() => {
-        let output;
-        if(snapshots && !isLoading && snapshots.length !== 0){
-            //fixes issue of search not working after first snap
-            if(snapshots.length === 1){
-                output = await searchByName(snapshots[0]._id, props.fileName);
+        if(textSearch === false){
+            handleForQuery();
+        }
+        else{
+            if(snapshots && !isLoading && snapshots.length !== 0){
+                await searchByName(currentSnap._id, fileName);
+                getRecentSearches();
+                navigate('/searchresults');
             }
-            else{
-                output = await searchByName(currentSnap._id, props.fileName);
-            }
-            setResult(output.length===0?"":output[0].name);
-            getRecentSearches();
-            navigate('/searchresults', {state: {results:output}});
         }
     }
 
-    const queryBuilderHelper = () => {
-        navigate('/querybuilder', {state : {
-            snapshots: snapshots,
-        }})
+    const handleForQuery = async() => {
+        if(snapshots && !isLoading && snapshots.length !== 0){
+            let queryOptions = fileName.split(" ");
+            let existingQueriesMap = new Map();
+            let index = 0;
+
+            while(index < queryOptions.length){
+                let nameOfFile = queryOptions[index];
+                let queryOption = queryOptions[index];
+                queryOption = queryOptions[index].substring(0, queryOptions[index].indexOf(":"));
+                if(queryOption === "owner" || queryOption === "creator" ||
+                queryOption === "from" || queryOption === "to" || queryOption === "readable" ||
+                    queryOption === "writeable" || queryOption === "shareable"){
+                        existingQueriesMap.set(queryOption + ":user", nameOfFile.substring(nameOfFile.indexOf(":") + 1));
+                } else if(queryOption === "drive"){
+                    existingQueriesMap.set(queryOption + ":drive", nameOfFile.substring(nameOfFile.indexOf(":") + 1));
+                } else if(queryOption === "name" || queryOption === "inFolder" || queryOption === "folder"){
+                    existingQueriesMap.set(queryOption + ":regexp", nameOfFile.substring(nameOfFile.indexOf(":") + 1));
+                } else if(queryOption === "path"){
+                    existingQueriesMap.set(queryOption + ":path", nameOfFile.substring(nameOfFile.indexOf(":") + 1));
+                }
+                index += 1;
+            }
+            
+            performSearch(currentSnap, existingQueriesMap, true);
+            navigate('/searchresults');
+        }
     }
 
-    
+    const handleEnterPress = (e) => {
+        if(e.key === "Enter" && textSearch === true) {
+            e.preventDefault()
+            handleSearch()
+        }
+        else if(e.key === "Enter" && textSearch === false){
+            e.preventDefault();
+            handleForQuery();
+        }
+    }
+
+    const toggleQueryBuilderDisplay = () => {
+        setShowQueryBuilder(!showQueryBuilder);
+    }
+
+    const setQueryOrSearch = () => {
+        setTextSearch(!textSearch);
+    }
+
+    let textOrQuery = textSearch ? "Text Search" : "Query Search";
+
     return (
-        <>
-            <div className={"search-bar-container"}>
-                <input
-                    type="text"
-                    value={props.fileName}
-                    onChange={({ target }) => props.setFileName(target.value)}
-                    placeholder="Search..."
+        <div className="header-center-content-container">
+            <h3 className="switchStatement"> {textOrQuery} </h3>
+            <ToggleSlider onToggle={setQueryOrSearch}/>
+            <div className="search-bar-container">
+                <form onKeyDown={(e) => handleEnterPress(e)} className="modal-form">
+                    <input
+                        className="header-search-bar"
+                        type="text"
+                        value={fileName}
+                        onChange={({ target }) => setFileName(target.value)}
+                        placeholder="Search..."
+                    />
+                </form>
+                <AiOutlineSearch size={30} className="search-button" onClick={handleSearch}/>
+                <FaFilter onClick={toggleQueryBuilderDisplay} size={20} className="search-filter-button" />
+            </div>
+            <div className="snapshot-selection-container">
+                <GoDeviceCamera
+                    className="snapshot-icon"
+                    size={30}
+                    onClick={() => setShowSnapshots(!showSnapshots)}
                 />
-                <br></br>
-                <button className={"forQuery"}onClick={queryBuilderHelper}> queryBuilder </button> 
+                <select onChange={(e) => handleSnapshotClick(e)}>
+                    {snapshots.length > 0 && snapshots.map(({_id}) => (
+                        <option key={_id} value={_id}>{_id}</option>
+                    ))}
+                </select>
             </div>
-            <div className="profile-dropdown-container"
-            ref={wrapperRef}>
-            <GoDeviceCamera
-                className="snapshot-button"
-                size={30}
-                onClick={() => setDropdown(!dropdown)}
-            />
-                <ul className={`user-dropdown ${dropdown ? "user-dropdown-open" : ""}`}>
-                    {(snapshots && !isLoading && snapshots.length !== 0) &&
-                                    (snapshots.map((snap) => {
-                                        return (
-                                            <li className="user-menu-item" key={snap._id} onClick={() => handleSnapshotClick(snap)}>
-                                                <span value={snap} >id: {snap._id}  date: {snap.date}</span>
-                                            </li>
-                                        )
-                                    }))
-                                }                
-                    {(!snapshots || isLoading || snapshots.length === 0) &&
-                        <li className="no-snapshots-message">No snapshots!</li>
-                    }
-                </ul>
+            <div className={`search-dropdown ${showQueryBuilder ? "search-dropdown-open" : ""}`}>
+                <QueryBuilder currentSnap={currentSnap} toggleDropdown={toggleQueryBuilderDisplay} />
             </div>
-            <div className='search'>
-                    <AiOutlineSearch size={30} className="search-button" onClick={handleSearch}/>
-            </div> 
-            <div>
-            {/* <input className="e-input" type="text" placeholder="Search Results Here" value={result?result:"No Results!"} readOnly={true}/> */}
-            </div>
-        </>
+        </div>
     );
 }

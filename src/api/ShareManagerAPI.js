@@ -14,6 +14,9 @@ export const setLinkedGoogle = (payload) => api.post(`/google`, payload)
 export const getFileFolderDif = (id) => api.get(`/fileFolderDiff/${id}`)
 export const snapshotDiff = (payload) => api.post(`/snapShotDiff`, payload)
 export const searchByName = (payload) => api.post(`/searchByName`, payload)
+export const getControlReqs = (payload) => api.post(`/control/requirements`, payload)
+export const deleteControlReq = (payload) => api.delete(`/control/requirements`, {data: payload})
+export const createNewControlReqs = (payload) => api.post(`/control/requirements/add`, payload)
 
 const managerAPI = {
     createUser,
@@ -26,6 +29,9 @@ const managerAPI = {
     getFileFolderDif,
     snapshotDiff,
     searchByName,
+    getControlReqs,
+    deleteControlReq,
+    createNewControlReqs,
 }
 
 export default managerAPI

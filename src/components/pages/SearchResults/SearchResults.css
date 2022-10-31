@@ -1,0 +1,50 @@
+th{
+    width: 40%;
+    text-align: left;
+    border: 3px solid pink;
+}
+
+table{
+    width: 180%;
+    margin-left: 10%;
+    margin-left: auto;
+    margin-right: auto;
+    border: 3px solid black;
+}
+
+.file-info-block {
+    border-bottom: 2px solid #adadad;
+    padding: 5px;
+}
+
+.file-info-name {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
+    background-color: cornflowerblue;
+    color: white;
+    font-weight: bold;
+}
+
+.file-info-name:hover {
+    cursor: pointer;
+}
+
+.file-info-name svg {
+    color: white;
+}
+
+.update-access-button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+}
+
+.search-result-file-name{
+    width: 300px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}

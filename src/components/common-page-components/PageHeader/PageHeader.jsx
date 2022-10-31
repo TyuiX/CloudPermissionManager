@@ -1,6 +1,6 @@
 import React, {useContext, useState} from 'react';
 import "./PageHeader.css"
-import {AiFillSetting, AiOutlineCloudSync} from "react-icons/ai";
+import {AiOutlineCloudSync} from "react-icons/ai";
 import {Link} from "react-router-dom";
 import SearchBar from "./SearchBar/SearchBar";
 import {UserContext} from "../../../utils/context/UserContext";
@@ -39,7 +39,6 @@ export default function PageHeader() {
                 <SearchBar fileName={fileName} setFileName={setFileName}/>
             </div>
             <div className="header-section">
-                <AiFillSetting size={30} />
                 <ProfileDropdownMenu setFileName={setFileName}/>
             </div>
         </div>

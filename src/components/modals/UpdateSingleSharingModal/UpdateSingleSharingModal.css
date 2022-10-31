@@ -1,40 +1,3 @@
-.modal-footer {
-    display: flex;
-    justify-content: flex-end;
-    margin-right: 10px;
-}
-
-.modal-button {
-    padding: 10px;
-    font-weight: bold;
-    border: none;
-    border-radius: 5px;
-    margin-right: 10px;
-    background-color: white;
-    transition: 0.15s;
-}
-
-.modal-button:hover {
-    cursor: pointer;
-    color: white;
-}
-
-.modal-confirm {
-    border: 2px solid cornflowerblue;
-}
-
-.modal-confirm:hover {
-    background-color: cornflowerblue;
-}
-
-.modal-cancel {
-    border: 2px solid white;
-}
-
-.modal-cancel:hover {
-    background-color: indianred;
-}
-
 .modal-user-item {
     display: flex;
     align-items: center;
@@ -63,21 +26,6 @@
 
 .modal-user-remove-icon:hover {
     cursor: pointer;
-}
-
-.modal-form {
-    position: relative;
-    display: flex;
-}
-
-.modal-form-input {
-    position: relative;
-    font-size: 16px;
-    border: 1px solid dimgrey;
-    border-radius: 5px;
-    padding: 5px;
-    width: 95%;
-    margin: 10px auto;
 }
 
 .modal-users-list {
