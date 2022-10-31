@@ -136,7 +136,7 @@ function UserContextProvider(props) {
 
     const getFolderFileDif = useCallback( async (id) => {
         try {
-            const res = await api.getFileFolderDif(id)
+            const res = await api.getFileFolderDif()
             if (res.status === 200) {
                 console.log(res.data)
                 return res.data
@@ -146,6 +146,19 @@ function UserContextProvider(props) {
             return err.response.data.errorMessage;
         }
     }, [])
+    const getDeviantFiles = useCallback( async (snapshot) => {
+        try {
+            const res = await api.deviant({snapshot: snapshot})
+            if (res.status === 200) {
+                console.log(res.data)
+                return res.data
+            }
+        }
+        catch (err) {
+            return err.response.data.errorMessage;
+        }
+    }, [])
+
 
     const getSnapShotDiff = useCallback( async (oldSnapshot, currSnapshot) => {
         try {
@@ -419,7 +432,7 @@ function UserContextProvider(props) {
             user, snapshots, isLoading, loggedIn, recentSearches, createUser, loginUser, logoutUser, startLoading, finishLoading, 
             setGoogleAcc, createNewSnapshot, getFolderFileDif, getSnapShotDiff, searchByName, getRecentSearches, createNewControlReq,
             controlReqs, deleteControlReq, setIsLoading, getControlReqs, performSearch, searchResults,
-            getControlReqQueryFiles, checkInDomains, checkViolations, checkReqsBeforeUpdate
+            getControlReqQueryFiles, checkInDomains, checkViolations, checkReqsBeforeUpdate, getDeviantFiles
         }}>
             {props.children}
         </UserContext.Provider>

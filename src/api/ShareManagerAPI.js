@@ -17,6 +17,7 @@ export const searchByName = (payload) => api.post(`/searchByName`, payload)
 export const getControlReqs = (payload) => api.post(`/control/requirements`, payload)
 export const deleteControlReq = (payload) => api.delete(`/control/requirements`, {data: payload})
 export const createNewControlReqs = (payload) => api.post(`/control/requirements/add`, payload)
+export const deviant = (payload) => api.post(`/getDeviantFiles`, payload)
 
 const managerAPI = {
     createUser,
@@ -32,6 +33,7 @@ const managerAPI = {
     getControlReqs,
     deleteControlReq,
     createNewControlReqs,
+    deviant
 }
 
 export default managerAPI
