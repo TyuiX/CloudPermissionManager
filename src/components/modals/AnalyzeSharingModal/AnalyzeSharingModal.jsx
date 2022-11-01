@@ -18,8 +18,8 @@ export default function AnalyzeSharingModal(props) {
                     {analysisInfo &&
                         <div className="analysis-list-container">
                             {analysisType === "file-folder" ?
-                                analysisInfo.map(({type, folder, file, folder_role, file_role, perm_name}) =>
-                                    <div key={perm_name} className="analysis-block">
+                                analysisInfo.map(({type, folder, file, folder_role, file_role, perm_name}, index) =>
+                                    <div key={perm_name + file + index} className="analysis-block">
                                         {type} permission
                                         <div>Folder: {folder}</div>
                                         <div>File: {file}</div>
@@ -34,8 +34,8 @@ export default function AnalyzeSharingModal(props) {
                                     </div>
                                 )
                                 : analysisType === "snapshot-change" ?
-                                    analysisInfo.map(({type, file_name, perm_id, perm_name, perm_role, new_role, old_role}) =>
-                                    <div key={perm_id} className="analysis-block">
+                                    analysisInfo.map(({type, file_name, perm_id, perm_name, perm_role, new_role, old_role}, index) =>
+                                    <div key={perm_id, index} className="analysis-block">
                                         {type}
                                         <div>File: {file_name}</div>
                                         <div>User: {perm_name}</div>
