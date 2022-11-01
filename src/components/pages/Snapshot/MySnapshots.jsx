@@ -78,8 +78,7 @@ export default function MySnapshots() {
                     }
                     fileCopy.perm = Object.fromEntries(newPerms)
                 }
-                console.log(fileCopy)
-
+                
                 if (snapshot.folders.has(parents[0])){
                     snapshot.folders.get(parents[0]).set(id, fileCopy)
                 }
