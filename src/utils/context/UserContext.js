@@ -233,8 +233,8 @@ function UserContextProvider(props) {
         }
     }, [user.email])
 
-    const searchCheckFile = (operator, operand, addedFiles, file, addedFilesSet) => {
-        // console.log(file);
+    const searchCheckFile = (operator, operand, addedFiles, file, addedFilesSet, snapshot, folderId) => {
+        console.log(file);
         if(operator === "drive:drive"){
             if(operand === "My Drive"){
                 if(file.ownedByMe === true){
@@ -299,10 +299,23 @@ function UserContextProvider(props) {
         }else if(operator === "to:user"){
             console.log("in here");
             file.permissions.forEach((perm) => {
+                if (perm.emailAddress === operand && file.ownedByMe === true) {
+                    if(perm.role !== "owner"){
+                        if(!addedFilesSet.has(file.name)){
+                            addedFilesSet.add(file.name);
+                            addedFiles.push(file);
+                        }
+                    }
+                }
+            })
+        } else if(operator === "from:user"){
+            file.permissions.forEach((perm) => {
                 if (perm.emailAddress === operand) {
-                    if(!addedFilesSet.has(file.name)){
-                        addedFilesSet.add(file.name);
-                        addedFiles.push(file);
+                    if(perm.role === "owner"){
+                        if(!addedFilesSet.has(file.name)){
+                            addedFilesSet.add(file.name);
+                            addedFiles.push(file);
+                        }
                     }
                 }
             })
@@ -344,7 +357,16 @@ function UserContextProvider(props) {
         Object.values(snapshot.folders).forEach((folder) => {
             Object.values(folder).forEach((file) => {
                 queries.forEach((key, value) => {
-                    searchCheckFile(value, key, files, file, set);
+                    console.log(value);
+                    if(value === "inFolder:regexp"){
+                        console.log(file.type);
+                        if(file.type === "folder"){
+                            searchCheckFile(value, key, files, file, set, snapshot, file.id);
+                        }
+                    }
+                    else{
+                        searchCheckFile(value, key, files, file, set, snapshot, "");
+                    }
                 })
             })
         })

@@ -6,6 +6,7 @@ import "./AnalyzeSharingModal.css";
 export default function AnalyzeSharingModal(props) {
     const {toggleModal, analysisInfo, analysisType} = props;
 
+    console.log(analysisInfo);
     return (
         <div className="modal-background">
             <div className="modal-container">
