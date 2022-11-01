@@ -105,6 +105,8 @@ export default function MySnapshots() {
     }
 
     const handleCompareFileFolder = async () => {
+        console.log(firstSnap)
+        console.log(firstSnap._id)
         let data = await getFolderFileDif(firstSnap._id);
         setAnalysisInfo(data)
         setAnalysisType("file-folder")

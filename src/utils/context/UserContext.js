@@ -136,7 +136,7 @@ function UserContextProvider(props) {
 
     const getFolderFileDif = useCallback( async (id) => {
         try {
-            const res = await api.getFileFolderDif()
+            const res = await api.getFileFolderDif(id)
             if (res.status === 200) {
                 console.log(res.data)
                 return res.data
@@ -146,6 +146,7 @@ function UserContextProvider(props) {
             return err.response.data.errorMessage;
         }
     }, [])
+
     const getDeviantFiles = useCallback( async (snapshot) => {
         try {
             const res = await api.deviant({snapshot: snapshot})
