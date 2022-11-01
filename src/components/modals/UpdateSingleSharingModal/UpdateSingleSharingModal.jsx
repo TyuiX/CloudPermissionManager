@@ -149,6 +149,7 @@ export default function UpdateSingleSharingModal(props) {
                                                 <option value="reader">Reader</option>
                                                 <option value="commenter">Commenter</option>
                                                 <option value="unshared" >Unshared</option>
+                                                <option value="editor">Editor</option>
                                             </select>
                                         </div>
                                     )
@@ -184,6 +185,7 @@ export default function UpdateSingleSharingModal(props) {
                                                 <option value="writer">Writer</option>
                                                 <option value="reader">Reader</option>
                                                 <option value="commenter">Commenter</option>
+                                                <option value="editor">Editor</option>
                                             </select>
                                         </div>
                                     )

@@ -5,7 +5,7 @@ import '../../modals/UpdateSingleSharingModal/UpdateSingleSharingModal.css';
 import "../index.css";
 
 export default function MetaData(props) {
-    const {permissions, toggleModal} = props;
+    const {permissions, toggleModal, createdOn} = props;
     const [errorMsg, setErrorMsg] = useState("");
     console.log(permissions);
     return (
@@ -18,18 +18,11 @@ export default function MetaData(props) {
                     <div className="modal-section">
                         <div className="modal-section-title">Permissions:</div>
                         <div className="modal-users-list">
-                            {/* {permissions.length !== 0 ?
-                                permissions.map((perm) => {
-                                    return (
-                                        <div className="modal-user-item" key={perm}>
-                                            {perm}
-                                        </div>
-                                    )
-                                })
-                                :
-                                <div className="no-users-message">No new users...</div>
-                            } */}
                             {permissions}
+                        </div>
+                        <div className="modal-section-title">Creation Date:</div>
+                        <div className="modal-users-list">
+                            {createdOn}
                         </div>
                     </div>
                 </div>
@@ -37,11 +30,6 @@ export default function MetaData(props) {
             {errorMsg &&
                 <ErrorPopupModal msg={errorMsg} updateText={setErrorMsg} />
             }
-            
-            {/* <div className="update-access-button-container">
-                Permissons: {permissions}
-            </div> */}
-                
         </>
     )
 }

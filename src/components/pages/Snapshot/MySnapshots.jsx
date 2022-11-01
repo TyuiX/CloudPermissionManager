@@ -14,7 +14,7 @@ export default function MySnapshots() {
     const [showModal, setShowModal] = useState(false);
     const [analysisInfo, setAnalysisInfo] = useState([])
     const [analysisType, setAnalysisType] = useState("")
-
+    console.log(showModal)
     const handleToggleModal = () => {
         setShowModal(!showModal)
     }
@@ -148,6 +148,9 @@ export default function MySnapshots() {
     const handleDeviant = async ()=> {
         let data = await getDeviantFiles(snapshots[0]);
         console.log(data)
+        setAnalysisInfo(data)
+        setAnalysisType("deviant")
+        setShowModal(true)
     }
     console.log(snapshots)
     
