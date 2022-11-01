@@ -14,7 +14,7 @@ export default function AnalyzeSharingModal(props) {
                     <AiOutlineClose className="sidebar-close-button" onClick={toggleModal} />
                 </div>
                 <div className="modal-section">
-                    <div className="modal-section-title">{analysisType === "file-folder" ? "File Folder" : "Snapshot"} Sharing Differences:</div>
+                    <div className="modal-section-title">{analysisType === "file-folder" ? "File Folder" : analysisType === "snapshot-change" ? "Snapshot": "Deviant"} Sharing Differences:</div>
                     {analysisInfo &&
                         <div className="analysis-list-container">
                             {analysisType === "file-folder" ?
@@ -33,8 +33,8 @@ export default function AnalyzeSharingModal(props) {
                                         }
                                     </div>
                                 )
-                                :
-                                analysisInfo.map(({type, file_name, perm_id, perm_name, perm_role, new_role, old_role}) =>
+                                : analysisType === "snapshot-change" ?
+                                    analysisInfo.map(({type, file_name, perm_id, perm_name, perm_role, new_role, old_role}) =>
                                     <div key={perm_id} className="analysis-block">
                                         {type}
                                         <div>File: {file_name}</div>
@@ -54,6 +54,21 @@ export default function AnalyzeSharingModal(props) {
                                         }
                                     </div>
                                 )
+                                :
+                                analysisInfo.map(({fileName, diffPer}) => {
+                                    return (
+                                      <div className="analysis-block">
+                                        <div>{fileName}</div>
+                                        {
+                                          diffPer.map((dif) => (
+                                              <div><div>Permission target: {dif[0].displayName}</div>
+                                              <div>Difference: {dif[1]}</div></div>
+                                          ))
+                                        }
+                                      </div>
+                                    )
+                                  })
+                                
                             }
                         </div>
                     }
