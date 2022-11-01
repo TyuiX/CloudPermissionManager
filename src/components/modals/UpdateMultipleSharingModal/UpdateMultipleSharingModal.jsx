@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import "../index.css";
 import "./UpdateMultipleSharingModal.css";
-import {AiOutlineClose} from "react-icons/ai";
+import {AiOutlineClose, AiOutlineExclamationCircle} from "react-icons/ai";
 import {GoogleContext} from "../../../utils/context/GoogleContext";
 import ErrorPopupModal from "../ErrorPopupModal/ErrorPopupModal";
 import {UserContext} from "../../../utils/context/UserContext";
@@ -169,7 +169,7 @@ export default function UpdateMultipleSharingModal(props) {
     return (
         <>
             <div className="modal-background">
-                <div className="modal-container">
+                <div className="modal-container multiple-sharing-modal-container">
                     <div className="modal-header">
                         <span>Existing Users</span>
                         <AiOutlineClose className="sidebar-close-button" onClick={toggleModal} />
@@ -250,6 +250,13 @@ export default function UpdateMultipleSharingModal(props) {
                                 :
                                 <div className="no-users-message">No new users...</div>
                             }
+                        </div>
+                    </div>
+                    <div className="multiple-sharing-note">
+                        <AiOutlineExclamationCircle size={25} />
+                        <div>
+                            Note, these changes are applied to all selected files.
+                            Updated users from Existing Users list will be added if they dont already exist.
                         </div>
                     </div>
                     <div className="modal-footer">
