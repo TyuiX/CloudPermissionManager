@@ -35,7 +35,7 @@ export default function AnalyzeSharingModal(props) {
                                 )
                                 : analysisType === "snapshot-change" ?
                                     analysisInfo.map(({type, file_name, perm_id, perm_name, perm_role, new_role, old_role}, index) =>
-                                    <div key={perm_id, index} className="analysis-block">
+                                    <div key={perm_id + index} className="analysis-block">
                                         {type}
                                         <div>File: {file_name}</div>
                                         <div>User: {perm_name}</div>
