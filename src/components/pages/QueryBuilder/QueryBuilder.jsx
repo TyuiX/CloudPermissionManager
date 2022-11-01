@@ -68,6 +68,7 @@ export default function QueryBuilder(props) {
     // )})
     
     let folderIndex = 0;
+    console.log(qMap);
     console.log(state.snapshots);
     let foldersIterate = state.snapshots[0].folders;
     let set = new Set();
@@ -80,9 +81,10 @@ export default function QueryBuilder(props) {
             if(Object.values(Object.values(foldersIterate)[folderIndex])[fileIndex] !== undefined){
                 // console.log(Object.values(Object.values(foldersIterate)[j])[k].owner);
                 let file = Object.values(Object.values(foldersIterate)[folderIndex])[fileIndex];
-                console.log(file);
                 qMap.forEach((key, value) => {
-                    // console.log("key: " + key + ", value: " + value);
+                    console.log("key: " + key + ", value: " + value);
+                    // console.log(file);
+                    
                     if(value === "drive:drive"){
                         if(key === "My Drive"){
                             if(file.ownedByMe === true){
@@ -164,6 +166,14 @@ export default function QueryBuilder(props) {
                     } else if(value === "name:regexp"){
                         let regexp = new RegExp(key);
                         if(regexp.exec(file.name)){ // key is the regular expression.
+                            if(!set.has(file.name)){
+                                set.add(file.name);
+                                files.push(file);
+                            }
+                        }
+                    } else if(value === "sharing:none"){
+                        console.log("in here");
+                        if(file.ownedByMe === true && file.permissions.length === 1){
                             if(!set.has(file.name)){
                                 set.add(file.name);
                                 files.push(file);

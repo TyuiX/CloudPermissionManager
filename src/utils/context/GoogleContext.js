@@ -46,6 +46,7 @@ function GoogleContextProvider(props) {
             let accessToken = gapi.auth.getToken().access_token;
             let res = await api.getFiles({accessToken: accessToken})
             let files = res.data.files;
+            if(files === undefined){ return; }
             const reformattedFiles = files.map(({id, name, mimeType, ownedByMe, permissions, shared, modifiedTime,
                                                     createdTime, owners, parents
                                                 }) => {

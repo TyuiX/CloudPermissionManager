@@ -147,6 +147,20 @@ function UserContextProvider(props) {
         }
     }, [])
 
+    const getDeviantFiles = useCallback( async (snapshot) => {
+        try {
+            const res = await api.deviant({snapshot: snapshot})
+            if (res.status === 200) {
+                console.log(res.data)
+                return res.data
+            }
+        }
+        catch (err) {
+            return err.response.data.errorMessage;
+        }
+    }, [])
+
+
     const getSnapShotDiff = useCallback( async (oldSnapshot, currSnapshot) => {
         try {
             const res = await api.snapshotDiff({oldSnapshot: oldSnapshot, currSnapshot: currSnapshot});
@@ -274,7 +288,15 @@ function UserContextProvider(props) {
                     }
                 }
             })
-        } else if(operator === "to:user"){
+        } else if(operator === "shareable:user"){
+            console.log(file);
+            if(file.owner === operand){
+                if(!addedFilesSet.has(file.name)){
+                    addedFilesSet.add(file.name);
+                    addedFiles.push(file);
+                }
+            }
+        }else if(operator === "to:user"){
             console.log("in here");
             file.permissions.forEach((perm) => {
                 if (perm.emailAddress === operand) {
@@ -292,12 +314,33 @@ function UserContextProvider(props) {
                     addedFiles.push(file);
                 }
             }
-        }
+        } else if(operator === "sharing:none"){
+            console.log("in here");
+            if(file.ownedByMe === true && file.permissions.length === 1){
+                if(!addedFilesSet.has(file.name)){
+                    addedFilesSet.add(file.name);
+                    addedFiles.push(file);
+                }
+            }
+        } else if(operator === "sharing:individual"){
+            console.log("in here");
+            file.permissions.forEach((perm) => {
+                if (perm.emailAddress === operand) {
+                    if(perm.role === "writer" || perm.role === "reader"){
+                        if(!addedFilesSet.has(file.name)){
+                            addedFilesSet.add(file.name);
+                            addedFiles.push(file);
+                        }
+                    }
+                }
+            })
+        } 
     }
 
     const performSearch = useCallback (async (snapshot, queries, save) => {
         let files = [];
         let set = new Set();
+        console.log(snapshot);
         Object.values(snapshot.folders).forEach((folder) => {
             Object.values(folder).forEach((file) => {
                 queries.forEach((key, value) => {
@@ -419,7 +462,7 @@ function UserContextProvider(props) {
             user, snapshots, isLoading, loggedIn, recentSearches, createUser, loginUser, logoutUser, startLoading, finishLoading, 
             setGoogleAcc, createNewSnapshot, getFolderFileDif, getSnapShotDiff, searchByName, getRecentSearches, createNewControlReq,
             controlReqs, deleteControlReq, setIsLoading, getControlReqs, performSearch, searchResults,
-            getControlReqQueryFiles, checkInDomains, checkViolations, checkReqsBeforeUpdate
+            getControlReqQueryFiles, checkInDomains, checkViolations, checkReqsBeforeUpdate, getDeviantFiles
         }}>
             {props.children}
         </UserContext.Provider>

@@ -10,11 +10,11 @@ import {AiOutlinePlus} from "react-icons/ai";
 
 export default function MySnapshots() {
     const {allFiles} = useContext(GoogleContext);
-    const {snapshots, createNewSnapshot, getFolderFileDif, getSnapShotDiff} = useContext(UserContext);
+    const {snapshots, createNewSnapshot, getFolderFileDif, getSnapShotDiff, getDeviantFiles} = useContext(UserContext);
     const [showModal, setShowModal] = useState(false);
     const [analysisInfo, setAnalysisInfo] = useState([])
     const [analysisType, setAnalysisType] = useState("")
-
+    console.log(showModal)
     const handleToggleModal = () => {
         setShowModal(!showModal)
     }
@@ -105,6 +105,8 @@ export default function MySnapshots() {
     }
 
     const handleCompareFileFolder = async () => {
+        console.log(firstSnap)
+        console.log(firstSnap._id)
         let data = await getFolderFileDif(firstSnap._id);
         setAnalysisInfo(data)
         setAnalysisType("file-folder")
@@ -142,7 +144,16 @@ export default function MySnapshots() {
         else if (month === "12") { monthString = "December"}
         fullDate = "Taken on " + monthString + " " + day + ", " + 2022 + " at " + time;
     }
-
+    //handle getting deviant
+    const handleDeviant = async ()=> {
+        let data = await getDeviantFiles(snapshots[0]);
+        console.log(data)
+        setAnalysisInfo(data)
+        setAnalysisType("deviant")
+        setShowModal(true)
+    }
+    console.log(snapshots)
+    
     return (
         <>
             <div className="page-container">
@@ -151,14 +162,17 @@ export default function MySnapshots() {
                     <h2 className="page-content-header">My Snapshots</h2>
                     <div className="snapshot-page-buttons">
                         <button className="snapshot-page-button" onClick={handleCompareFileFolder}>FileFolderDiff</button>
+                        <button className="snapshot-page-button" onClick={handleDeviant}>deviant</button>
                         <button className="snapshot-page-button" onClick={handleCompareSnapshot}>SnapshotDiff</button>
                         <button className="snapshot-page-button" onClick={createSnapshotData}>
                             <AiOutlinePlus size={20} />
                             Add Snapshot
                         </button>
                     </div>
-                    {snapshots &&
+                    
+                    {snapshots.length > 0 &&
                         <>
+                    
                             <h3 className="category-title">Current Snapshot:</h3>
                             <SnapCell snapInfo={firstSnap}/>
                             <h3 className="category-title">Snapshot History:</h3>
