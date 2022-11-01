@@ -54,6 +54,14 @@ export default function SearchBar(props) {
             while(index < queryOptions.length){
                 let nameOfFile = queryOptions[index];
                 let queryOption = queryOptions[index];
+                let ifSharing = "";
+                console.log(queryOptions)
+                console.log(queryOptions[index].substring(0, queryOptions[index].indexOf(":")));
+                if(queryOptions[index].substring(0, queryOptions[index].indexOf(":")) === "sharing"){
+                    ifSharing = queryOptions[index].substring(queryOptions[index].indexOf(":") + 1, queryOptions[index].lastIndexOf(":"));
+                    console.log(ifSharing);
+                }
+                console.log(queryOption);
                 queryOption = queryOptions[index].substring(0, queryOptions[index].indexOf(":"));
                 if(queryOption === "owner" || queryOption === "creator" ||
                 queryOption === "from" || queryOption === "to" || queryOption === "readable" ||
@@ -65,7 +73,23 @@ export default function SearchBar(props) {
                     existingQueriesMap.set(queryOption + ":regexp", nameOfFile.substring(nameOfFile.indexOf(":") + 1));
                 } else if(queryOption === "path"){
                     existingQueriesMap.set(queryOption + ":path", nameOfFile.substring(nameOfFile.indexOf(":") + 1));
-                }
+                } else if(ifSharing.length !== 0) {
+                    console.log("in here");
+                    console.log(ifSharing);
+                    console.log(queryOptions[index].substring(queryOptions[index].indexOf(":")+1))
+                    // console.log(nameOfFile.substring(nameOfFile.lastIndexOf(":") + 1));
+                    if(queryOptions[index].substring(queryOptions[index].indexOf(":")+1) === "none"){
+                        existingQueriesMap.set(queryOptions[index], 
+                            nameOfFile.substring(nameOfFile.lastIndexOf(":") + 1));
+                    } else if(ifSharing === "individual"){
+                        existingQueriesMap.set(queryOptions[index].substring(0, queryOptions[index].lastIndexOf(":")), 
+                            nameOfFile.substring(nameOfFile.lastIndexOf(":") + 1));
+                    }
+                } // else{
+                //     console.log(queryOption);
+                //     console.log(nameOfFile);
+                //     existingQueriesMap.set(nameOfFile, nameOfFile.substring(nameOfFile.indexOf(":") + 1));
+                // }
                 index += 1;
             }
             

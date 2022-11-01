@@ -11,13 +11,15 @@ export default function SearchResults() {
     const [openDropdown, setOpenDropdown] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [permissions, setPermissions] = useState([]);
+    const [createdOn, setCreatedOn] = useState([]);
 
     const handleToggleModal = () => {
         setShowModal(!showModal);
     }
 
-    const setPermsAndToggle = (permissions) => {
+    const setPermsAndToggle = (permissions, createdAt) => {
         setPermissions(permissions);
+        setCreatedOn(createdAt);
         handleToggleModal();
     }
 
@@ -26,10 +28,10 @@ export default function SearchResults() {
     
     if(searchResults.length !== 0) {
         toPrint = (searchResults.map((result) => { // 
-            
+            console.log(result);
             let permissions = [];
+            
             result.permissions.map(perms => {
-                // console.log("perms: ");
                 permissions.push(perms.emailAddress + ", " + perms.role);
                 permissions.push(<br></br>)
             })
@@ -38,11 +40,18 @@ export default function SearchResults() {
                 permissions.push(<br></br>)
             }
             
+            let createdAt = "";
+            if(result.createdOn !== undefined){
+                createdAt = "" + result.createdOn;
+                let year = createdAt.substring(0, 4);
+                let month = createdAt.substring(5, 7);
+                let day = createdAt.substring(8, 10);
+                createdAt = month + "/" + day + "/" + year;
+            } else{
+                createdAt = "Information not provided";
+            }
 
-            // console.log(result.owner);
             let owner = result.owner !== undefined ? result.owner : "Owner not found";
-            // console.log(result);
-            // console.log("here");
             console.log(permissions);
 
             return (
@@ -60,7 +69,7 @@ export default function SearchResults() {
                             <div>{owner} </div>
                         </th>
                         <div className="file-info-block">
-                            <div className="file-info-name" onClick={() => setPermsAndToggle(permissions)}>
+                            <div className="file-info-name" onClick={() => setPermsAndToggle(permissions, createdAt)}>
                                 <div>MetaData</div>
                                 {openDropdown ?
                                     <IoIosArrowUp size={20}/>
@@ -98,6 +107,7 @@ export default function SearchResults() {
             showModal &&
                 <MetaData 
                     permissions = {permissions}
+                    createdOn = {createdOn}
                     toggleModal={handleToggleModal}
                 />
         }

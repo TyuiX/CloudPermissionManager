@@ -274,7 +274,15 @@ function UserContextProvider(props) {
                     }
                 }
             })
-        } else if(operator === "to:user"){
+        } else if(operator === "shareable:user"){
+            console.log(file);
+            if(file.owner === operand){
+                if(!addedFilesSet.has(file.name)){
+                    addedFilesSet.add(file.name);
+                    addedFiles.push(file);
+                }
+            }
+        }else if(operator === "to:user"){
             console.log("in here");
             file.permissions.forEach((perm) => {
                 if (perm.emailAddress === operand) {
@@ -292,12 +300,33 @@ function UserContextProvider(props) {
                     addedFiles.push(file);
                 }
             }
-        }
+        } else if(operator === "sharing:none"){
+            console.log("in here");
+            if(file.ownedByMe === true && file.permissions.length === 1){
+                if(!addedFilesSet.has(file.name)){
+                    addedFilesSet.add(file.name);
+                    addedFiles.push(file);
+                }
+            }
+        } else if(operator === "sharing:individual"){
+            console.log("in here");
+            file.permissions.forEach((perm) => {
+                if (perm.emailAddress === operand) {
+                    if(perm.role === "writer" || perm.role === "reader"){
+                        if(!addedFilesSet.has(file.name)){
+                            addedFilesSet.add(file.name);
+                            addedFiles.push(file);
+                        }
+                    }
+                }
+            })
+        } 
     }
 
     const performSearch = useCallback (async (snapshot, queries, save) => {
         let files = [];
         let set = new Set();
+        console.log(snapshot);
         Object.values(snapshot.folders).forEach((folder) => {
             Object.values(folder).forEach((file) => {
                 queries.forEach((key, value) => {
