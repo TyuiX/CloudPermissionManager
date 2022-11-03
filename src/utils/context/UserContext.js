@@ -2,6 +2,8 @@ import React, {createContext, useCallback, useEffect, useState} from "react";
 import api from '../../api/ShareManagerAPI'
 import {useNavigate} from "react-router-dom";
 import ControlReqQueriesLists from "../ControlReqQueriesLists";
+import controlReqsList from "../ControlReqQueriesLists";
+import { AiOutlineConsoleSql } from "react-icons/ai";
 
 export const UserContext = createContext({});
 
@@ -338,34 +340,84 @@ function UserContextProvider(props) {
         } else if(operator === "sharing:individual"){
             console.log("in here");
             file.permissions.forEach((perm) => {
-                if (perm.emailAddress === operand) {
-                    if(perm.role === "writer" || perm.role === "reader"){
+                if(file.ownedByMe){
+                    if (perm.emailAddress === operand) {
+                        if(perm.role === "writer" || perm.role === "reader"){
+                            if(!addedFilesSet.has(file.name)){
+                                addedFilesSet.add(file.name);
+                                addedFiles.push(file);
+                            }
+                        }
+                    }
+                }
+            })
+        } else if(operator === "inFolder:regexp"){
+            let regexp = new RegExp(operand);
+            console.log("in here!");
+            console.log(snapshot);
+            
+            Object.entries(snapshot.folders).forEach((key, value) => {
+                console.log(key[0] + " ... " + folderId);
+                console.log("value: " + value + ", operand: " + operand);
+                
+                if(key[0] === folderId){
+                    // console.log(key);
+                    console.log(key);
+                    // console.log(Object.values(key[1])[0]);
+                    // console.log(key[1].name);
+                    // console.log(value);
+                    let index = 1;
+                    console.log(key.length);
+                    while(index < key.length){
+                        let file = Object.values(key[index])[0];
+                        console.log(file);
+                        index += 1;
                         if(!addedFilesSet.has(file.name)){
                             addedFilesSet.add(file.name);
                             addedFiles.push(file);
                         }
                     }
+                    
+                    
+                    // let index = 0;
+                    // while(index < Object.values(folderId).length){
+                    
+                    // }
                 }
             })
-        } 
+        }
     }
 
     const performSearch = useCallback (async (snapshot, queries, save) => {
         let files = [];
         let set = new Set();
+        console.log(queries);
         console.log(snapshot);
+        let booleanOperator = "";
         Object.values(snapshot.folders).forEach((folder) => {
             Object.values(folder).forEach((file) => {
                 queries.forEach((key, value) => {
-                    console.log(value);
-                    if(value === "inFolder:regexp"){
-                        console.log(file.type);
-                        if(file.type === "folder"){
-                            searchCheckFile(value, key, files, file, set, snapshot, file.id);
+                    if(value === "&&" || value === "||" || value === "!"){
+                        if(booleanOperator !== ""){
+                            console.error("Invalid Query");
                         }
+                        booleanOperator = value;
                     }
-                    else{
-                        searchCheckFile(value, key, files, file, set, snapshot, "");
+                    else{ // doesn't fully work though since the query before the boolean 
+                            // operator is going to be registed (talk about during standup).
+                        console.log(value);
+                        if(value === "inFolder:regexp"){
+                            if(file.type === "folder" && file.name === key){
+                                console.log(file);
+                                console.log(key);
+                                console.log(file.id);
+                                // return;
+                                searchCheckFile(value, key, files, file, set, snapshot, file.id);
+                            }
+                        }
+                        else{
+                            searchCheckFile(value, key, files, file, set, snapshot, "");
+                        }
                     }
                 })
             })
@@ -430,6 +482,7 @@ function UserContextProvider(props) {
         let queryMap = new Map();
         const {query} = req;
         let splitQueryOps = query.split(" ");
+        
         splitQueryOps.forEach(query => {
             let queryParts = query.split(":");
             if (queryParts.length <= 1) {

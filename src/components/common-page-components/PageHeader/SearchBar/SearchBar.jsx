@@ -53,14 +53,19 @@ export default function SearchBar(props) {
 
             while(index < queryOptions.length){
                 let nameOfFile = queryOptions[index];
+                console.log(queryOptions);
                 let queryOption = queryOptions[index];
                 let ifSharing = "";
-                console.log(queryOptions)
                 console.log(queryOptions[index].substring(0, queryOptions[index].indexOf(":")));
+                
+                // first checks that do not need further string intropolation.
                 if(queryOptions[index].substring(0, queryOptions[index].indexOf(":")) === "sharing"){
                     ifSharing = queryOptions[index].substring(queryOptions[index].indexOf(":") + 1, queryOptions[index].lastIndexOf(":"));
                     console.log(ifSharing);
+                } else if(queryOption === "&&" || queryOption === "||" || queryOption === "!"){
+                    existingQueriesMap.set(queryOption, queryOption);
                 }
+
                 console.log(queryOption);
                 queryOption = queryOptions[index].substring(0, queryOptions[index].indexOf(":"));
                 if(queryOption === "owner" || queryOption === "creator" ||
