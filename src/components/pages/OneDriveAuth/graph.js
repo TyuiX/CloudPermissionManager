@@ -35,6 +35,19 @@ export async function callMsGraph(accessToken) {
             }).catch(err => {
                 console.log(err); 
             })
+
+            fetch("https://graph.microsoft.com/v1.0/me/drive/items/016R5WTWYLRE5I7DGCONDISRUYU7XOR6FJ/permissions", {
+                // dataType: "jsonp",
+                method: "GET",
+                headers: headers
+            }).then(res => {
+                console.log(res.json().then(function(data) {
+                    console.log(data);
+                  }));
+            }).catch(err => {
+                console.log(err); 
+            })
+
             id = e.id;
             console.log(e);
         });

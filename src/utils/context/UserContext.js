@@ -338,11 +338,13 @@ function UserContextProvider(props) {
         } else if(operator === "sharing:individual"){
             console.log("in here");
             file.permissions.forEach((perm) => {
-                if (perm.emailAddress === operand) {
-                    if(perm.role === "writer" || perm.role === "reader"){
-                        if(!addedFilesSet.has(file.name)){
-                            addedFilesSet.add(file.name);
-                            addedFiles.push(file);
+                if(file.ownedByMe === true){
+                    if (perm.emailAddress === operand) {
+                        if(perm.role === "writer" || perm.role === "reader"){
+                            if(!addedFilesSet.has(file.name)){
+                                addedFilesSet.add(file.name);
+                                addedFiles.push(file);
+                            }
                         }
                     }
                 }

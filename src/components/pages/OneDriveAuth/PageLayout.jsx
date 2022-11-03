@@ -5,13 +5,13 @@ import { SignOutButton } from "./SignOutButton"
 import { callMsGraph } from "./graph";
 import { useMsal } from "@azure/msal-react";
 import { loginRequest } from "./authConfig";
-import { OneDriveContext } from "../../../utils/context/OneDriveContext";
+// import { OneDriveContext } from "../../../utils/context/OneDriveContext";
 /**
  * Renders the navbar component with a sign-in button if a user is not authenticated
  */
 export const PageLayout = (props) => {
     const isAuthenticated = useIsAuthenticated();
-    const {apiData} = useContext(OneDriveContext);
+    // const {apiData} = useContext(OneDriveContext);
 
     const { instance, accounts, inProgress } = useMsal();
     const [accessToken, setAccessToken] = useState(null);
