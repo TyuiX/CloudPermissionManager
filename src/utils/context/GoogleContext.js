@@ -10,6 +10,7 @@ function GoogleContextProvider(props) {
     const [allFiles, setAllFiles] = useState([]);
     const [myFiles, setMyFiles] = useState([]);
     const [sharedFiles, setSharedFiles] = useState([]);
+    const [sharedDrives, setSharedDrives] = useState([]);
     const {user, loggedIn, startLoading, finishLoading } = useContext(UserContext)
     const [email, setEmail] = useState();
 
@@ -45,10 +46,13 @@ function GoogleContextProvider(props) {
         const getGoogleFiles = async () => {
             let accessToken = gapi.auth.getToken().access_token;
             let res = await api.getFiles({accessToken: accessToken})
-            let files = res.data.files;
-            if(files === undefined){ return; }
+            const {files, drives} = res.data;
+            if (files === undefined) {
+                return;
+            }
+            console.log(res)
             const reformattedFiles = files.map(({id, name, mimeType, ownedByMe, permissions, shared, modifiedTime,
-                                                    createdTime, owners, parents
+                                                    createdTime, owners, parents, driveId
                                                 }) => {
                 let type;
                 switch (mimeType) {
@@ -72,13 +76,34 @@ function GoogleContextProvider(props) {
                     createdOn: createdTime,
                     cloudOrigin: "google",
                     parents: parents,
+                    driveId: driveId,
                 }
             });
-            let myFiles = reformattedFiles.filter((file) => file.ownedByMe || typeof file.ownedByMe === 'undefined');
-            let sharedFiles = reformattedFiles.filter((file) => file.ownedByMe === false);
+            let sharedDrives = drives.map(({id, name}) => (
+                {
+                    id: id,
+                    name: name,
+                    files: []
+                }
+            ))
+            let myDrive = [];
+            reformattedFiles.forEach((file) => {
+                if (file.driveId) {
+                    let index = sharedDrives.findIndex(drive => drive.id === file.driveId)
+                    sharedDrives[index].files.push(file)
+                } else {
+                    myDrive.push(file)
+                }
+            })
+            console.log(sharedDrives)
+            console.log(myDrive)
+
+            let myFiles = myDrive.filter((file) => file.ownedByMe || typeof file.ownedByMe === 'undefined');
+            let sharedFiles = myDrive.filter((file) => file.ownedByMe === false);
             setAllFiles(reformattedFiles)
             setMyFiles(myFiles)
             setSharedFiles(sharedFiles)
+            setSharedDrives(sharedDrives)
             setEmail(gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().cu);
         }
         
@@ -107,7 +132,7 @@ function GoogleContextProvider(props) {
 
     return (
         <GoogleContext.Provider value={{
-            allFiles, myFiles, sharedFiles, email, getGoogleFiles, updateFilePerms, updateMultipleFiles
+            allFiles, myFiles, sharedFiles, email, getGoogleFiles, updateFilePerms, updateMultipleFiles, sharedDrives
         }}>
             {props.children}
         </GoogleContext.Provider>
