@@ -1,8 +1,61 @@
 .analysis-list-container {
-    height: 526px;
+    height: 218px;
+    overflow-y: auto;
+}
+
+.snapshot-diff-list-container {
+    height: 474px;
     overflow-y: auto;
 }
 
 .analysis-block {
     margin-bottom: 10px;
+}
+
+.snapshot-compare-list {
+    height: 526px;
+    overflow-y: auto;
+}
+
+.select-analysis-snapshot-header {
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    width: 100%;
+    padding: 5px 0;
+    background-color: cornflowerblue;
+}
+
+.select-snapshot-selections-container {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+}
+
+.analysis-select-snapshot-container {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    font-size: 14px;
+}
+
+.analysis-select-snapshot-container div {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.select-analysis-snapshot-button {
+    padding: 5px;
+    border: none;
+    background-color: white;
+    transition: 0.2s;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+.select-analysis-snapshot-button:hover {
+    cursor: pointer;
+    color: cornflowerblue;
 }
