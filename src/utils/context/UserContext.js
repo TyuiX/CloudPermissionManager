@@ -388,7 +388,7 @@ function UserContextProvider(props) {
                 }
             }
         }
-        else if (role === "writer" || role === "editor") {
+        else if (role === "writer" || role === "editor" || role === "organizer" || role === "fileOrganizer") {
             if (dw.emails.length > 0 || dw.domains.length > 0) {
                 if (dw.emails.includes(emailAddress) || checkInDomains(emailAddress, dw.domains)) {
                     currentViol.violation = "Denied Writer";
