@@ -49,8 +49,7 @@ export default function FileInfoBlock(props) {
                                 <>
                                     <div className="file-info-key perms-header">Permissions </div>
                                     {
-                                        //TODO redo later to account for groups
-                                        permissions.filter(({type}) => type === "user").map((perm) => (
+                                        permissions.map((perm) => (
                                             <PermissionsCell key={perm.id} permInfo={perm} />
                                         ))
                                     }

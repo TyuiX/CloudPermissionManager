@@ -39,9 +39,6 @@ export default function AnalyzeSharingModal(props) {
             let data = await getSnapShotDiff(selectedSnap, selectedSecondSnap);
             setSnapshotDiff(data)
         }
-
-
-
     }
 
     // handle selection of snapshots
@@ -58,7 +55,6 @@ export default function AnalyzeSharingModal(props) {
         }
     }
 
-    console.log(analysisInfo);
     return (
         <div className="modal-background">
             <div className="modal-container">

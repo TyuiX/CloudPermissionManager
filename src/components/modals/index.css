@@ -53,6 +53,19 @@
     align-items: center;
 }
 
+.add-anyone-link {
+    border-radius: 5px;
+    font-weight: bold;
+    padding: 10px;
+    margin-left: 20px;
+    position: relative;
+    right: 190px;
+}
+
+.add-anyone-link:hover {
+    cursor: pointer;
+}
+
 .modal-form-input {
     position: relative;
     font-size: 16px;

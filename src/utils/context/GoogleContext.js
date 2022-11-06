@@ -83,14 +83,20 @@ function GoogleContextProvider(props) {
                 {
                     id: id,
                     name: name,
-                    files: []
+                    sharedFiles: []
                 }
             ))
             let myDrive = [];
             reformattedFiles.forEach((file) => {
-                if (file.driveId) {
-                    let index = sharedDrives.findIndex(drive => drive.id === file.driveId)
-                    sharedDrives[index].files.push(file)
+                if (drives.length > 0) {
+                    if (file.driveId) {
+                        console.log(file.driveId)
+                        console.log(file)
+                        let index = sharedDrives.findIndex(drive => drive.id === file.driveId)
+                        sharedDrives[index].sharedFiles.push(file)
+                    } else {
+                        myDrive.push(file)
+                    }
                 } else {
                     myDrive.push(file)
                 }
