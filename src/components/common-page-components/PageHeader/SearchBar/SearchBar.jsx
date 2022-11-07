@@ -86,6 +86,9 @@ export default function SearchBar(props) {
                     if(queryOptions[index].substring(queryOptions[index].indexOf(":")+1) === "none"){
                         existingQueriesMap.set(queryOptions[index], 
                             nameOfFile.substring(nameOfFile.lastIndexOf(":") + 1));
+                    } else if(queryOptions[index].substring(queryOptions[index].indexOf(":")+1) === "domain"){
+                        existingQueriesMap.set(queryOptions[index],
+                            nameOfFile.substring(nameOfFile.lastIndexOf(":") + 1));
                     } else if(ifSharing === "individual"){
                         existingQueriesMap.set(queryOptions[index].substring(0, queryOptions[index].lastIndexOf(":")), 
                             nameOfFile.substring(nameOfFile.lastIndexOf(":") + 1));

@@ -237,6 +237,7 @@ function UserContextProvider(props) {
 
     const searchCheckFile = (operator, operand, addedFiles, file, addedFilesSet, snapshot, folderId) => {
         console.log(file);
+
         if(operator === "drive:drive"){
             if(operand === "My Drive"){
                 if(file.ownedByMe === true){
@@ -337,7 +338,29 @@ function UserContextProvider(props) {
                     addedFiles.push(file);
                 }
             }
-        } else if(operator === "sharing:individual"){
+        } else if(operator === "sharing:domain"){
+            /*
+             * doesn't accept a "value" since the sharing:domain automatically goes into
+             * the email of the current logged into google drive
+            */
+            let ownerDomain = "" + file.owner;
+            ownerDomain = ownerDomain.substring(ownerDomain.indexOf("@") + 1);
+            
+            if(file.ownedByMe === true){
+                file.permissions.forEach((perm) => {
+                    let userDomain = "" + perm.emailAddress;
+                    userDomain = userDomain.substring(userDomain.indexOf("@") + 1);
+                    if(perm.role !== "owner"){
+                        if (userDomain === ownerDomain && file.permissions.length !== 1) {
+                            if(!addedFilesSet.has(file.name)){
+                                addedFilesSet.add(file.name);
+                                addedFiles.push(file);
+                            }
+                        }
+                    }
+                })
+            }  
+        }else if(operator === "sharing:individual"){
             console.log("in here");
             file.permissions.forEach((perm) => {
                 if(file.ownedByMe){
@@ -352,76 +375,105 @@ function UserContextProvider(props) {
                 }
             })
         } else if(operator === "inFolder:regexp"){
-            let regexp = new RegExp(operand);
-            console.log("in here!");
-            console.log(snapshot);
-            
             Object.entries(snapshot.folders).forEach((key, value) => {
-                console.log(key[0] + " ... " + folderId);
-                console.log("value: " + value + ", operand: " + operand);
-                
                 if(key[0] === folderId){
-                    // console.log(key);
-                    console.log(key);
-                    // console.log(Object.values(key[1])[0]);
-                    // console.log(key[1].name);
-                    // console.log(value);
-                    let index = 1;
-                    console.log(key.length);
-                    while(index < key.length){
-                        let file = Object.values(key[index])[0];
-                        console.log(file);
-                        index += 1;
+                    let index = 0;
+                    while(index < (Object.values(key[1]).length)){
+                        let file = Object.values(key[1])[index];
                         if(!addedFilesSet.has(file.name)){
                             addedFilesSet.add(file.name);
                             addedFiles.push(file);
                         }
+                        index += 1;
                     }
-                    
-                    
-                    // let index = 0;
-                    // while(index < Object.values(folderId).length){
-                    
-                    // }
+                }
+            })
+        } else if(operator === "folder:regexp"){
+            Object.entries(snapshot.folders).forEach((key, value) => {
+                if(key[0] === folderId){
+                    let index = 0;
+                    console.log(snapshot)
+                    console.log(folderId);
+                    console.log(file);
+                    while(index < (Object.values(key[1]).length)){
+                        let file = Object.values(key[1])[index];
+                        if(!addedFilesSet.has(file.name)){
+                            addedFilesSet.add(file.name);
+                            addedFiles.push(file);
+                            checkForSubFolders(snapshot, file.id, addedFilesSet, addedFiles);
+                        }
+                        index += 1;
+                    }
                 }
             })
         }
     }
 
+    /**
+     * helper function for "folder:regexp" query operator. This function checks to see if there
+     * exists a sub folder which has files in it, that needs to be shown for the front end.
+    */
+    const checkForSubFolders = (snapshot, folderId, addedFilesSet, addedFiles) => {
+        Object.entries(snapshot.folders).forEach((key, value) => {
+            console.log(folderId);
+            let setHere = new Set();
+        
+            setHere = addedFilesSet;
+            if(key[0] === folderId){
+                let index = 0;
+                while(index < (Object.values(key[1]).length)){
+                    let file = Object.values(key[1])[index];
+                    console.log(file);
+                    if(!setHere.has(file.name)){
+                        setHere.add(file.name);
+                        addedFiles.push(file);
+                        checkForSubFolders(snapshot, file.id, addedFilesSet, addedFiles);
+                    }
+                    index += 1;
+                }
+            }
+        })
+        return addedFiles;
+    }
+
     const performSearch = useCallback (async (snapshot, queries, save) => {
         let files = [];
         let set = new Set();
-        console.log(queries);
-        console.log(snapshot);
-        let booleanOperator = "";
+        let operators = []; // will store three operators at a time - needed b/c of boolean operators.
+        let index = 0;
         Object.values(snapshot.folders).forEach((folder) => {
             Object.values(folder).forEach((file) => {
                 queries.forEach((key, value) => {
-                    if(value === "&&" || value === "||" || value === "!"){
-                        if(booleanOperator !== ""){
-                            console.error("Invalid Query");
-                        }
-                        booleanOperator = value;
-                    }
-                    else{ // doesn't fully work though since the query before the boolean 
-                            // operator is going to be registed (talk about during standup).
-                        console.log(value);
+                    console.log(value);
+                    console.log(files);
+                    console.log(operators);
+                    if(operators.length !== 3){
                         if(value === "inFolder:regexp"){
-                            if(file.type === "folder" && file.name === key){
-                                console.log(file);
-                                console.log(key);
-                                console.log(file.id);
-                                // return;
+                            let regexp = new RegExp(key);
+                            if(regexp.exec(file.name) && file.type === "folder"){ 
                                 searchCheckFile(value, key, files, file, set, snapshot, file.id);
                             }
-                        }
-                        else{
+                        } else if(value === "folder:regexp"){
+                            let regexp = new RegExp(key);
+                            if(regexp.exec(file.name) && file.type === "folder"){ 
+                                searchCheckFile(value, key, files, file, set, snapshot, file.id);
+                            }
+                        } else{
+                            console.log("tamam");
                             searchCheckFile(value, key, files, file, set, snapshot, "");
                         }
+                        if(index === 0){
+                            operators.push(value);
+                            index = 1;
+                        }
+                    } else{
+                        console.log("in else!");
                     }
                 })
             })
         })
+        
+        console.log(operators);
         // console.log(files);
         if (save) {
             setSearchResults(files)
