@@ -38,7 +38,7 @@ export default function QueryBuilder(props) {
 
     const confirmQuery = () => {
         console.log("wger");
-        performSearch(currentSnap, existingQueriesMap, true);
+        performSearch(currentSnap, existingQueriesMap, true, []);
         toggleDropdown()
         navigate('/searchresults');
     }

@@ -49,7 +49,9 @@ export default function SearchBar(props) {
         if(snapshots && !isLoading && snapshots.length !== 0){
             let queryOptions = fileName.split(" ");
             let existingQueriesMap = new Map();
+            let booleanOps = [];
             let index = 0;
+            console.log(queryOptions);
 
             while(index < queryOptions.length){
                 let nameOfFile = queryOptions[index];
@@ -62,8 +64,10 @@ export default function SearchBar(props) {
                 if(queryOptions[index].substring(0, queryOptions[index].indexOf(":")) === "sharing"){
                     ifSharing = queryOptions[index].substring(queryOptions[index].indexOf(":") + 1, queryOptions[index].lastIndexOf(":"));
                     console.log(ifSharing);
-                } else if(queryOption === "&&" || queryOption === "||" || queryOption === "!"){
-                    existingQueriesMap.set(queryOption, queryOption);
+                } 
+                
+                if(queryOption === "and" || queryOption === "or" || queryOption === "!"){
+                    booleanOps.push(queryOption);
                 }
 
                 console.log(queryOption);
@@ -101,7 +105,7 @@ export default function SearchBar(props) {
                 index += 1;
             }
             
-            performSearch(currentSnap, existingQueriesMap, true);
+            performSearch(currentSnap, existingQueriesMap, true, booleanOps);
             navigate('/searchresults');
         }
     }
