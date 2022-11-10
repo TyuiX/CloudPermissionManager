@@ -12,13 +12,6 @@
     display: inline-block;
 }
 
-.multiple-sharing-note {
-    display: flex;
-    align-items: center;
-    font-size: 12px;
-    margin-left: 10px;
-}
-
 .multiple-sharing-note div {
     margin: 0 10px;
 }

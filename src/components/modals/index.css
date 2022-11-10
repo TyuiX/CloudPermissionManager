@@ -146,3 +146,14 @@
 .modal-add-text-button:hover {
     cursor: pointer;
 }
+
+.modal-footnote {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    margin-left: 10px;
+}
+
+.modal-footnote div {
+    padding-left: 15px;
+}
