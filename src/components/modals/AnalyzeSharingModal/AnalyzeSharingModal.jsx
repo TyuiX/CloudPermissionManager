@@ -14,7 +14,7 @@ export default function AnalyzeSharingModal(props) {
     const [fileFolderDiff, setFileFolderDiff] = useState([])
     const [deviantSharing, setDeviantSharing] = useState([])
     const [snapshotDiff, setSnapshotDiff] = useState([])
-    const [threshold, setThreshold] = useState(80)
+    const [threshold, setThreshold] = useState(0.8)
 
     console.log(threshold)
 
