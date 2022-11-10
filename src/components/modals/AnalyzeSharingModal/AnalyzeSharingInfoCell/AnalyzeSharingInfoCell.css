@@ -17,3 +17,8 @@
     font-size: 14px;
     border-bottom: 1px solid #adadad;
 }
+
+.snapshot-diff-block {
+    display: flex;
+    flex-direction: column;
+}

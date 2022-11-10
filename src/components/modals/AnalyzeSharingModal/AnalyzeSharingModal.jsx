@@ -6,6 +6,7 @@ import ReactSlider from 'react-slider'
 import {UserContext} from "../../../utils/context/UserContext";
 import AnalyzeSharingInfoCell from "./AnalyzeSharingInfoCell/AnalyzeSharingInfoCell";
 import FileFolderSharingDiffList from "./FileFolderSharingDiffList/FileFolderSharingDiffList";
+import SnapshotDiffList from "./SnapshotDiffList";
 
 export default function AnalyzeSharingModal(props) {
     const {toggleModal, analysisType} = props;
@@ -44,7 +45,15 @@ export default function AnalyzeSharingModal(props) {
         } else {
             // pass two selected snapshots to backend and await return
             let data = await getSnapShotDiff(selectedSnap, selectedSecondSnap);
-            setSnapshotDiff(data)
+            console.log(data)
+
+            setSnapshotDiff({
+                "New Files": data.filter(({type}) => type === "new file"),
+                "New Permissions": data.filter(({type}) => type === "new perm"),
+                "Changed Permissions": data.filter(({type}) => type === "change perm"),
+                "Deleted Permissions": data.filter(({type}) => type === "deleted perm"),
+                size: data.length
+            })
         }
     }
 
@@ -119,27 +128,8 @@ export default function AnalyzeSharingModal(props) {
                         {fileFolderDiff.size > 0 &&
                             <FileFolderSharingDiffList diffInfo={fileFolderDiff} />
                         }
-                        {snapshotDiff.length > 0 &&
-                            snapshotDiff.map(({type, file_name, perm_id, perm_name, perm_role, new_role, old_role}, index) =>
-                                <div key={perm_id + index} className="analysis-block">
-                                    {type}
-                                    <div>File: {file_name}</div>
-                                    <div>User: {perm_name}</div>
-                                    {
-                                        type === "new perm" &&
-                                        <>
-                                            <div>Role: {perm_role}</div>
-                                        </>
-                                    }
-                                    {
-                                        type === "change perm" &&
-                                        <>
-                                            <div>Old Role: {old_role}</div>
-                                            <div>New Role: {new_role}</div>
-                                        </>
-                                    }
-                                </div>
-                            )
+                        {snapshotDiff.size > 0 &&
+                            <SnapshotDiffList diffInfo={snapshotDiff} />
                         }
                     </div>
                 </div>

@@ -7,6 +7,7 @@
 .snapshot-diff-list-container {
     height: 474px;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .analysis-block {

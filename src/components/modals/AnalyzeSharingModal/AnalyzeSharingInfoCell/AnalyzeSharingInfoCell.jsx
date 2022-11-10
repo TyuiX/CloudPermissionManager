@@ -70,7 +70,42 @@ export default function AnalyzeSharingInfoCell(props) {
             </div>
         )
     }
+    const {type, file_name, perm_id, perm_name, perm_role, new_role, old_role} = cellInfo;
 
-
-    return null;
+    return (
+        <div className="analysis-block">
+            <div className="snapshot-diff-block">
+                <div>
+                    <div className="analysis-info-text-label">File: </div>
+                    <div className="analysis-info-text" >{file_name}</div>
+                </div>
+                {perm_name &&
+                    <div>
+                        <div className="analysis-info-text-label">User: </div>
+                        <div className="analysis-info-text" >{perm_name}</div>
+                    </div>
+                }
+                {
+                    type === "new perm" &&
+                    <div>
+                        <div className="analysis-info-text-label">Role: </div>
+                        <div className="analysis-info-text" >{perm_role}</div>
+                    </div>
+                }
+                {
+                    type === "change perm" &&
+                    <>
+                        <div>
+                            <div className="analysis-info-text-label">Old Role: </div>
+                            <div className="analysis-info-text" >{old_role}</div>
+                        </div>
+                        <div>
+                            <div className="analysis-info-text-label">New Role: </div>
+                            <div className="analysis-info-text" >{new_role}</div>
+                        </div>
+                    </>
+                }
+            </div>
+        </div>
+    )
 }
