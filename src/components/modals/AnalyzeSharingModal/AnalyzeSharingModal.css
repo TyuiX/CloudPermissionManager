@@ -1,5 +1,5 @@
 .analysis-list-container {
-    height: 218px;
+    height: 205px;
     overflow-y: auto;
 }
 
@@ -40,22 +40,55 @@
     font-size: 14px;
 }
 
-.analysis-select-snapshot-container div {
+.analysis-option-label {
     display: flex;
     align-items: center;
     margin-right: 10px;
 }
 
 .select-analysis-snapshot-button {
-    padding: 5px;
+    padding: 8px;
     border: none;
     background-color: white;
     transition: 0.2s;
     font-weight: bold;
     border-radius: 5px;
+    margin: auto 0;
+    height: 100%;
 }
 
 .select-analysis-snapshot-button:hover {
     cursor: pointer;
     color: cornflowerblue;
+}
+
+.deviant-slider {
+    color: white;
+    text-align: center;
+    font-size: 12px;
+    margin-top: 5px;
+    width: 200px;
+    height: 25px;
+}
+
+.slider-track {
+    height: 5px;
+    background-color: #f8f8f8;
+    border-radius: 10px;
+    top:7px
+}
+.slider-track.slider-track-1 {
+    background-color: #ff4444;
+}
+
+.slider-thumb {
+    width: 20px;
+    background-color: black;
+    border-radius: 50%;
+    height: 20px;
+    line-height: 20px;
+}
+
+.slider-track:hover, .slider-thumb:hover {
+    cursor: pointer;
 }

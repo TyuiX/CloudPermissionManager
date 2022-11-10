@@ -146,9 +146,9 @@ function UserContextProvider(props) {
         }
     }, [])
 
-    const getDeviantFiles = useCallback( async (snapshot) => {
+    const getDeviantFiles = useCallback( async (snapshot, threshold) => {
         try {
-            const res = await api.deviant({snapshot: snapshot})
+            const res = await api.deviant({snapshot: snapshot, threshold: threshold})
             if (res.status === 200) {
                 console.log(res.data)
                 return res.data
