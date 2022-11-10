@@ -5,7 +5,7 @@ import React, {useContext, useState} from "react";
 import {GoogleContext} from "../../../utils/context/GoogleContext";
 import {UserContext} from "../../../utils/context/UserContext";
 import AnalyzeSharingModal from "../../modals/AnalyzeSharingModal/AnalyzeSharingModal";
-import "./MySnapshots.css";
+import "../SnapshotPages.css";
 import {AiOutlinePlus} from "react-icons/ai";
 
 export default function MySnapshots() {
@@ -122,20 +122,6 @@ export default function MySnapshots() {
         secondSnap = snapshots;
     }
 
-    let fullDate = "";
-    if (firstSnap){
-        let date = firstSnap.date;
-
-        let month = date.substring(5, 7);
-        let day = date.substring(8, 10);
-        let time = date.substring(11, date.length - 5);
-
-        let monthString = "";
-        if (month === "10") { monthString = "October"}
-        else if (month === "11") { monthString = "November"}
-        else if (month === "12") { monthString = "December"}
-        fullDate = "Taken on " + monthString + " " + day + ", " + 2022 + " at " + time;
-    }
     console.log(snapshots)
     
     return (

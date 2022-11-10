@@ -1,0 +1,10 @@
+.upload-file-button {
+    color: white;
+    padding: 15px 8px 15px 20px;
+    background-color: cornflowerblue;
+    width: 95%;
+}
+
+.upload-grp-modal-container {
+    height: unset;
+}

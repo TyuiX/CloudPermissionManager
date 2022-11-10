@@ -18,6 +18,8 @@ export const getControlReqs = (payload) => api.post(`/control/requirements`, pay
 export const deleteControlReq = (payload) => api.delete(`/control/requirements`, {data: payload})
 export const createNewControlReqs = (payload) => api.post(`/control/requirements/add`, payload)
 export const deviant = (payload) => api.post(`/getDeviantFiles`, payload)
+export const createNewGroupSnapshot = (payload) => api.post(`/snapshot/group/add`, payload)
+export const getGroupSnapshots = (payload) => api.post(`/snapshot/group/list`, payload)
 
 const managerAPI = {
     createUser,
@@ -33,7 +35,9 @@ const managerAPI = {
     getControlReqs,
     deleteControlReq,
     createNewControlReqs,
-    deviant
+    deviant,
+    createNewGroupSnapshot,
+    getGroupSnapshots
 }
 
 export default managerAPI

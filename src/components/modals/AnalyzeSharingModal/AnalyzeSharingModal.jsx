@@ -2,20 +2,21 @@ import React, {useContext, useEffect, useState} from 'react';
 import {AiOutlineClose} from "react-icons/ai";
 import "../index.css";
 import "./AnalyzeSharingModal.css";
+import ReactSlider from 'react-slider'
 import {UserContext} from "../../../utils/context/UserContext";
 import AnalyzeSharingInfoCell from "./AnalyzeSharingInfoCell/AnalyzeSharingInfoCell";
 
 export default function AnalyzeSharingModal(props) {
     const {toggleModal, analysisType} = props;
-    const {snapshots, getFolderFileDif, getSnapShotDiff, getDeviantFiles} = useContext(UserContext);
+    const {snapshots, getFolderFileDif, getSnapShotDiff, getDeviantFiles, setIsLoading} = useContext(UserContext);
     const [selectedSnap, setSelectedSnap] = useState({});
     const [selectedSecondSnap, setSelectedSecondSnap] = useState({});
     const [fileFolderDiff, setFileFolderDiff] = useState([])
     const [deviantSharing, setDeviantSharing] = useState([])
     const [snapshotDiff, setSnapshotDiff] = useState([])
+    const [threshold, setThreshold] = useState(0.8)
 
-    console.log(selectedSnap)
-    console.log(selectedSecondSnap)
+    console.log(threshold)
 
     useEffect(() => {
         if (snapshots.length <= 0) {
@@ -31,7 +32,7 @@ export default function AnalyzeSharingModal(props) {
         e.preventDefault();
         if (analysisType === "analysis") {
             // await getting both analyze sharing and deviant sharing information
-            const [res1, res2] = await Promise.all([getFolderFileDif(selectedSnap._id), getDeviantFiles(selectedSnap)])
+            const [res1, res2] = await Promise.all([getFolderFileDif(selectedSnap._id), getDeviantFiles(selectedSnap, threshold)])
             setFileFolderDiff(res1);
             setDeviantSharing(res2);
         } else {
@@ -65,7 +66,7 @@ export default function AnalyzeSharingModal(props) {
                 <div className="select-analysis-snapshot-header">
                     <div className="select-snapshot-selections-container">
                         <div className="analysis-select-snapshot-container">
-                            <div>{analysisType === "compare" && "First "}Snapshot:</div>
+                            <div className="analysis-option-label">{analysisType === "compare" && "First "}Snapshot:</div>
                             <select onChange={(e) => handleSnapshotSelect(e, true)}>
                                 {
                                     snapshots.map(({_id}) => (
@@ -74,9 +75,24 @@ export default function AnalyzeSharingModal(props) {
                                 }
                             </select>
                         </div>
+                        { analysisType === "analysis" &&
+                            <div className="analysis-select-snapshot-container">
+                                <div className="analysis-option-label">Deviant Threshold:</div>
+                                <ReactSlider
+                                    className="deviant-slider"
+                                    thumbClassName="slider-thumb"
+                                    trackClassName="slider-track"
+                                    min={51}
+                                    max={100}
+                                    defaultValue={80}
+                                    renderThumb={(props, state) => <div {...props}>{state.valueNow}</div>}
+                                    onChange={(value) => setThreshold(value / 100.0)}
+                                />
+                            </div>
+                        }
                         {analysisType === "compare" &&
                             <div className="analysis-select-snapshot-container">
-                                <div>Second Snapshot:</div>
+                                <div className="analysis-option-label">Second Snapshot:</div>
                                 <select onChange={(e) => handleSnapshotSelect(e, false)}>
                                     {
                                         snapshots.map(({_id}) => (
