@@ -77,6 +77,7 @@ function GoogleContextProvider(props) {
                     cloudOrigin: "google",
                     parents: parents,
                     driveId: driveId,
+                    inheritedFrom: undefined,
                 }
             });
             let sharedDrives = drives.map(({id, name}) => (
