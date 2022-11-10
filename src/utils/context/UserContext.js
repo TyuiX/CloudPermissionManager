@@ -250,6 +250,7 @@ function UserContextProvider(props) {
                         addedFilesSet.add(filePassed.name);
                         filesAdded = filePassed;
                     }
+                    fileForOperator = filePassed;
                 }
             } else{
                 if(filePassed.ownedByMe === false){
@@ -257,6 +258,7 @@ function UserContextProvider(props) {
                         addedFilesSet.add(filePassed.name);
                         filesAdded = filePassed;
                     }
+                    fileForOperator = filePassed;
                 }
             }
         } else if(operator === "owner:user"){
@@ -274,6 +276,7 @@ function UserContextProvider(props) {
                     addedFilesSet.add(filePassed.name);
                     filesAdded = filePassed;
                 }
+                fileForOperator = filePassed;
             }
         } else if(operator === "readable:user"){
             filePassed.permissions.forEach((perm) => {
@@ -283,6 +286,7 @@ function UserContextProvider(props) {
                             addedFilesSet.add(filePassed.name);
                             filesAdded = filePassed;
                         }
+                        fileForOperator = filePassed;
                     }
                 }
             })
@@ -295,6 +299,7 @@ function UserContextProvider(props) {
                             filesAdded = filePassed;
                         }
                     }
+                    fileForOperator = filePassed;
                 }
             })
         } else if(operator === "shareable:user"){
@@ -304,6 +309,7 @@ function UserContextProvider(props) {
                     addedFilesSet.add(filePassed.name);
                     filesAdded = filePassed;
                 }
+                fileForOperator = filePassed;
             }
         }else if(operator === "to:user"){
             console.log("in here");
@@ -315,6 +321,7 @@ function UserContextProvider(props) {
                             filesAdded = filePassed;
                         }
                     }
+                    fileForOperator = filePassed;
                 }
             })
         } else if(operator === "from:user"){
@@ -326,6 +333,7 @@ function UserContextProvider(props) {
                             filesAdded = filePassed;
                         }
                     }
+                    fileForOperator = filePassed;
                 }
             })
         } else if(operator === "name:regexp"){
@@ -345,6 +353,7 @@ function UserContextProvider(props) {
                     addedFilesSet.add(filePassed.name);
                     filesAdded = filePassed;
                 }
+                fileForOperator = filePassed;
             }
         } else if(operator === "sharing:domain"){
             /*
@@ -364,6 +373,7 @@ function UserContextProvider(props) {
                                 addedFilesSet.add(filePassed.name);
                                 filesAdded = filePassed;
                             }
+                            fileForOperator = filePassed;
                         }
                     }
                 })
@@ -378,6 +388,7 @@ function UserContextProvider(props) {
                                 addedFilesSet.add(filePassed.name);
                                 filesAdded = filePassed;
                             }
+                            fileForOperator = filePassed;
                         }
                     }
                 }
@@ -392,6 +403,7 @@ function UserContextProvider(props) {
                             addedFilesSet.add(file.name);
                             filesAdded = filePassed;
                         }
+                        fileForOperator = filePassed;
                         index += 1;
                     }
                 }
@@ -410,6 +422,7 @@ function UserContextProvider(props) {
                             filesAdded = filePassed;
                             checkForSubFolders(snapshot, file.id, addedFilesSet);  // addedFiles was here.
                         }
+                        fileForOperator = filePassed;
                         index += 1;
                     }
                 }
@@ -469,21 +482,59 @@ function UserContextProvider(props) {
         // name:^jjev and writeable:jason.zhang.1@stonybrook.edu
         
         let files = [];
+        let saveTheseFiles = [];
         let filesToCompare = [];
         console.log(filesToCompare);
         let flag = 0;
-        let firstQuery = [];
+        let firstQuery = []; 
+        let queriesIndex = 0;
+        let saveOriginalQueries = new Map();
+        let keyToDelete = null;
+
+        for(let [key, value] of queries){
+            saveOriginalQueries.set(key, value);
+            console.log("key: " + key + ", value: " + value);
+            if(queriesIndex >= 2){ // delete one at a time to check the last index with the second to last index.
+                break;
+            }
+            if(queriesIndex < 1){
+                keyToDelete = key;
+                queries.delete(key);
+            }
+            queriesIndex += 1;
+        }
         
         while(booleanIndex < booleanOps.length){
             let secondQuery = [];
+            console.log(queries);
+            console.log(Object.keys(queries));
+            console.log(Object.keys(queries)[0]);
+            
+            let queryIndex = 0;
+            
+            if(queriesIndex === 7){ // a flag (7 represents something specific).
+                saveOriginalQueries.delete(keyToDelete)
+                for(let [key, value] of queries){
+                    if(queryIndex >= 1){
+                        saveOriginalQueries.set(key, value);
+                    }
+                    if(queryIndex >= 1){ // delete one at a time to check the last index with the second to last index.
+                        break;
+                    }
+                    queryIndex += 1;
+                    keyToDelete = key;
+                    queries.delete(key);
+                }
+            }
+            queriesIndex = 7;
+            console.log(queries);
+            console.log(saveOriginalQueries);
             Object.values(snapshot.folders).forEach((folder) => {
-                console.log("count");
                 Object.values(folder).forEach((file) => {
-                    console.log(queries);
                     let results = new Map();
                     let qFlag = 0;
-                    queries.forEach((key, value) => {
-                        console.log(file); //name:^JJEV and owner:emirhan.akkaya@stonybrook.edu
+                    saveOriginalQueries.forEach((key, value) => {
+                        // console.log(file); //name:^JJEV and owner:emirhan.akkaya@stonybrook.edu
                         if(value === "inFolder:regexp"){
                             let regexp = new RegExp(key);
                             if(regexp.exec(file.name) && file.type === "folder"){ 
@@ -496,21 +547,21 @@ function UserContextProvider(props) {
                             }
                         } else{
                             let returnedFile = searchCheckFile(value, key, file, set, snapshot, "");
-                            console.log(filesToCompare);
                             if(returnedFile[0]){
                                 files.push(returnedFile[0]);
                                 filesToCompare.push(returnedFile[0].id);
                                 console.log("qFlag: " + qFlag);
-                                console.log(value);
-                            } 
-                            
-                            if(returnedFile[1]){
                                 if(qFlag === 0){
                                     console.log("value[0]: " + value);
-                                    firstQuery.push(file.id);
-                                } else{
+                                    console.log(file);
+                                    firstQuery.push(file.name);
+                                }
+                            }
+                            if(returnedFile[1]){
+                                if(qFlag === 1){//
                                     console.log("value[1]: " + value);
-                                    secondQuery.push(file.id);
+                                    console.log(file);
+                                    secondQuery.push(file.name);
                                 }
                             }
                             qFlag = 1; // even if file wasn't added, should still be "1" for qFlag for next query.
@@ -545,40 +596,69 @@ function UserContextProvider(props) {
             
             let addedSet = new Set();
             let forBoolIndex = 0;
+            console.log("amk: " + booleanOps[forBoolIndex]);
             if(booleanOps[forBoolIndex] === "and"){
                 let index = 0;
-                let set = new Set();
+                let setHere = new Set();
                 while(index < firstQuery.length){
-                    set.add(firstQuery[index]);
+                    setHere.add(firstQuery[index]);
                     index += 1;
                 }
+
                 index = 0;
-                console.log(set);
                 while(index < secondQuery.length){
-                    if(set.has(secondQuery[index])){
+                    if(setHere.has(secondQuery[index])){
                         console.log("in add");
+                        console.log(secondQuery[index]);
                         addedSet.add(secondQuery[index]);
                     }
                     index += 1;
                 }
-                // name:^JJEV and owner:emirhan.akkaya@stonybrook.edu
+                // name:^jjev and owner:emirhan.akkaya@stonybrook.edu
+                // name:pdf$ and owner:scott.stoller@stonybrook.edu and sharing:none
                 index = 0;
+                let indexForSave = 0;
+                console.log(addedSet);
                 console.log(files);
-               
                 while(index < files.length){
-                    console.log("files[index].id: " + files[index].id);
-                    if(!addedSet.has(files[index].id)){
-                        console.log("in here!");
-                        files.splice(index, 1);
+                    console.log("files[index].name: " + files[index].name);
+                    if(addedSet.has(files[index].name)){
+                        saveTheseFiles[indexForSave] = files[index];
+                        indexForSave += 1;
                     }
                     index += 1;
                 }
-                console.log(files);
+            } else if(booleanOps[forBoolIndex] === "or"){
+                // name:^jjev and owner:emirhan.akkaya@stonybrook.edu
+                let index = 0;
+                while(index < files.length){
+                    saveTheseFiles[index] = files[index];
+                    index += 1;
+                }
+            } else if(booleanOps[forBoolIndex] === "!"){
+                let index = 0;
+                console.log(firstQuery);
+                while(index < firstQuery.length){
+                    addedSet.add(firstQuery[index]);
+                    index += 1;
+                }
+                console.log(addedSet);
+                index = 0;
+                Object.values(snapshot.folders).forEach((folder) => {
+                    Object.values(folder).forEach((file) => {
+                        if(!addedSet.has(file.name)){
+                            saveTheseFiles[index] = file;
+                        }
+                        index += 1;
+                    })
+                })
+            } else{ // one boolean operator.
+                let index = 0;
+                while(index < files.length){
+                    saveTheseFiles[index] = files[index];
+                    index += 1;
+                }
             }
-            console.log(addedSet);
-            console.log(booleanOps[booleanIndex]);
-            booleanIndex+=1;
-            console.log("count");
             booleanIndex += 1;
             forBoolIndex += 1;
         }
@@ -587,10 +667,10 @@ function UserContextProvider(props) {
         
         // console.log(files);
         if (save) {
-            setSearchResults(files)
+            setSearchResults(saveTheseFiles)
         }
         else {
-            return files;
+            return saveTheseFiles;
         }
     },[])
 
