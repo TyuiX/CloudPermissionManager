@@ -1,19 +1,21 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {AiOutlineClose} from "react-icons/ai";
 import ErrorPopupModal from "../ErrorPopupModal/ErrorPopupModal";
 import "./UploadGroupModal.css";
+import {UserContext} from "../../../utils/context/UserContext";
 
 export default function UploadGroupModal(props) {
     const {toggleModal} = props
     const [selectedFileData, setSelectedFileData] = useState("");
-    const [fileSelected, setFileSelected] = useState(false);
     const [errorMsg, setErrorMsg] = useState("")
+    const {createNewGroupSnapshot, setIsLoading} = useContext(UserContext);
 
-    const handleConfirm = (e) => {
+    const handleConfirm = async (e) => {
         e.preventDefault()
         if (!selectedFileData.includes("groups.google.com")) {
             setErrorMsg("Please input a valid HTML file of a Google Groups' Members page to create a new Group Snapshot")
         } else {
+            setIsLoading(true)
             const emailRegex = /"[\w._-]+@googlegroups.com/g
             const memRegex = /mailto:[\w._-]+@[\w._-]+"/g
 
@@ -24,8 +26,10 @@ export default function UploadGroupModal(props) {
             let members = mailtoRefs.map((mailtos) =>
                 mailtos[0].split("mailto:")[1].slice(0, -1)
             )
-            console.log(email)
-            console.log(members)
+
+            await createNewGroupSnapshot(members, email)
+            setIsLoading(false)
+            toggleModal()
         }
     }
 
@@ -40,17 +44,15 @@ export default function UploadGroupModal(props) {
 
         if (file) {
             reader.readAsText(file);
-            setFileSelected(true)
         } else {
             setSelectedFileData("")
-            setFileSelected(false)
         }
     }
 
     return (
         <>
             <div className="modal-background">
-                <div className="modal-container sharing-modal-container">
+                <div className="modal-container upload-grp-modal-container">
                     <div className="modal-header">
                         <span>{"Upload Group Membership"}</span>
                         <AiOutlineClose className="sidebar-close-button" onClick={toggleModal} />

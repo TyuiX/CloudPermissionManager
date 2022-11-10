@@ -1,15 +1,15 @@
 import React from 'react';
 import "../../SnapshotPages.css";
-import {FaFolder} from "react-icons/fa";
+import {IoPeople} from "react-icons/io5";
 
-export default function SnapCell(props) {
+export default function GroupSnapCell(props) {
     const {snapInfo} = props;
+    const {email, members} = snapInfo;
     let date = snapInfo.date + "";
 
     let month = date.substring(5, 7);
     let day = date.substring(8, 10);
     let time = date.substring(11, date.length - 5);
-
 
     let monthString = "";
     if(month === "10") { monthString = "October"}
@@ -20,10 +20,10 @@ export default function SnapCell(props) {
     return (
         <div className="snapshot-cell">
             <div className="snapshot-cell-icon-container">
-                <FaFolder className="snapshot-cell-icon" size={25} />
+                <IoPeople className="snapshot-cell-icon" size={25} />
             </div>
             <div className="snapshot-info">
-                <div>Id: {snapInfo._id}</div>
+                <div>Email: {email}</div>
                 <div className="snapshot-info-subtext">{fullDate}</div>
             </div>
         </div>

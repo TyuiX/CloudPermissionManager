@@ -13,6 +13,7 @@ function UserContextProvider(props) {
     const [isLoading, setIsLoading] = useState(true);
     const [recentSearches, setRecentSearches] = useState([]);
     const [searchResults, setSearchResults] = useState([]);
+    const [groupSnapshots, setGroupSnapshots] = useState([])
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -34,9 +35,7 @@ function UserContextProvider(props) {
             return
         }
         const loadResources = async () => {
-            await getSnapshots()
-            await getRecentSearches()
-            await getControlReqs()
+            await Promise.all([getSnapshots(), getRecentSearches(), getControlReqs(), getGroupSnapshots()])
         }
         loadResources()
     }, [user.email])
@@ -205,7 +204,6 @@ function UserContextProvider(props) {
             console.log(res.data)
             const res2 = await api.getControlReqs(res.data.accessControlReqs)
             setControlReqs(res2.data.reqs)
-            console.log(setControlReqs);
         }
         catch (err) {
             return err.response.data.errorMessage;
@@ -228,6 +226,29 @@ function UserContextProvider(props) {
             const res = await api.createNewControlReqs({newReq: newControlReq, email: user.email})
             console.log(res.data)
             await getControlReqs()
+        }
+        catch (err) {
+            return err.response.data.errorMessage;
+        }
+    }, [user.email])
+
+    const getGroupSnapshots = useCallback(async () => {
+        try {
+            const res = await api.getUserProfile({email: user.email});
+            console.log(res.data)
+            const res2 = await api.getGroupSnapshots(res.data.groupSnapshot)
+            setGroupSnapshots(res2.data.snaps)
+        }
+        catch (err) {
+            return err.response.data.errorMessage;
+        }
+    },[user.email])
+
+    const createNewGroupSnapshot = useCallback(async (members, grpEmail) => {
+        try {
+            const res = await api.createNewGroupSnapshot({members: members, grpEmail: grpEmail, email: user.email})
+            console.log(res.data)
+            await getGroupSnapshots()
         }
         catch (err) {
             return err.response.data.errorMessage;
@@ -486,7 +507,7 @@ function UserContextProvider(props) {
         <UserContext.Provider value={{
             user, snapshots, isLoading, loggedIn, recentSearches, createUser, loginUser, logoutUser, startLoading, finishLoading, 
             setGoogleAcc, createNewSnapshot, getFolderFileDif, getSnapShotDiff, searchByName, getRecentSearches, createNewControlReq,
-            controlReqs, deleteControlReq, setIsLoading, getControlReqs, performSearch, searchResults,
+            controlReqs, deleteControlReq, setIsLoading, performSearch, searchResults, groupSnapshots, createNewGroupSnapshot,
             getControlReqQueryFiles, checkInDomains, checkViolations, checkReqsBeforeUpdate, getDeviantFiles
         }}>
             {props.children}
