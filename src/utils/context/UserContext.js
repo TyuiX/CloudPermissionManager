@@ -4,6 +4,7 @@ import {useNavigate} from "react-router-dom";
 import ControlReqQueriesLists from "../ControlReqQueriesLists";
 import controlReqsList from "../ControlReqQueriesLists";
 import { AiOutlineConsoleSql } from "react-icons/ai";
+import { Stack } from "react-bootstrap";
 
 export const UserContext = createContext({});
 
@@ -235,186 +236,187 @@ function UserContextProvider(props) {
         }
     }, [user.email])
 
-    const searchCheckFile = (operator, operand, secondOperator, secondOperand, booleanOperator,
-        addedFiles, file, addedFilesSet, snapshot, folderId) => {
-        console.log(file);
-        console.log(secondOperator);
+    const searchCheckFile = (operator, operand, filePassed, addedFilesSet, snapshot, folderId) => {
+        console.log(filePassed);
 
-        if(secondOperator === null && secondOperand === null){
-            console.log("in here!");
-            if(operator === "drive:drive"){
-                if(operand === "My Drive"){
-                    if(file.ownedByMe === true){
-                        if(!addedFilesSet.has(file.name)){
-                            addedFilesSet.add(file.name);
-                            addedFiles.push(file);
-                        }
+        let filesAdded = null; // update this "dummy" array and then return this as the return for "searchCheckFiles"
+        let fileForOperator = null;
+
+        console.log("in here!");
+        if(operator === "drive:drive"){
+            if(operand === "My Drive"){
+                if(filePassed.ownedByMe === true){
+                    if(!addedFilesSet.has(filePassed.name)){
+                        addedFilesSet.add(filePassed.name);
+                        filesAdded = filePassed;
                     }
-                } else{
-                    if(file.ownedByMe === false){
-                        if(!addedFilesSet.has(file.name)){
-                            addedFilesSet.add(file.name);
-                            addedFiles.push(file);
+                }
+            } else{
+                if(filePassed.ownedByMe === false){
+                    if(!addedFilesSet.has(filePassed.name)){
+                        addedFilesSet.add(filePassed.name);
+                        filesAdded = filePassed;
+                    }
+                }
+            }
+        } else if(operator === "owner:user"){
+            console.log(filePassed)
+            if(filePassed.owner === operand){
+                if(!addedFilesSet.has(filePassed.name)){
+                    addedFilesSet.add(filePassed.name);
+                    filesAdded = filePassed;
+                }
+                fileForOperator = filePassed;
+            }
+        } else if(operator === "creator:user"){
+            if(filePassed.creator === operand){
+                if(!addedFilesSet.has(filePassed.name)){
+                    addedFilesSet.add(filePassed.name);
+                    filesAdded = filePassed;
+                }
+            }
+        } else if(operator === "readable:user"){
+            filePassed.permissions.forEach((perm) => {
+                if (perm.emailAddress === operand) {
+                    if(perm.role === "reader"){
+                        if(!addedFilesSet.has(filePassed.name)){
+                            addedFilesSet.add(filePassed.name);
+                            filesAdded = filePassed;
                         }
                     }
                 }
-            } else if(operator === "owner:user"){
-                console.log(file)
-                if(file.owner === operand){
-                    if(!addedFilesSet.has(file.name)){
-                        addedFilesSet.add(file.name);
-                        addedFiles.push(file);
+            })
+        } else if(operator === "writeable:user"){
+            filePassed.permissions.forEach((perm) => {
+                if (perm.emailAddress === operand) {
+                    if(perm.role === "writer"){
+                        if(!addedFilesSet.has(filePassed.name)){
+                            addedFilesSet.add(filePassed.name);
+                            filesAdded = filePassed;
+                        }
                     }
                 }
-            } else if(operator === "creator:user"){
-                if(file.creator === operand){
-                    if(!addedFilesSet.has(file.name)){
-                        addedFilesSet.add(file.name);
-                        addedFiles.push(file);
+            })
+        } else if(operator === "shareable:user"){
+            console.log(filePassed);
+            if(filePassed.owner === operand){
+                if(!addedFilesSet.has(filePassed.name)){
+                    addedFilesSet.add(filePassed.name);
+                    filesAdded = filePassed;
+                }
+            }
+        }else if(operator === "to:user"){
+            console.log("in here");
+            filePassed.permissions.forEach((perm) => {
+                if (perm.emailAddress === operand && filePassed.ownedByMe === true) {
+                    if(perm.role !== "owner"){
+                        if(!addedFilesSet.has(filePassed.name)){
+                            addedFilesSet.add(filePassed.name);
+                            filesAdded = filePassed;
+                        }
                     }
                 }
-            } else if(operator === "readable:user"){
-                file.permissions.forEach((perm) => {
-                    if (perm.emailAddress === operand) {
-                        if(perm.role === "reader"){
-                            if(!addedFilesSet.has(file.name)){
-                                addedFilesSet.add(file.name);
-                                addedFiles.push(file);
-                            }
+            })
+        } else if(operator === "from:user"){
+            filePassed.permissions.forEach((perm) => {
+                if (perm.emailAddress === operand) {
+                    if(perm.role === "owner"){
+                        if(!addedFilesSet.has(filePassed.name)){
+                            addedFilesSet.add(filePassed.name);
+                            filesAdded = filePassed;
                         }
-                    }
-                })
-            } else if(operator === "writeable:user"){
-                file.permissions.forEach((perm) => {
-                    if (perm.emailAddress === operand) {
-                        if(perm.role === "writer"){
-                            if(!addedFilesSet.has(file.name)){
-                                addedFilesSet.add(file.name);
-                                addedFiles.push(file);
-                            }
-                        }
-                    }
-                })
-            } else if(operator === "shareable:user"){
-                console.log(file);
-                if(file.owner === operand){
-                    if(!addedFilesSet.has(file.name)){
-                        addedFilesSet.add(file.name);
-                        addedFiles.push(file);
                     }
                 }
-            }else if(operator === "to:user"){
-                console.log("in here");
-                file.permissions.forEach((perm) => {
-                    if (perm.emailAddress === operand && file.ownedByMe === true) {
-                        if(perm.role !== "owner"){
-                            if(!addedFilesSet.has(file.name)){
-                                addedFilesSet.add(file.name);
-                                addedFiles.push(file);
-                            }
-                        }
-                    }
-                })
-            } else if(operator === "from:user"){
-                file.permissions.forEach((perm) => {
-                    if (perm.emailAddress === operand) {
-                        if(perm.role === "owner"){
-                            if(!addedFilesSet.has(file.name)){
-                                addedFilesSet.add(file.name);
-                                addedFiles.push(file);
-                            }
-                        }
-                    }
-                })
-            } else if(operator === "name:regexp"){
-                let regexp = new RegExp(operand);
-                if(regexp.exec(file.name)){ // key is the regular expression.
-                    if(!addedFilesSet.has(file.name)){
-                        addedFilesSet.add(file.name);
-                        addedFiles.push(file);
-                    }
+            })
+        } else if(operator === "name:regexp"){
+            let regexp = new RegExp(operand);
+            console.log(filePassed);
+            if(regexp.exec(filePassed.name)){ // key is the regular expression.
+                if(!addedFilesSet.has(filePassed.name)){
+                    addedFilesSet.add(filePassed.name);
+                    filesAdded = filePassed;
                 }
-            } else if(operator === "sharing:none"){
-                console.log("in here");
-                if(file.ownedByMe === true && file.permissions.length === 1){
-                    if(!addedFilesSet.has(file.name)){
-                        addedFilesSet.add(file.name);
-                        addedFiles.push(file);
-                    }
+                fileForOperator = filePassed;
+            }
+        } else if(operator === "sharing:none"){
+            console.log("in here");
+            if(filePassed.ownedByMe === true && filePassed.permissions.length === 1){
+                if(!addedFilesSet.has(filePassed.name)){
+                    addedFilesSet.add(filePassed.name);
+                    filesAdded = filePassed;
                 }
-            } else if(operator === "sharing:domain"){
-                /*
-                 * doesn't accept a "value" since the sharing:domain automatically goes into
-                 * the email of the current logged into google drive
-                */
-                let ownerDomain = "" + file.owner;
-                ownerDomain = ownerDomain.substring(ownerDomain.indexOf("@") + 1);
-                
-                if(file.ownedByMe === true){
-                    file.permissions.forEach((perm) => {
-                        let userDomain = "" + perm.emailAddress;
-                        userDomain = userDomain.substring(userDomain.indexOf("@") + 1);
-                        if(perm.role !== "owner"){
-                            if (userDomain === ownerDomain && file.permissions.length !== 1) {
-                                if(!addedFilesSet.has(file.name)){
-                                    addedFilesSet.add(file.name);
-                                    addedFiles.push(file);
-                                }
+            }
+        } else if(operator === "sharing:domain"){
+            /*
+                * doesn't accept a "value" since the sharing:domain automatically goes into
+                * the email of the current logged into google drive
+            */
+            let ownerDomain = "" + filePassed.owner;
+            ownerDomain = ownerDomain.substring(ownerDomain.indexOf("@") + 1);
+            
+            if(filePassed.ownedByMe === true){
+                filePassed.permissions.forEach((perm) => {
+                    let userDomain = "" + perm.emailAddress;
+                    userDomain = userDomain.substring(userDomain.indexOf("@") + 1);
+                    if(perm.role !== "owner"){
+                        if (userDomain === ownerDomain && filePassed.permissions.length !== 1) {
+                            if(!addedFilesSet.has(filePassed.name)){
+                                addedFilesSet.add(filePassed.name);
+                                filesAdded = filePassed;
                             }
-                        }
-                    })
-                }
-            }else if(operator === "sharing:individual"){
-                console.log("in here");
-                file.permissions.forEach((perm) => {
-                    if(file.ownedByMe){
-                        if (perm.emailAddress === operand) {
-                            if(perm.role === "writer" || perm.role === "reader"){
-                                if(!addedFilesSet.has(file.name)){
-                                    addedFilesSet.add(file.name);
-                                    addedFiles.push(file);
-                                }
-                            }
-                        }
-                    }
-                })
-            } else if(operator === "inFolder:regexp"){
-                Object.entries(snapshot.folders).forEach((key, value) => {
-                    if(key[0] === folderId){
-                        let index = 0;
-                        while(index < (Object.values(key[1]).length)){
-                            let file = Object.values(key[1])[index];
-                            if(!addedFilesSet.has(file.name)){
-                                addedFilesSet.add(file.name);
-                                addedFiles.push(file);
-                            }
-                            index += 1;
-                        }
-                    }
-                })
-            } else if(operator === "folder:regexp"){
-                Object.entries(snapshot.folders).forEach((key, value) => {
-                    if(key[0] === folderId){
-                        let index = 0;
-                        console.log(snapshot);
-                        console.log(folderId);
-                        console.log(file);
-                        while(index < (Object.values(key[1]).length)){
-                            let file = Object.values(key[1])[index];
-                            if(!addedFilesSet.has(file.name)){
-                                addedFilesSet.add(file.name);
-                                addedFiles.push(file);
-                                checkForSubFolders(snapshot, file.id, addedFilesSet, addedFiles);
-                            }
-                            index += 1;
                         }
                     }
                 })
             }
-        } else{
-
+        }else if(operator === "sharing:individual"){
+            console.log("in here");
+            filePassed.permissions.forEach((perm) => {
+                if(filePassed.ownedByMe){
+                    if (perm.emailAddress === operand) {
+                        if(perm.role === "writer" || perm.role === "reader"){
+                            if(!addedFilesSet.has(filePassed.name)){
+                                addedFilesSet.add(filePassed.name);
+                                filesAdded = filePassed;
+                            }
+                        }
+                    }
+                }
+            })
+        } else if(operator === "inFolder:regexp"){
+            Object.entries(snapshot.folders).forEach((key, value) => {
+                if(key[0] === folderId){
+                    let index = 0;
+                    while(index < (Object.values(key[1]).length)){
+                        let file = Object.values(key[1])[index];
+                        if(!addedFilesSet.has(file.name)){
+                            addedFilesSet.add(file.name);
+                            filesAdded = filePassed;
+                        }
+                        index += 1;
+                    }
+                }
+            })
+        } else if(operator === "folder:regexp"){
+            Object.entries(snapshot.folders).forEach((key, value) => {
+                if(key[0] === folderId){
+                    let index = 0;
+                    console.log(snapshot);
+                    console.log(folderId);
+                    console.log(filePassed);
+                    while(index < (Object.values(key[1]).length)){
+                        let file = Object.values(key[1])[index];
+                        if(!addedFilesSet.has(file.name)){
+                            addedFilesSet.add(file.name);
+                            filesAdded = filePassed;
+                            checkForSubFolders(snapshot, file.id, addedFilesSet);  // addedFiles was here.
+                        }
+                        index += 1;
+                    }
+                }
+            })
         }
-        
+        console.log(filesAdded);
+        return [filesAdded, fileForOperator]
     }
 
     /**
@@ -445,13 +447,12 @@ function UserContextProvider(props) {
     }
 
     const performSearch = useCallback (async (snapshot, queries, save, booleanOps) => {
-        let files = [];
+        
         let set = new Set();
-        let booleanIndex = 0;
+        let booleanIndex = queries.length > 1 ? 0 : -1;
         
         console.log(booleanOps);
         console.log(queries);
-
     
         let queriesLength = 0;
         let keys = [];
@@ -464,60 +465,124 @@ function UserContextProvider(props) {
         console.log(queriesLength);
         console.log(keys);
         console.log(values);
+        
         // name:^jjev and writeable:jason.zhang.1@stonybrook.edu
         
-        if(booleanOps.length !== 0){
-            while(booleanIndex < booleanOps.length){
-                Object.values(snapshot.folders).forEach((folder) => {
-                    Object.values(folder).forEach((file) => {
-                        let qIndex = 1;
-                        while(qIndex < 2){
-                            if(values[qIndex-1] === "inFolder:regexp" || values[qIndex] === "inFolder:regexp"){
-                                let regexp = new RegExp(keys[qIndex]);
-                                if(regexp.exec(file.name) && file.type === "folder"){ 
-                                    searchCheckFile(values[qIndex-1], keys[qIndex-1], values[qIndex], keys[qIndex], 
-                                        booleanOps[booleanIndex], files, file, set, snapshot, file.id);
-                                }
-                            } else if(values[qIndex-1] === "folder:regexp" || values[qIndex] === "folder:regexp"){
-                                let regexp = new RegExp(keys[qIndex]);
-                                if(regexp.exec(file.name) && file.type === "folder"){ 
-                                    searchCheckFile(values[qIndex-1], keys[qIndex-1], values[qIndex], keys[qIndex],
-                                        booleanOps[booleanIndex], files, file, set, snapshot, file.id);
-                                }
-                            } else{
-                                console.log("tamam");
-                                searchCheckFile(values[qIndex-1], keys[qIndex-1], values[qIndex], keys[qIndex],
-                                    booleanOps[booleanIndex], files, file, set, snapshot, "");
-                            }
-                            qIndex += 2;
-                        }
-                    })
-                })
-                console.log(booleanOps[booleanIndex]);
-                booleanIndex+=1;
-            }
-        } else{
+        let files = [];
+        let filesToCompare = [];
+        console.log(filesToCompare);
+        let flag = 0;
+        let firstQuery = [];
+        
+        while(booleanIndex < booleanOps.length){
+            let secondQuery = [];
             Object.values(snapshot.folders).forEach((folder) => {
+                console.log("count");
                 Object.values(folder).forEach((file) => {
+                    console.log(queries);
+                    let results = new Map();
+                    let qFlag = 0;
                     queries.forEach((key, value) => {
+                        console.log(file); //name:^JJEV and owner:emirhan.akkaya@stonybrook.edu
                         if(value === "inFolder:regexp"){
                             let regexp = new RegExp(key);
                             if(regexp.exec(file.name) && file.type === "folder"){ 
-                                searchCheckFile(value, key, null, null, null, files, file, set, snapshot, file.id);
+                                files = searchCheckFile(value, key, file, set, snapshot, file.id);
                             }
                         } else if(value === "folder:regexp"){
                             let regexp = new RegExp(key);
                             if(regexp.exec(file.name) && file.type === "folder"){ 
-                                searchCheckFile(value, key, null, null, null, files, file, set, snapshot, file.id);
+                                files = searchCheckFile(value, key, file, set, snapshot, file.id);
                             }
                         } else{
-                            console.log("tamam");
-                            searchCheckFile(value, key, null, null, null, files, file, set, snapshot, "");
+                            let returnedFile = searchCheckFile(value, key, file, set, snapshot, "");
+                            console.log(filesToCompare);
+                            if(returnedFile[0]){
+                                files.push(returnedFile[0]);
+                                filesToCompare.push(returnedFile[0].id);
+                                console.log("qFlag: " + qFlag);
+                                console.log(value);
+                            } 
+                            
+                            if(returnedFile[1]){
+                                if(qFlag === 0){
+                                    console.log("value[0]: " + value);
+                                    firstQuery.push(file.id);
+                                } else{
+                                    console.log("value[1]: " + value);
+                                    secondQuery.push(file.id);
+                                }
+                            }
+                            qFlag = 1; // even if file wasn't added, should still be "1" for qFlag for next query.
                         }
+                       
+                        // AND operator (checking if second operators array is in first operatros array)
+                        
+                        // let filesQueryIndex = 0;
+                        // while(filesQueryIndex < filesQuery.length){
+                        //     let checkDuplicatesIndex = filesQueryIndex;
+                        //     let dupFlag = 0;
+                        //     while(checkDuplicatesIndex < filesQuery.length){
+                        //         if(filesQuery[checkDuplicatesIndex].id === files[checkDuplicatesIndex].id){
+                        //             dupFlag = 1;
+                        //             break;
+                        //         }
+                        //         checkDuplicatesIndex += 1;
+                        //     }
+                        //     if(dupFlag === 0){
+                        //         files.push(filesQuery[filesQueryIndex]); // duplicate NON - EXISTENT
+                        //     }
+                        //     filesQueryIndex += 1;
+                        // }
+                        results.set(value, files);
                     })
                 })
+                // first = true;
             })
+
+            console.log(firstQuery);
+            console.log(secondQuery);
+            
+            let addedSet = new Set();
+            let forBoolIndex = 0;
+            if(booleanOps[forBoolIndex] === "and"){
+                let index = 0;
+                let set = new Set();
+                while(index < firstQuery.length){
+                    set.add(firstQuery[index]);
+                    index += 1;
+                }
+                index = 0;
+                console.log(set);
+                while(index < secondQuery.length){
+                    if(set.has(secondQuery[index])){
+                        console.log("in add");
+                        addedSet.add(secondQuery[index]);
+                    }
+                    index += 1;
+                }
+                // name:^JJEV and owner:emirhan.akkaya@stonybrook.edu
+                index = 0;
+                console.log(files);
+               
+                while(index < files.length){
+                    console.log("files[index].id: " + files[index].id);
+                    if(!addedSet.has(files[index].id)){
+                        console.log("in here!");
+                        files.splice(index, 1);
+                    }
+                    index += 1;
+                }
+                console.log(files);
+            }
+            console.log(addedSet);
+            console.log(booleanOps[booleanIndex]);
+            booleanIndex+=1;
+            console.log("count");
+            booleanIndex += 1;
+            forBoolIndex += 1;
         }
+        
         
         
         // console.log(files);
