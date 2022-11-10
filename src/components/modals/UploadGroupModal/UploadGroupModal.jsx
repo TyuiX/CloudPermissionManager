@@ -1,5 +1,5 @@
 import React, {useContext, useState} from 'react';
-import {AiOutlineClose} from "react-icons/ai";
+import {AiOutlineClose, AiOutlineExclamationCircle} from "react-icons/ai";
 import ErrorPopupModal from "../ErrorPopupModal/ErrorPopupModal";
 import "./UploadGroupModal.css";
 import {UserContext} from "../../../utils/context/UserContext";
@@ -59,6 +59,13 @@ export default function UploadGroupModal(props) {
                     </div>
                     <div className="modal-section">
                         <input className="upload-file-button" type="file" onChange={previewFile}/>
+                    </div>
+                    <div className="modal-footnote">
+                        <AiOutlineExclamationCircle size={25} />
+                        <div>
+                            Note: In order to create a Snapshot of a Google Group, submit a HTML file of the Members
+                            page on the Google Groups group's page.
+                        </div>
                     </div>
                     <div className="modal-footer">
                         <button className="modal-button modal-confirm" onClick={e => handleConfirm(e)}>Confirm</button>

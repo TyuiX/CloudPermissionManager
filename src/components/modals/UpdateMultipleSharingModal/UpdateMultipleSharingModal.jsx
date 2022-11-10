@@ -262,7 +262,7 @@ export default function UpdateMultipleSharingModal(props) {
                             }
                         </div>
                     </div>
-                    <div className="multiple-sharing-note">
+                    <div className="modal-footnote">
                         <AiOutlineExclamationCircle size={25} />
                         <div>
                             Note, these changes are applied to all selected files.
