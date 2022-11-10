@@ -5,10 +5,12 @@ import "./AnalyzeSharingModal.css";
 import ReactSlider from 'react-slider'
 import {UserContext} from "../../../utils/context/UserContext";
 import AnalyzeSharingInfoCell from "./AnalyzeSharingInfoCell/AnalyzeSharingInfoCell";
+import FileFolderSharingDiffList from "./FileFolderSharingDiffList/FileFolderSharingDiffList";
+import SnapshotDiffList from "./SnapshotDiffList";
 
 export default function AnalyzeSharingModal(props) {
     const {toggleModal, analysisType} = props;
-    const {snapshots, getFolderFileDif, getSnapShotDiff, getDeviantFiles, setIsLoading} = useContext(UserContext);
+    const {snapshots, getFolderFileDif, getSnapShotDiff, getDeviantFiles} = useContext(UserContext);
     const [selectedSnap, setSelectedSnap] = useState({});
     const [selectedSecondSnap, setSelectedSecondSnap] = useState({});
     const [fileFolderDiff, setFileFolderDiff] = useState([])
@@ -33,12 +35,25 @@ export default function AnalyzeSharingModal(props) {
         if (analysisType === "analysis") {
             // await getting both analyze sharing and deviant sharing information
             const [res1, res2] = await Promise.all([getFolderFileDif(selectedSnap._id), getDeviantFiles(selectedSnap, threshold)])
-            setFileFolderDiff(res1);
+            setFileFolderDiff({
+                "Different Permissions": res1.filter(({type}) => type === "diff"),
+                "Extra Permissions": res1.filter(({type}) => type === "extra"),
+                "Missing Permissions": res1.filter(({type}) => type === "missing"),
+                size: res1.length
+            });
             setDeviantSharing(res2);
         } else {
             // pass two selected snapshots to backend and await return
             let data = await getSnapShotDiff(selectedSnap, selectedSecondSnap);
-            setSnapshotDiff(data)
+            console.log(data)
+
+            setSnapshotDiff({
+                "New Files": data.filter(({type}) => type === "new file"),
+                "New Permissions": data.filter(({type}) => type === "new perm"),
+                "Changed Permissions": data.filter(({type}) => type === "change perm"),
+                "Deleted Permissions": data.filter(({type}) => type === "deleted perm"),
+                size: data.length
+            })
         }
     }
 
@@ -110,32 +125,11 @@ export default function AnalyzeSharingModal(props) {
                 <div className="modal-section">
                     <div className="modal-section-title">{analysisType === "analysis" ? "File Folder" : "Snapshot"} Sharing Differences:</div>
                     <div className={analysisType === "analysis" ? "analysis-list-container" : "snapshot-diff-list-container"}>
-                        {fileFolderDiff.length > 0 &&
-                            fileFolderDiff.map((info, index) =>
-                                <AnalyzeSharingInfoCell key={index} cellInfo={info} infoType={"ff"} />
-                            )
+                        {fileFolderDiff.size > 0 &&
+                            <FileFolderSharingDiffList diffInfo={fileFolderDiff} />
                         }
-                        {snapshotDiff.length > 0 &&
-                            snapshotDiff.map(({type, file_name, perm_id, perm_name, perm_role, new_role, old_role}, index) =>
-                                <div key={perm_id + index} className="analysis-block">
-                                    {type}
-                                    <div>File: {file_name}</div>
-                                    <div>User: {perm_name}</div>
-                                    {
-                                        type === "new perm" &&
-                                        <>
-                                            <div>Role: {perm_role}</div>
-                                        </>
-                                    }
-                                    {
-                                        type === "change perm" &&
-                                        <>
-                                            <div>Old Role: {old_role}</div>
-                                            <div>New Role: {new_role}</div>
-                                        </>
-                                    }
-                                </div>
-                            )
+                        {snapshotDiff.size > 0 &&
+                            <SnapshotDiffList diffInfo={snapshotDiff} />
                         }
                     </div>
                 </div>
@@ -144,18 +138,8 @@ export default function AnalyzeSharingModal(props) {
                         <div className="modal-section-title">Deviant Sharing</div>
                         {deviantSharing.length > 0 &&
                             <div className="analysis-list-container">
-                                {deviantSharing.map(({fileName, diffPer}) => (
-                                    <div className="analysis-block">
-                                        <div>{fileName}</div>
-                                        {
-                                            diffPer.map((dif) => (
-                                                <div>
-                                                    <div>Permission target: {dif[0].displayName}</div>
-                                                    <div>Difference: {dif[1]}</div>
-                                                </div>
-                                            ))
-                                        }
-                                    </div>
+                                {deviantSharing.map(({fileName, diffPer}, index) => (
+                                    <AnalyzeSharingInfoCell key={index} cellInfo={diffPer} infoType={"dev"} fileName={fileName} />
                                 ))}
                             </div>
                         }
