@@ -64,20 +64,34 @@ export default function SearchBar(props) {
                 if(queryOptions[index].substring(0, queryOptions[index].indexOf(":")) === "sharing"){
                     ifSharing = queryOptions[index].substring(queryOptions[index].indexOf(":") + 1, queryOptions[index].lastIndexOf(":"));
                     console.log(ifSharing);
-                } 
-                
-                if(queryOption === "and" || queryOption === "or" || queryOption === "!"){
-                    booleanOps.push(queryOption);
                 }
 
+                console.log("burda");
+                console.log(queryOptions[index][0]);
+                if(queryOption === "and" || queryOption === "or"){
+                    booleanOps.push(queryOption);
+                } else if(queryOptions[index][0] === "!"){
+                    console.log("in here");
+                    queryOptions[index].substring(1);
+                    booleanOps.push("!");
+                }
+
+                if(queryOption[0] === "!"){
+                    queryOption = queryOptions[index].substring(1, queryOptions[index].indexOf(":"));
+                } else{
+                    queryOption = queryOptions[index].substring(0, queryOptions[index].indexOf(":"));
+                }
                 console.log(queryOption);
-                queryOption = queryOptions[index].substring(0, queryOptions[index].indexOf(":"));
+                
+                console.log(nameOfFile.substring(nameOfFile.lastIndexOf(":") + 1) + queryOptions[index+1]);
+                console.log(nameOfFile);
                 if(queryOption === "owner" || queryOption === "creator" ||
                 queryOption === "from" || queryOption === "to" || queryOption === "readable" ||
                     queryOption === "writeable" || queryOption === "shareable"){
                         existingQueriesMap.set(queryOption + ":user", nameOfFile.substring(nameOfFile.indexOf(":") + 1));
                 } else if(queryOption === "drive"){
-                    existingQueriesMap.set(queryOption + ":drive", nameOfFile.substring(nameOfFile.indexOf(":") + 1));
+                    existingQueriesMap.set(queryOption + ":drive", nameOfFile.substring(nameOfFile.lastIndexOf(":") + 1)
+                        + " " + queryOptions[index+1]);
                 } else if(queryOption === "name" || queryOption === "inFolder" || queryOption === "folder"){
                     existingQueriesMap.set(queryOption + ":regexp", nameOfFile.substring(nameOfFile.indexOf(":") + 1));
                 } else if(queryOption === "path"){
@@ -104,7 +118,7 @@ export default function SearchBar(props) {
                 // }
                 index += 1;
             }
-            
+            console.log(existingQueriesMap);
             performSearch(currentSnap, existingQueriesMap, true, booleanOps);
             navigate('/searchresults');
         }
