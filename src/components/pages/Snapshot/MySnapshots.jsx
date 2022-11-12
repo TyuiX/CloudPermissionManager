@@ -5,14 +5,13 @@ import React, {useContext, useState} from "react";
 import {GoogleContext} from "../../../utils/context/GoogleContext";
 import {UserContext} from "../../../utils/context/UserContext";
 import AnalyzeSharingModal from "../../modals/AnalyzeSharingModal/AnalyzeSharingModal";
-import "./MySnapshots.css";
+import "../SnapshotPages.css";
 import {AiOutlinePlus} from "react-icons/ai";
 
 export default function MySnapshots() {
     const {allFiles} = useContext(GoogleContext);
-    const {snapshots, createNewSnapshot, getFolderFileDif, getSnapShotDiff, getDeviantFiles} = useContext(UserContext);
+    const {snapshots, createNewSnapshot} = useContext(UserContext);
     const [showModal, setShowModal] = useState(false);
-    const [analysisInfo, setAnalysisInfo] = useState([])
     const [analysisType, setAnalysisType] = useState("")
     console.log(showModal)
     const handleToggleModal = () => {
@@ -38,6 +37,7 @@ export default function MySnapshots() {
             const {id, parents, permissions} = file;
             console.log(permissions);
             console.log(file);
+
             if (!parents){
                 if (!snapshot.folders.has("orphan")){
                     snapshot.folders.set("orphan", new Map());
@@ -103,21 +103,14 @@ export default function MySnapshots() {
         createNewSnapshot(snapshot, user.email)
     }
 
-    const handleCompareFileFolder = async () => {
-        console.log(firstSnap)
-        console.log(firstSnap._id)
-        let data = await getFolderFileDif(firstSnap._id);
-        setAnalysisInfo(data)
-        setAnalysisType("file-folder")
+    const openAnalyzeSnapshot = async () => {
+        setAnalysisType("analysis")
         setShowModal(true)
     }
 
-    const handleCompareSnapshot = async () => {
-        console.log(firstSnap)
-        let data = await getSnapShotDiff(snapshots[1], firstSnap);
-        setAnalysisInfo(data)
-        setAnalysisType("snapshot-change")
-        setShowModal(true)
+    const openCompareSnapshots = () => {
+        setAnalysisType("compare");
+        setShowModal(true);
     }
 
     let firstSnap = null;
@@ -129,28 +122,6 @@ export default function MySnapshots() {
         secondSnap = snapshots;
     }
 
-    let fullDate = "";
-    if (firstSnap){
-        let date = firstSnap.date;
-
-        let month = date.substring(5, 7);
-        let day = date.substring(8, 10);
-        let time = date.substring(11, date.length - 5);
-
-        let monthString = "";
-        if (month === "10") { monthString = "October"}
-        else if (month === "11") { monthString = "November"}
-        else if (month === "12") { monthString = "December"}
-        fullDate = "Taken on " + monthString + " " + day + ", " + 2022 + " at " + time;
-    }
-    //handle getting deviant
-    const handleDeviant = async ()=> {
-        let data = await getDeviantFiles(snapshots[0]);
-        console.log(data)
-        setAnalysisInfo(data)
-        setAnalysisType("deviant")
-        setShowModal(true)
-    }
     console.log(snapshots)
     
     return (
@@ -160,18 +131,15 @@ export default function MySnapshots() {
                 <div className="page-content">
                     <h2 className="page-content-header">My Snapshots</h2>
                     <div className="snapshot-page-buttons">
-                        <button className="snapshot-page-button" onClick={handleCompareFileFolder}>FileFolderDiff</button>
-                        <button className="snapshot-page-button" onClick={handleDeviant}>deviant</button>
-                        <button className="snapshot-page-button" onClick={handleCompareSnapshot}>SnapshotDiff</button>
+                        <button className="snapshot-page-button" onClick={openAnalyzeSnapshot}>Analyze Snapshot</button>
+                        <button className="snapshot-page-button" onClick={openCompareSnapshots}>Compare Snapshots</button>
                         <button className="snapshot-page-button" onClick={createSnapshotData}>
                             <AiOutlinePlus size={20} />
                             Add Snapshot
                         </button>
                     </div>
-                    
                     {snapshots.length > 0 &&
                         <>
-                    
                             <h3 className="category-title">Current Snapshot:</h3>
                             <SnapCell snapInfo={firstSnap}/>
                             <h3 className="category-title">Snapshot History:</h3>
@@ -186,7 +154,6 @@ export default function MySnapshots() {
             </div>
             {showModal &&
                 <AnalyzeSharingModal
-                    analysisInfo={analysisInfo}
                     analysisType={analysisType}
                     toggleModal={handleToggleModal}
                 />

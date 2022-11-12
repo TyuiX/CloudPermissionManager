@@ -16,6 +16,7 @@ function UserContextProvider(props) {
     const [isLoading, setIsLoading] = useState(true);
     const [recentSearches, setRecentSearches] = useState([]);
     const [searchResults, setSearchResults] = useState([]);
+    const [groupSnapshots, setGroupSnapshots] = useState([])
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -37,9 +38,7 @@ function UserContextProvider(props) {
             return
         }
         const loadResources = async () => {
-            await getSnapshots()
-            await getRecentSearches()
-            await getControlReqs()
+            await Promise.all([getSnapshots(), getRecentSearches(), getControlReqs(), getGroupSnapshots()])
         }
         loadResources()
     }, [user.email])
@@ -150,9 +149,9 @@ function UserContextProvider(props) {
         }
     }, [])
 
-    const getDeviantFiles = useCallback( async (snapshot) => {
+    const getDeviantFiles = useCallback( async (snapshot, threshold) => {
         try {
-            const res = await api.deviant({snapshot: snapshot})
+            const res = await api.deviant({snapshot: snapshot, threshold: threshold})
             if (res.status === 200) {
                 console.log(res.data)
                 return res.data
@@ -205,9 +204,9 @@ function UserContextProvider(props) {
     const getControlReqs = useCallback(async () => {
         try {
             const res = await api.getUserProfile({email: user.email});
+            console.log(res.data)
             const res2 = await api.getControlReqs(res.data.accessControlReqs)
             setControlReqs(res2.data.reqs)
-            console.log(setControlReqs);
         }
         catch (err) {
             return err.response.data.errorMessage;
@@ -236,12 +235,34 @@ function UserContextProvider(props) {
         }
     }, [user.email])
 
-    const searchCheckFile = (operator, operand, filePassed, addedFilesSet, snapshot, folderId) => {
+    const getGroupSnapshots = useCallback(async () => {
+        try {
+            const res = await api.getUserProfile({email: user.email});
+            console.log(res.data)
+            const res2 = await api.getGroupSnapshots(res.data.groupSnapshot)
+            setGroupSnapshots(res2.data.snaps)
+        }
+        catch (err) {
+            return err.response.data.errorMessage;
+        }
+    },[user.email])
 
+    const createNewGroupSnapshot = useCallback(async (members, grpEmail) => {
+        try {
+            const res = await api.createNewGroupSnapshot({members: members, grpEmail: grpEmail, email: user.email})
+            console.log(res.data)
+            await getGroupSnapshots()
+        }
+        catch (err) {
+            return err.response.data.errorMessage;
+        }
+    }, [user.email])
+
+
+    const searchCheckFile = (operator, operand, addedFiles, file, addedFilesSet, snapshot, folderId) => {
         let filesAdded = null; // update this "dummy" array and then return this as the return for "searchCheckFiles"
         let fileForOperator = null;
-        console.log(operator);
-        console.log(operand);
+        console.log(file);
         if(operator === "drive:drive"){
             if(operand === "My Drive"){
                 console.log(filePassed);
@@ -761,7 +782,7 @@ function UserContextProvider(props) {
                 }
             }
         }
-        else if (role === "writer" || role === "editor") {
+        else if (role === "writer" || role === "editor" || role === "organizer" || role === "fileOrganizer") {
             if (dw.emails.length > 0 || dw.domains.length > 0) {
                 if (dw.emails.includes(emailAddress) || checkInDomains(emailAddress, dw.domains)) {
                     currentViol.violation = "Denied Writer";
@@ -836,7 +857,7 @@ function UserContextProvider(props) {
         <UserContext.Provider value={{
             user, snapshots, isLoading, loggedIn, recentSearches, createUser, loginUser, logoutUser, startLoading, finishLoading, 
             setGoogleAcc, createNewSnapshot, getFolderFileDif, getSnapShotDiff, searchByName, getRecentSearches, createNewControlReq,
-            controlReqs, deleteControlReq, setIsLoading, getControlReqs, performSearch, searchResults,
+            controlReqs, deleteControlReq, setIsLoading, performSearch, searchResults, groupSnapshots, createNewGroupSnapshot,
             getControlReqQueryFiles, checkInDomains, checkViolations, checkReqsBeforeUpdate, getDeviantFiles
         }}>
             {props.children}

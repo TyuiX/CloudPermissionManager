@@ -28,7 +28,7 @@ export default function QueryBuilder(props) {
         }
         else{
             handleToggleGenericModal();
-            console.log("qmap");
+            // console.log("qmap");
             console.log(qMap);
         }
     }
