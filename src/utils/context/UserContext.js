@@ -340,6 +340,7 @@ function UserContextProvider(props) {
             let regexp = new RegExp(operand);
             console.log(filePassed);
             if(regexp.exec(filePassed.name)){ // key is the regular expression.
+                console.log("in pdf");
                 if(!addedFilesSet.has(filePassed.name)){
                     addedFilesSet.add(filePassed.name);
                     filesAdded = filePassed;
@@ -459,44 +460,32 @@ function UserContextProvider(props) {
         return addedFiles;
     }
 
-    // writeable:jason.zhang.1@stonybrook.edu and owner:emirhan.akkaya@stonybrook.edu and name:pdf$ or 
-    // (cont. ^)... from:varunvinay.chotalia@stonybrook.edu and to:emirhan.akkaya@stonybrook.edu
     const performSearch = useCallback (async (snapshot, queries, save, booleanOps) => {
         
         let set = new Set();
-        console.log(queries);
-        
-        //writeable:jason.zhang.1@stonybrook.edu and owner:jason.guo@stonybrook.edu
-        //name:^JJEV and owner:jason.guo@stonybrook.edu or from:varunvinay.chotalia@stonybrook.edu
         let queriesLength = 0;
+
         let keys = [];
         let values = [];
+       
         queries.forEach((key, value) => {
             keys.push(key);
             values.push(value);
             queriesLength += 1;
         })
-        let booleanIndex = queriesLength > 1 ? 0 : -1; // was >
-        console.log(booleanIndex);
-        console.log(booleanOps);
-        console.log(queries);
-        console.log(queriesLength);
-       
-        
-        // name:^jjev and writeable:jason.zhang.1@stonybrook.edu
+
+        let booleanIndex = queriesLength > 1 ? 0 : -1;
         
         let files = [];
         let saveTheseFiles = [];
         let filesToCompare = [];
-        console.log(filesToCompare);
         let firstQuery = []; 
+        
         let queriesIndex = 0;
         let saveOriginalQueries = new Map();
         let keyToDelete = null;
 
         for(let [key, value] of queries){
-            // saveOriginalQueries.set(key, value);
-            console.log("key: " + key + ", value: " + value);
             if(queriesIndex >= 2){ // delete one at a time to check the last index with the second to last index.
                 break;
             }
@@ -514,18 +503,10 @@ function UserContextProvider(props) {
         let forBoolIndex = 0;
         let namesOfFiles = new Set();
         while(booleanIndex < booleanOps.length){
-            
             let secondQuery = [];
-            console.log(queries);
-            console.log(Object.keys(queries));
-            // if(Object.keys(queries).length <= 0 && queriesIndex === 7){
-            //     break;
-            // }
-            console.log(Object.keys(queries)[0]);
-            
             let queryIndex = 0;
             
-            if(queriesIndex === 7){ // a flag (7 represents something specific).
+            if(queriesIndex === 7){
                 saveOriginalQueries.delete(keyToDelete)
                 console.log(saveOriginalQueries);
                 for(let [key, value] of queries){
@@ -542,14 +523,6 @@ function UserContextProvider(props) {
                     queries.delete(key);
                 }
             }
-            //writeable:jason.zhang.1@stonybrook.edu and owner:jason.guo@stonybrook.edu or name:pdf$
-            
-            console.log(files);
-            console.log(queries);
-            console.log(booleanIndex);
-            console.log(booleanOps.length);
-            console.log(booleanOps[booleanIndex]);
-            console.log(saveOriginalQueries);
             let lengthOfQueriesHere = 0;
             saveOriginalQueries.forEach((key, value) =>{
                 lengthOfQueriesHere += 1;
@@ -562,7 +535,6 @@ function UserContextProvider(props) {
                     let qFlag = 0;
                     if(queriesIndex === 7){
                         let indexHere = 0;
-                        // firstQuery = [];
                         namesOfFiles.forEach((val) => {
                             firstQuery[indexHere] = val;
                             indexHere += 1;
@@ -571,13 +543,8 @@ function UserContextProvider(props) {
                     saveOriginalQueries.forEach((key, value) => {
                         if(lengthOfQueriesHere === 1 && queriesIndex === 7) { 
                             qFlag = 1; 
-                            // firstQuery = [];
-                        } // can't put a nonsense restriction in this case.
-                        else{
-                            ;
                         }
-                        // console.log(file); //name:^JJEV and owner:jason.guo@stonybrook.edu or sharing:none
-                        //name:^JJEV and owner:jason.guo@stonybrook.edu or from:varunvinay.chotalia@stonybrook.edu
+
                         if(value === "inFolder:regexp"){
                             let regexp = new RegExp(key);
                             if(regexp.exec(file.name) && file.type === "folder"){ 
@@ -589,20 +556,15 @@ function UserContextProvider(props) {
                                 files = searchCheckFile(value, key, file, set, snapshot, file.id);
                             }
                         } else{
-                            console.log("key: " + key + ", value: " + value);
                             let returnedFile = searchCheckFile(value, key, file, set, snapshot, "");
                             if(returnedFile[0]){
-                                console.log("in heree?");
                                 files.push(returnedFile[0]);
-                                // filesSet.add(returnedFile[0]);
                                 filesToCompare.push(returnedFile[0].id);
                                 if(qFlag === 0){
                                     firstQuery.push(file.id);
                                 }
                             }
                             if(returnedFile[1]){
-                                console.log("qFlag: " + qFlag);
-                                console.log(file);
                                 if(qFlag === 1){//
                                     secondQuery.push(file.id);
                                 }
@@ -610,40 +572,18 @@ function UserContextProvider(props) {
                             
                             qFlag = 1; // even if file wasn't added, should still be "1" for qFlag for next query.
                         }
-                       
-                        // AND operator (checking if second operators array is in first operatros array)
-                        
-                        // let filesQueryIndex = 0;
-                        // while(filesQueryIndex < filesQuery.length){
-                        //     let checkDuplicatesIndex = filesQueryIndex;
-                        //     let dupFlag = 0;
-                        //     while(checkDuplicatesIndex < filesQuery.length){
-                        //         if(filesQuery[checkDuplicatesIndex].id === files[checkDuplicatesIndex].id){
-                        //             dupFlag = 1;
-                        //             break;
-                        //         }
-                        //         checkDuplicatesIndex += 1;
-                        //     }
-                        //     if(dupFlag === 0){
-                        //         files.push(filesQuery[filesQueryIndex]); // duplicate NON - EXISTENT
-                        //     }
-                        //     filesQueryIndex += 1;
-                        // }
                         results.set(value, files);
                     })
                 })
-                // first = true;
             })
             queriesIndex = 7;
 
             console.log(firstQuery);
             console.log(secondQuery);
             console.log(booleanOps);
-            
             let addedSet = new Set();
-            // name:^JJEV and owner:jason.guo@stonybrook.edu or from:varunvinay.chotalia@stonybrook.edu
-            // writeable:jason.zhang.1@stonybrook.edu and owner:emirhan.akkaya@stonybrook.edu and name:pdf$
             if(booleanOps[forBoolIndex] === "and"){
+                // check to see if the next boolean operator is "!"
                 let index = 0;
                 let setHere = new Set();
                 while(index < firstQuery.length){ setHere.add(firstQuery[index++]); }
@@ -668,18 +608,18 @@ function UserContextProvider(props) {
                         }
                     })
                 })
+                
             } else if(booleanOps[forBoolIndex] === "or"){
-                // name:^jjev and owner:emirhan.akkaya@stonybrook.edu
                 let index = 0;
                 let setToAdd = new Set();
                 while(index < firstQuery.length){ setToAdd.add(firstQuery[index++]); }
+
                 index = 0;
                 while(index < secondQuery.length){ setToAdd.add(secondQuery[index++]); }
+
                 index = 0;
-                console.log(setToAdd);
                 saveTheseFiles = [];
                 namesOfFiles = [];
-                console.log(saveTheseFiles); // make "saveTheseFiles" a set and then push onto an array at the end.
                 
                 Object.values(snapshot.folders).forEach((folder) => {
                     Object.values(folder).forEach((file) => {
@@ -693,16 +633,23 @@ function UserContextProvider(props) {
                 console.log(saveTheseFiles);
             } else if(booleanOps[forBoolIndex] === "!"){
                 saveTheseFiles = [];
-                console.log(saveTheseFiles);
                 namesOfFiles = [];
+
                 let index = 0;
-                console.log(firstQuery);
                 addedSet = new Set();
-                while(index < firstQuery.length){
-                    addedSet.add(firstQuery[index]);
-                    index += 1;
+
+                if((forBoolIndex + 1) < booleanOps.length){
+                    while(index < firstQuery.length){
+                        addedSet.add(firstQuery[index]);
+                        index += 1;
+                    }
+                } else{
+                    while(index < secondQuery.length){
+                        addedSet.add(secondQuery[index]);
+                        index += 1;
+                    }
                 }
-                console.log(addedSet);
+
                 index = 0;
                 Object.values(snapshot.folders).forEach((folder) => {
                     Object.values(folder).forEach((file) => {
@@ -717,6 +664,48 @@ function UserContextProvider(props) {
                         }
                     })
                 })
+                if((forBoolIndex % 2 === 1) && booleanOps.length !== 1){
+                    // can't have "!" as last boolean operator unless length of booleanOps === 1
+                    index = 0;
+                    addedSet = new Set();
+                    let setHere = new Set();
+                    // sample: name:^JJEV and !owner:emirhan.akkaya@stonybrook.edu and writeable:varunvinay.chotalia@stonybrook.edu
+                    
+                    if(booleanOps[forBoolIndex-1] === "and"){
+                        console.log(saveTheseFiles);
+                        console.log(firstQuery);
+                        while(index < saveTheseFiles.length){  setHere.add(saveTheseFiles[index++].id); }
+                        index = 0;
+                        while(index < firstQuery.length){
+                            if(setHere.has(firstQuery[index])){
+                                addedSet.add(firstQuery[index]); // id's to loop through :)
+                            }
+                            index += 1;
+                        }
+                        console.log(addedSet);
+                    } else { // has to be "or"
+                        console.log("in the else");
+                        console.log(saveTheseFiles);
+                        while(index < saveTheseFiles.length){ addedSet.add(saveTheseFiles[index++].id); }
+                        index = 0;
+                        while(index < firstQuery.length){ addedSet.add(firstQuery[index++]); }
+                    }
+
+                    saveTheseFiles = [];
+                    firstQuery = [];
+                    index = 0;
+                    Object.values(snapshot.folders).forEach((folder) => {
+                        Object.values(folder).forEach((file) => {
+                            if(addedSet.has(file.id)){
+                                saveTheseFiles[index] = file;
+                                firstQuery[index] = file.id;
+                                namesOfFiles[index] = file.id; // fixme
+                                index += 1;
+                            }
+                        })
+                    })
+                }
+
             } else{ // one query operator.
                 if(booleanOps.length > 0){
                     break; // then there could've been a "!" from which we already saved some files.
@@ -724,7 +713,7 @@ function UserContextProvider(props) {
                 let index = 0;
                 while(index < files.length){
                     saveTheseFiles[index] = files[index];
-                    namesOfFiles[index] = files[index].id; // fixme
+                    namesOfFiles[index] = files[index].id;
                     index += 1;
                 }
             }
