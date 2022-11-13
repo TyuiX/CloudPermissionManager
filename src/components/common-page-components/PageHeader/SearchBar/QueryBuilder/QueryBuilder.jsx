@@ -8,7 +8,7 @@ import QueryBuilderQueryTag from "./QueryBuilderQueryTag/QueryBuilderQueryTag";
 
 export default function QueryBuilder(props) {
     const {currentSnap, toggleDropdown, dropdownOpen} = props;
-    const {performSearch} = useContext(UserContext);
+    const {performSearch, getRecentSearches} = useContext(UserContext);
     const [selectedQueryOp, setSelectedQueryOp] = useState("drive:drive");
     const [selectedQueryArg, setSelectedQueryArg] = useState("");
     const [existingQueries, setExistingQueries] = useState([]);
@@ -59,9 +59,10 @@ export default function QueryBuilder(props) {
     }
 
     // perform actual search will full query
-    const confirmQuery = () => {
+    const confirmQuery = async () => {
         console.log(existingQueries);
-        performSearch(currentSnap, stringQuery.split(" "), true, []);
+        await performSearch(currentSnap, stringQuery.split(" "), true, []);
+        getRecentSearches();
         toggleDropdown()
         navigate('/searchresults');
     }

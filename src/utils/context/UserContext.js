@@ -457,6 +457,11 @@ function UserContextProvider(props) {
         let results = []; 
         let index = 0;
 
+        await api.addRecentSearch({
+            query: queries.join(" "),
+            email: user.email
+        })
+
         // TODO redundant code
         // if(queries[0].display){
         //     while(index < queries.length){
@@ -582,7 +587,7 @@ function UserContextProvider(props) {
         else {
             return results;
         }
-    },[])
+    },[searchCheckFile, searchFolder, user.email])
 
     const checkInDomains = useCallback ((user, domains) => {
         let found = domains.find(domain => user.endsWith(domain))
