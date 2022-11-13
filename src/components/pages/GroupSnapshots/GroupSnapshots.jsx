@@ -17,6 +17,7 @@ export default function GroupSnapshots() {
         setShowModal(!showModal)
     }
     
+    console.log(groupSnapshots);
     return (
         <>
             <div className="page-container">
