@@ -60,7 +60,8 @@ export default function QueryBuilder(props) {
     // perform actual search will full query
     const confirmQuery = () => {
         console.log("wger");
-        performSearch(currentSnap, existingQueriesMap, true, []);
+        console.log(existingQueries);
+        performSearch(currentSnap, existingQueries, true, []);
         toggleDropdown()
         navigate('/searchresults');
     }
@@ -81,6 +82,7 @@ export default function QueryBuilder(props) {
             arg: selectedQueryArg,
             display: selectedQueryOp.substring(0, selectedQueryOp.indexOf(':') + 1) + selectedQueryArg
         })
+        console.log(queryCopy);
         setExistingQueries(queryCopy);
         setSelectedQueryOp("drive:drive")
         setSelectedQueryArg("")

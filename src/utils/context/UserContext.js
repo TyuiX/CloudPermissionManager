@@ -1,6 +1,6 @@
 import React, {createContext, useCallback, useEffect, useState} from "react";
 import api from '../../api/ShareManagerAPI'
-import {useNavigate} from "react-router-dom";
+import {UNSAFE_enhanceManualRouteObjects, useNavigate} from "react-router-dom";
 import ControlReqQueriesLists from "../ControlReqQueriesLists";
 import controlReqsList from "../ControlReqQueriesLists";
 import { AiOutlineConsoleSql } from "react-icons/ai";
@@ -42,7 +42,6 @@ function UserContextProvider(props) {
         }
         loadResources()
     }, [user.email])
-    
     
     const startLoading = useCallback(() => {
         setIsLoading(true);
@@ -149,9 +148,9 @@ function UserContextProvider(props) {
         }
     }, [])
 
-    const getDeviantFiles = useCallback( async (snapshot, threshold) => {
+    const getDeviantFiles = useCallback( async (snapshot) => {
         try {
-            const res = await api.deviant({snapshot: snapshot, threshold: threshold})
+            const res = await api.deviant({snapshot: snapshot})
             if (res.status === 200) {
                 console.log(res.data)
                 return res.data
@@ -204,9 +203,9 @@ function UserContextProvider(props) {
     const getControlReqs = useCallback(async () => {
         try {
             const res = await api.getUserProfile({email: user.email});
-            console.log(res.data)
             const res2 = await api.getControlReqs(res.data.accessControlReqs)
             setControlReqs(res2.data.reqs)
+            console.log(setControlReqs);
         }
         catch (err) {
             return err.response.data.errorMessage;
@@ -235,6 +234,7 @@ function UserContextProvider(props) {
         }
     }, [user.email])
 
+
     const getGroupSnapshots = useCallback(async () => {
         try {
             const res = await api.getUserProfile({email: user.email});
@@ -258,127 +258,81 @@ function UserContextProvider(props) {
         }
     }, [user.email])
 
+    const searchCheckFile = (operator, operand, filePassed, addedFilesSet, snapshot, folderId) => {
 
-    const searchCheckFile = (operator, operand, addedFiles, file, addedFilesSet, snapshot, folderId) => {
         let filesAdded = null; // update this "dummy" array and then return this as the return for "searchCheckFiles"
-        let fileForOperator = null;
-        console.log(file);
-        if(operator === "drive:drive"){
-            if(operand === "My Drive"){
+        console.log(operator);
+        console.log(operand);
+        if(operator === "drive"){
+            if(operand === "MyDrive"){
                 console.log(filePassed);
                 if(filePassed.ownedByMe === true){
-                    if(!addedFilesSet.has(filePassed.name)){
-                        addedFilesSet.add(filePassed.name);
-                        filesAdded = filePassed;
-                    }
-                    fileForOperator = filePassed;
+                    filesAdded = filePassed;
                 }
             } else{
                 if(filePassed.ownedByMe === false){
-                    if(!addedFilesSet.has(filePassed.name)){
-                        addedFilesSet.add(filePassed.name);
-                        filesAdded = filePassed;
-                    }
-                    fileForOperator = filePassed;
+                    filesAdded = filePassed;
                 }
             }
-        } else if(operator === "owner:user"){
+        } else if(operator === "owner"){
             console.log(filePassed)
             if(filePassed.owner === operand){
-                if(!addedFilesSet.has(filePassed.name)){
-                    addedFilesSet.add(filePassed.name);
-                    filesAdded = filePassed;
-                }
-                fileForOperator = filePassed;
+                filesAdded = filePassed;
             }
-        } else if(operator === "creator:user"){
+        } else if(operator === "creator"){
             if(filePassed.creator === operand){
-                if(!addedFilesSet.has(filePassed.name)){
-                    addedFilesSet.add(filePassed.name);
-                    filesAdded = filePassed;
-                }
-                fileForOperator = filePassed;
+                filesAdded = filePassed;
             }
-        } else if(operator === "readable:user"){
+        } else if(operator === "readable"){
             filePassed.permissions.forEach((perm) => {
                 if (perm.emailAddress === operand) {
                     if(perm.role === "reader"){
-                        if(!addedFilesSet.has(filePassed.name)){
-                            addedFilesSet.add(filePassed.name);
-                            filesAdded = filePassed;
-                        }
-                        fileForOperator = filePassed;
+                        filesAdded = filePassed;
                     }
                 }
             })
-        } else if(operator === "writeable:user"){
+        } else if(operator === "writeable"){
             filePassed.permissions.forEach((perm) => {
                 if (perm.emailAddress === operand) {
                     if(perm.role === "writer"){
-                        if(!addedFilesSet.has(filePassed.name)){
-                            addedFilesSet.add(filePassed.name);
-                            filesAdded = filePassed;
-                        }
-                        fileForOperator = filePassed;
+                        filesAdded = filePassed;
                     }
                 }
             })
-        } else if(operator === "shareable:user"){
+        } else if(operator === "shareable"){
             console.log(filePassed);
             if(filePassed.owner === operand){
-                if(!addedFilesSet.has(filePassed.name)){
-                    addedFilesSet.add(filePassed.name);
-                    filesAdded = filePassed;
-                }
-                fileForOperator = filePassed;
+                filesAdded = filePassed;
             }
-        }else if(operator === "to:user"){
+        }else if(operator === "to"){
             console.log("in here");
             filePassed.permissions.forEach((perm) => {
                 if (perm.emailAddress === operand) { // "ownedByMe" doesn't need to be true here.
                     if(perm.role !== "owner"){
-                        if(!addedFilesSet.has(filePassed.name)){
-                            addedFilesSet.add(filePassed.name);
-                            filesAdded = filePassed;
-                        }
-                        fileForOperator = filePassed;
+                        filesAdded = filePassed;
                     }
                 }
             })
-        } else if(operator === "from:user"){
+        } else if(operator === "from"){
             filePassed.permissions.forEach((perm) => {
                 if (perm.emailAddress === operand) {
                     if(perm.role === "owner"){
-                        if(!addedFilesSet.has(filePassed.name)){
-                            addedFilesSet.add(filePassed.name);
-                            filesAdded = filePassed;
-                        }
-                        fileForOperator = filePassed;
+                        filesAdded = filePassed;
                     }
                 }
             })
-        } else if(operator === "name:regexp"){
+        } else if(operator === "name"){ // sharing:name
             let regexp = new RegExp(operand);
             console.log(filePassed);
             if(regexp.exec(filePassed.name)){ // key is the regular expression.
-                console.log("in pdf");
-                if(!addedFilesSet.has(filePassed.name)){
-                    addedFilesSet.add(filePassed.name);
-                    filesAdded = filePassed;
-                }
-                fileForOperator = filePassed;
+                filesAdded = filePassed;
             }
-        } else if(operator === "sharing:none"){
-            console.log("in here");
+        } else if(operator === "none"){ // sharing:none
             if(filePassed.ownedByMe === true && filePassed.permissions.length === 1){
                 console.log("owned By me");
-                if(!addedFilesSet.has(filePassed.name)){
-                    addedFilesSet.add(filePassed.name);
-                    filesAdded = filePassed;
-                }
-                fileForOperator = filePassed;
+                filesAdded = filePassed;
             }
-        } else if(operator === "sharing:domain"){
+        } else if(operator === "domain"){ // sharing:domain
             /*
                 * doesn't accept a "value" since the sharing:domain automatically goes into
                 * the email of the current logged into google drive
@@ -392,46 +346,39 @@ function UserContextProvider(props) {
                     userDomain = userDomain.substring(userDomain.indexOf("@") + 1);
                     if(perm.role !== "owner"){
                         if (userDomain === ownerDomain && filePassed.permissions.length !== 1) {
-                            if(!addedFilesSet.has(filePassed.name)){
-                                addedFilesSet.add(filePassed.name);
-                                filesAdded = filePassed;
-                            }
-                            fileForOperator = filePassed;
+                            filesAdded = filePassed;
                         }
                     }
                 })
             }
-        }else if(operator === "sharing:individual"){
+    // working:
+    // -sharing:none and -writeable:brandon.stillword@gemini.com and -name:cse114_m1review or to:varunvinay.chotalia@stonybrook.edu 
+    // -sharing:none and -writeable:brandon.stillword@gemini.com and name:cse114_m1review or to:varunvinay.chotalia@stonybrook.edu
+        }else if(operator === "individual"){
             console.log("in here");
             filePassed.permissions.forEach((perm) => {
                 if(filePassed.ownedByMe){
                     if (perm.emailAddress === operand) {
                         if(perm.role === "writer" || perm.role === "reader"){
-                            if(!addedFilesSet.has(filePassed.name)){
-                                addedFilesSet.add(filePassed.name);
-                                filesAdded = filePassed;
-                            }
-                            fileForOperator = filePassed;
+                            filesAdded = filePassed;
                         }
                     }
                 }
             })
-        } else if(operator === "inFolder:regexp"){
+        } else if(operator === "inFolder"){
+            console.log(snapshot);
+            console.log(folderId);
             Object.entries(snapshot.folders).forEach((key, value) => {
                 if(key[0] === folderId){
                     let index = 0;
                     while(index < (Object.values(key[1]).length)){
-                        let file = Object.values(key[1])[index];
-                        if(!addedFilesSet.has(file.name)){
-                            addedFilesSet.add(file.name);
-                            filesAdded = filePassed;
-                        }
-                        fileForOperator = filePassed;
+                        console.log(filesAdded);
+                        filesAdded = filePassed;
                         index += 1;
                     }
                 }
             })
-        } else if(operator === "folder:regexp"){
+        } else if(operator === "folder"){
             Object.entries(snapshot.folders).forEach((key, value) => {
                 if(key[0] === folderId){
                     let index = 0;
@@ -440,315 +387,199 @@ function UserContextProvider(props) {
                     console.log(filePassed);
                     while(index < (Object.values(key[1]).length)){
                         let file = Object.values(key[1])[index];
-                        if(!addedFilesSet.has(file.name)){
-                            addedFilesSet.add(file.name);
-                            filesAdded = filePassed;
-                            checkForSubFolders(snapshot, file.id, addedFilesSet);  // addedFiles was here.
-                        }
-                        fileForOperator = filePassed;
+                        filesAdded = filePassed;
+                        checkForSubFolders(snapshot, file.id, addedFilesSet);  // addedFiles was here.
                         index += 1;
                     }
                 }
             })
         }
-        return [filesAdded, fileForOperator]
+        return filesAdded;
     }
 
     /**
      * helper function for "folder:regexp" query operator. This function checks to see if there
      * exists a sub folder which has files in it, that needs to be shown for the front end.
     */
-    const checkForSubFolders = (snapshot, folderId, addedFilesSet, addedFiles) => {
+    const checkForSubFolders = (snapshot, folderId, addedFiles) => {
         Object.entries(snapshot.folders).forEach((key, value) => {
             console.log(folderId);
-            let setHere = new Set();
-        
-            setHere = addedFilesSet;
             if(key[0] === folderId){
                 let index = 0;
                 while(index < (Object.values(key[1]).length)){
                     let file = Object.values(key[1])[index];
                     console.log(file);
-                    if(!setHere.has(file.name)){
-                        setHere.add(file.name);
-                        addedFiles.push(file);
-                        checkForSubFolders(snapshot, file.id, addedFilesSet, addedFiles);
-                    }
+                    
+                    addedFiles.push(file);
+                    console.log(addedFiles);
+                    checkForSubFolders(snapshot, file.id, addedFiles);
                     index += 1;
                 }
             }
         })
+        console.log(addedFiles);
         return addedFiles;
+    }
+
+    const searchFolder = (operator, snapshot, folderId) => {
+        let toAdd = [];
+        console.log(operator);
+        if(operator === "inFolder"){
+            Object.entries(snapshot.folders).forEach((key, value) => {
+                if(key[0] === folderId){
+                    let index = 0;
+                    while(index < (Object.values(key[1]).length)){
+                        toAdd.push(Object.values(key[1])[index]);
+                        index += 1;
+                    }
+                }
+            })
+        } else if(operator === "folder"){
+            Object.entries(snapshot.folders).forEach((key, value) => {
+                if(key[0] === folderId){
+                    let index = 0;
+                    while(index < (Object.values(key[1]).length)){
+                        let file = Object.values(key[1])[index];
+                        toAdd = checkForSubFolders(snapshot, file.id, toAdd);
+                        console.log(toAdd);
+                        index += 1;
+                    }
+                }
+            })
+        }
+        console.log(toAdd);
+        return toAdd;
     }
 
     const performSearch = useCallback (async (snapshot, queries, save, booleanOps) => {
         
         let set = new Set();
-        let queriesLength = 0;
+        let results = []; 
+        let index = 0;
 
-        let keys = [];
-        let values = [];
-       
-        queries.forEach((key, value) => {
-            keys.push(key);
-            values.push(value);
-            queriesLength += 1;
-        })
-
-        let booleanIndex = queriesLength > 1 ? 0 : -1;
-        
-        let files = [];
-        let saveTheseFiles = [];
-        let filesToCompare = [];
-        let firstQuery = []; 
-        
-        let queriesIndex = 0;
-        let saveOriginalQueries = new Map();
-        let keyToDelete = null;
-
-        for(let [key, value] of queries){
-            if(queriesIndex >= 2){ // delete one at a time to check the last index with the second to last index.
-                break;
+        if(queries[0].display){
+            while(index < queries.length){
+                let temp = queries[index].display;
+                queries[index] = temp;
+                index += 1;
             }
-            saveOriginalQueries.set(key, value);
-            
-            if(queriesIndex < 1){
-                keyToDelete = key;
-            }
-            queries.delete(key);
-            
-            queriesIndex += 1;
         }
         
-        queriesIndex = 0;
-        let forBoolIndex = 0;
-        let namesOfFiles = new Set();
-        while(booleanIndex < booleanOps.length){
-            let secondQuery = [];
-            let queryIndex = 0;
-            
-            if(queriesIndex === 7){
-                saveOriginalQueries.delete(keyToDelete)
-                console.log(saveOriginalQueries);
-                for(let [key, value] of queries){
-                    console.log("queries:");
-                    console.log(queries);
-                    if(queryIndex < 1){
-                        saveOriginalQueries.set(key, value);
-                    }
-                    if(queryIndex >= 1){ // delete one at a time to check the last index with the second to last index.
-                        break;
-                    }
-                    queryIndex += 1;
-                    keyToDelete = key;
-                    queries.delete(key);
-                }
+        index = 0;
+        while(index < queries.length){
+            let tempResult = [];
+            let tempResultIndex = 0;
+            let value = queries[index].substring(0, queries[index].indexOf(":"));
+            let vFlag = 0;
+            if(value[0] === "-"){
+                value = value.substring(1);
+                vFlag = 1;
             }
-            let lengthOfQueriesHere = 0;
-            saveOriginalQueries.forEach((key, value) =>{
-                lengthOfQueriesHere += 1;
-            })
-            //!name:Scala and owner:emirhan.akkaya@stonybrook.edu or writeable:jason.zhang.1@stonybrook.edu 
-            // stuck on this one^ -> getting the "!" to work with other boolean operators.
-            Object.values(snapshot.folders).forEach((folder) => {
-                Object.values(folder).forEach((file) => {
-                    let results = new Map();
-                    let qFlag = 0;
-                    if(queriesIndex === 7){
-                        let indexHere = 0;
-                        namesOfFiles.forEach((val) => {
-                            firstQuery[indexHere] = val;
-                            indexHere += 1;
-                        })
-                    }
-                    saveOriginalQueries.forEach((key, value) => {
-                        if(lengthOfQueriesHere === 1 && queriesIndex === 7) { 
-                            qFlag = 1; 
-                        }
 
-                        if(value === "inFolder:regexp"){
+            let key = queries[index].substring(queries[index].indexOf(":") + 1);
+
+            if(key === "none"){
+                value = "none";
+            } else if(key === "domain"){
+                value = "domain";
+            } else if(value === "sharing"){
+                value = "individual"
+            }
+
+            console.log("value: " + value + ", key: " + key);
+            
+            if(index % 2 === 0){ // non boolean operator
+                Object.values(snapshot.folders).forEach((folder) => {
+                    Object.values(folder).forEach((file) => {
+                        if(value === "inFolder"){
                             let regexp = new RegExp(key);
                             if(regexp.exec(file.name) && file.type === "folder"){ 
-                                files = searchCheckFile(value, key, file, set, snapshot, file.id);
+                                tempResult = searchFolder(value, snapshot, file.id);
                             }
-                        } else if(value === "folder:regexp"){
+                        } else if(value === "folder"){
                             let regexp = new RegExp(key);
                             if(regexp.exec(file.name) && file.type === "folder"){ 
-                                files = searchCheckFile(value, key, file, set, snapshot, file.id);
+                                tempResult = searchFolder(value, snapshot, file.id);
                             }
                         } else{
-                            let returnedFile = searchCheckFile(value, key, file, set, snapshot, "");
-                            if(returnedFile[0]){
-                                files.push(returnedFile[0]);
-                                filesToCompare.push(returnedFile[0].id);
-                                if(qFlag === 0){
-                                    firstQuery.push(file.id);
-                                }
-                            }
-                            if(returnedFile[1]){
-                                if(qFlag === 1){//
-                                    secondQuery.push(file.id);
-                                }
-                            }
-                            
-                            qFlag = 1; // even if file wasn't added, should still be "1" for qFlag for next query.
-                        }
-                        results.set(value, files);
-                    })
-                })
-            })
-            queriesIndex = 7;
-
-            console.log(firstQuery);
-            console.log(secondQuery);
-            console.log(booleanOps);
-            let addedSet = new Set();
-            if(booleanOps[forBoolIndex] === "and"){
-                // check to see if the next boolean operator is "!"
-                let index = 0;
-                let setHere = new Set();
-                while(index < firstQuery.length){ setHere.add(firstQuery[index++]); }
-                index = 0;
-                while(index < secondQuery.length){
-                    if(setHere.has(secondQuery[index])){
-                        addedSet.add(secondQuery[index]);
-                    }
-                    index += 1;
-                }
-                // name:^jjev and owner:emirhan.akkaya@stonybrook.edu
-                // name:pdf$ and owner:scott.stoller@stonybrook.edu and sharing:none
-                index = 0;
-                console.log(addedSet);
-                saveTheseFiles = [];
-                Object.values(snapshot.folders).forEach((folder) => {
-                    Object.values(folder).forEach((file) => {
-                        if(addedSet.has(file.id)){
-                            saveTheseFiles[index] = file;
-                            namesOfFiles[index] = file.id;
-                            index += 1;
+                            let resultHere = searchCheckFile(value, key, file, set, snapshot, "");
+                            console.log(resultHere);
+                            if(resultHere){ tempResult[tempResultIndex++] = resultHere; }
                         }
                     })
                 })
-                
-            } else if(booleanOps[forBoolIndex] === "or"){
-                let index = 0;
-                let setToAdd = new Set();
-                while(index < firstQuery.length){ setToAdd.add(firstQuery[index++]); }
 
-                index = 0;
-                while(index < secondQuery.length){ setToAdd.add(secondQuery[index++]); }
-
-                index = 0;
-                saveTheseFiles = [];
-                namesOfFiles = [];
-                
-                Object.values(snapshot.folders).forEach((folder) => {
-                    Object.values(folder).forEach((file) => {
-                        if(setToAdd.has(file.id)){
-                            saveTheseFiles[index] = file;
-                            namesOfFiles[index] = file.id;
-                            index += 1;
-                        }
-                    })
-                })
-                console.log(saveTheseFiles);
-            } else if(booleanOps[forBoolIndex] === "!"){
-                saveTheseFiles = [];
-                namesOfFiles = [];
-
-                let index = 0;
-                addedSet = new Set();
-
-                if((forBoolIndex + 1) < booleanOps.length){
-                    while(index < firstQuery.length){
-                        addedSet.add(firstQuery[index]);
-                        index += 1;
+                console.log("vFlag: " + vFlag);
+                // check all files for a possible "-" in front of their file names.
+                if(vFlag){ // then iterate through all files and only pick the one's that are not in current
+                    // temp results array.
+                    let indexHere = 0;
+                    let setHere = new Set(); // don't add duplicate files from below:
+                    while(indexHere < tempResult.length){
+                        setHere.add(tempResult[indexHere++].id);
                     }
-                } else{
-                    while(index < secondQuery.length){
-                        addedSet.add(secondQuery[index]);
-                        index += 1;
-                    }
-                }
-
-                index = 0;
-                Object.values(snapshot.folders).forEach((folder) => {
-                    Object.values(folder).forEach((file) => {
-                        if(addedSet.has(file.id)){
-                            console.log("has it");
-                            console.log(file);
-                        }
-                        else{
-                            saveTheseFiles[index] = file;
-                            namesOfFiles[index] = file.id; // fixme
-                            index += 1;
-                        }
-                    })
-                })
-                if((forBoolIndex % 2 === 1) && booleanOps.length !== 1){
-                    // can't have "!" as last boolean operator unless length of booleanOps === 1
-                    index = 0;
-                    addedSet = new Set();
-                    let setHere = new Set();
-                    // sample: name:^JJEV and !owner:emirhan.akkaya@stonybrook.edu and writeable:varunvinay.chotalia@stonybrook.edu
-                    
-                    if(booleanOps[forBoolIndex-1] === "and"){
-                        console.log(saveTheseFiles);
-                        console.log(firstQuery);
-                        while(index < saveTheseFiles.length){  setHere.add(saveTheseFiles[index++].id); }
-                        index = 0;
-                        while(index < firstQuery.length){
-                            if(setHere.has(firstQuery[index])){
-                                addedSet.add(firstQuery[index]); // id's to loop through :)
-                            }
-                            index += 1;
-                        }
-                        console.log(addedSet);
-                    } else { // has to be "or"
-                        console.log("in the else");
-                        console.log(saveTheseFiles);
-                        while(index < saveTheseFiles.length){ addedSet.add(saveTheseFiles[index++].id); }
-                        index = 0;
-                        while(index < firstQuery.length){ addedSet.add(firstQuery[index++]); }
-                    }
-
-                    saveTheseFiles = [];
-                    firstQuery = [];
-                    index = 0;
+                    let tempIndex = 0;
+                    tempResult = [];
                     Object.values(snapshot.folders).forEach((folder) => {
                         Object.values(folder).forEach((file) => {
-                            if(addedSet.has(file.id)){
-                                saveTheseFiles[index] = file;
-                                firstQuery[index] = file.id;
-                                namesOfFiles[index] = file.id; // fixme
-                                index += 1;
+                            if(!setHere.has(file.id)){
+                                tempResult[tempIndex++] = file;
                             }
                         })
                     })
                 }
 
-            } else{ // one query operator.
-                if(booleanOps.length > 0){
-                    break; // then there could've been a "!" from which we already saved some files.
-                }
-                let index = 0;
-                while(index < files.length){
-                    saveTheseFiles[index] = files[index];
-                    namesOfFiles[index] = files[index].id;
-                    index += 1;
+                if(index === 0) { results = tempResult; }
+                else{
+                    // apply boolean operator.
+                    if(queries[index-1] === "and"){
+                        let setOfParentFiles = new Set();
+                        let indexHere = 0;
+                        while(indexHere < results.length){
+                            setOfParentFiles.add(results[indexHere++].id);
+                        }
+
+                        indexHere = 0;
+                        let andResults = [];
+                        let andResultsIndex = 0;
+                        while(indexHere < tempResult.length){
+                            if(setOfParentFiles.has(tempResult[indexHere].id)){
+                                andResults[andResultsIndex++] = tempResult[indexHere]; // add this file to it.
+                            }
+                            indexHere += 1;
+                        }
+
+                        results = andResults;
+                    } else if(queries[index-1] === "or"){
+                        let orResults = [];
+                        let setHere = new Set(); // don't add duplicate files from below:
+                        let orResultsIndex = 0;
+                        while(orResultsIndex < results.length){
+                            orResults[orResultsIndex] = results[orResultsIndex]; // add this file to it.
+                            setHere.add(results[orResultsIndex]);
+                            orResultsIndex += 1;
+                        }
+                        
+                        let indexHere = 0;
+                        while(indexHere < tempResult.length){
+                            if(!setHere.has(tempResult[indexHere])){
+                                orResults[orResultsIndex] = tempResult[indexHere]; // add this file to it.
+                                orResultsIndex += 1;
+                            }
+                            indexHere += 1;
+                        }
+                        results = orResults;
+                    }
                 }
             }
-            console.log(namesOfFiles);
-            console.log(saveTheseFiles);
-            booleanIndex += 1;
-            forBoolIndex += 1;
+            index += 1;
         }
-        
+        //name:pdf$ and owner:emirhan.akkaya@stonybrook.edu or writeable:varunvinay.chotalia@stonybrook.edu
         if (save) {
-            setSearchResults(saveTheseFiles)
+            setSearchResults(results)
         }
         else {
-            return saveTheseFiles;
+            return results;
         }
     },[])
 
@@ -782,7 +613,7 @@ function UserContextProvider(props) {
                 }
             }
         }
-        else if (role === "writer" || role === "editor" || role === "organizer" || role === "fileOrganizer") {
+        else if (role === "writer" || role === "editor") {
             if (dw.emails.length > 0 || dw.domains.length > 0) {
                 if (dw.emails.includes(emailAddress) || checkInDomains(emailAddress, dw.domains)) {
                     currentViol.violation = "Denied Writer";
