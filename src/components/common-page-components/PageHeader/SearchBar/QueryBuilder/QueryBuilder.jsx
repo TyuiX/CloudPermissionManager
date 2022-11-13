@@ -59,7 +59,8 @@ export default function QueryBuilder(props) {
 
     // perform actual search will full query
     const confirmQuery = () => {
-        performSearch(currentSnap, existingQueries, true);
+        console.log("wger");
+        performSearch(currentSnap, existingQueriesMap, true, []);
         toggleDropdown()
         navigate('/searchresults');
     }

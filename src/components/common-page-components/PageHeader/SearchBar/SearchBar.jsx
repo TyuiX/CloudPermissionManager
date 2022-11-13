@@ -49,26 +49,49 @@ export default function SearchBar(props) {
         if(snapshots && !isLoading && snapshots.length !== 0){
             let queryOptions = fileName.split(" ");
             let existingQueriesMap = new Map();
+            let booleanOps = [];
             let index = 0;
+            console.log(queryOptions);
 
             while(index < queryOptions.length){
                 let nameOfFile = queryOptions[index];
+                console.log(queryOptions);
                 let queryOption = queryOptions[index];
                 let ifSharing = "";
-                // console.log(queryOptions)
-                // console.log(queryOptions[index].substring(0, queryOptions[index].indexOf(":")));
+                console.log(queryOptions[index].substring(0, queryOptions[index].indexOf(":")));
+                
+                // first checks that do not need further string intropolation.
                 if(queryOptions[index].substring(0, queryOptions[index].indexOf(":")) === "sharing"){
                     ifSharing = queryOptions[index].substring(queryOptions[index].indexOf(":") + 1, queryOptions[index].lastIndexOf(":"));
                     // console.log(ifSharing);
                 }
-                // console.log(queryOption);
-                queryOption = queryOptions[index].substring(0, queryOptions[index].indexOf(":"));
+
+                console.log("burda");
+                console.log(queryOptions[index][0]);
+                if(queryOption === "and" || queryOption === "or"){
+                    booleanOps.push(queryOption);
+                } else if(queryOptions[index][0] === "!"){
+                    console.log("in here");
+                    queryOptions[index].substring(1);
+                    booleanOps.push("!");
+                }
+
+                if(queryOption[0] === "!"){
+                    queryOption = queryOptions[index].substring(1, queryOptions[index].indexOf(":"));
+                } else{
+                    queryOption = queryOptions[index].substring(0, queryOptions[index].indexOf(":"));
+                }
+                console.log(queryOption);
+                
+                console.log(nameOfFile.substring(nameOfFile.lastIndexOf(":") + 1) + queryOptions[index+1]);
+                console.log(nameOfFile);
                 if(queryOption === "owner" || queryOption === "creator" ||
                 queryOption === "from" || queryOption === "to" || queryOption === "readable" ||
                     queryOption === "writeable" || queryOption === "shareable"){
                         existingQueriesMap.set(queryOption + ":user", nameOfFile.substring(nameOfFile.indexOf(":") + 1));
                 } else if(queryOption === "drive"){
-                    existingQueriesMap.set(queryOption + ":drive", nameOfFile.substring(nameOfFile.indexOf(":") + 1));
+                    existingQueriesMap.set(queryOption + ":drive", nameOfFile.substring(nameOfFile.lastIndexOf(":") + 1)
+                        + " " + queryOptions[index+1]);
                 } else if(queryOption === "name" || queryOption === "inFolder" || queryOption === "folder"){
                     existingQueriesMap.set(queryOption + ":regexp", nameOfFile.substring(nameOfFile.indexOf(":") + 1));
                 } else if(queryOption === "path"){
@@ -81,6 +104,9 @@ export default function SearchBar(props) {
                     if(queryOptions[index].substring(queryOptions[index].indexOf(":")+1) === "none"){
                         existingQueriesMap.set(queryOptions[index], 
                             nameOfFile.substring(nameOfFile.lastIndexOf(":") + 1));
+                    } else if(queryOptions[index].substring(queryOptions[index].indexOf(":")+1) === "domain"){
+                        existingQueriesMap.set(queryOptions[index],
+                            nameOfFile.substring(nameOfFile.lastIndexOf(":") + 1));
                     } else if(ifSharing === "individual"){
                         existingQueriesMap.set(queryOptions[index].substring(0, queryOptions[index].lastIndexOf(":")), 
                             nameOfFile.substring(nameOfFile.lastIndexOf(":") + 1));
@@ -92,8 +118,8 @@ export default function SearchBar(props) {
                 // }
                 index += 1;
             }
-            
-            performSearch(currentSnap, existingQueriesMap, true);
+            console.log(existingQueriesMap);
+            performSearch(currentSnap, existingQueriesMap, true, booleanOps);
             navigate('/searchresults');
         }
     }
