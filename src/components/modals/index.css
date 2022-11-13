@@ -152,6 +152,7 @@
     align-items: center;
     font-size: 12px;
     margin-left: 10px;
+    font-weight: normal;
 }
 
 .modal-footnote div {

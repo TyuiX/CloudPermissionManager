@@ -1,25 +1,24 @@
 import React, {useState, useContext} from 'react';
 import "./RecentSearchModal.css";
-import {AiOutlineClose} from "react-icons/ai";
+import {AiOutlineClose, AiOutlineExclamationCircle} from "react-icons/ai";
 import {UserContext} from "../../../utils/context/UserContext";
 
 export default function RecentSearchModal(props) {
-    const {toggleModal, fileName} = props;
-    // const [recentSearches, setRecentSearches] = useState(["mus119_paper", "cleanenergycover", "vocab.txt"]);
+    const {toggleModal, setSearchText} = props;
     const {recentSearches} = useContext(UserContext);
     const [selectedOption, setSelectedOption] = useState();
     console.log(recentSearches);
 
+    // applies selected recent search to search bar
     const confirmUpdate = (e) => {
         e.preventDefault();
         console.log("confirm");
-        // console.log(selectedOption);
-        props.setFileName(selectedOption);
+        setSearchText(selectedOption);
         toggleModal();
     }
 
+    // handle which search is selected
     const handleOptionChange = (e) => {
-        console.log(e.target.value);
         setSelectedOption(e.target.value);
     }
 
@@ -27,7 +26,7 @@ export default function RecentSearchModal(props) {
         <div className="modal-background">
             <div className="recent-modal-container">
                 <div className="modal-header">
-                    <span>{fileName}</span>
+                    <span></span>
                     <AiOutlineClose className="sidebar-close-button" onClick={toggleModal} />
                 </div>
                 <div className="modal-section">
@@ -36,8 +35,8 @@ export default function RecentSearchModal(props) {
                         {recentSearches !== undefined && recentSearches.length !== 0?
                             recentSearches.map((search) => {
                                 return (
-                                    <div className="radio">
-                                        <label>
+                                    <div className="recent-search-option">
+                                        <label className="recent-search-option-label">
                                             <input type="radio" value={search}
                                                         checked={selectedOption === search} 
                                                         onChange={handleOptionChange} />
@@ -51,8 +50,16 @@ export default function RecentSearchModal(props) {
                         }
                     </div>
                 </div>
+                <div className="modal-footnote">
+                    <AiOutlineExclamationCircle size={25} />
+                    <div>
+                        Select a recent search query/text that you wish to perform again. The selected query will
+                        be applied to the search bar. Note: You will have to choose to search as a text or query option
+                        yourself once applied.
+                    </div>
+                </div>
                 <div className="modal-footer">
-                    <button className="modal-button modal-confirm" onClick={(e) => confirmUpdate(e)}>Confirm</button>
+                    <button className="modal-button modal-confirm" onClick={(e) => confirmUpdate(e)}>Apply</button>
                     <button className="modal-button modal-cancel" onClick={toggleModal}>Cancel</button>
                 </div>
             </div>
