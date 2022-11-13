@@ -28,6 +28,7 @@ export default function QueryBuilder(props) {
     // construct query string to display
     useEffect(() => {
         if (existingQueries.length < 1) {
+            setStringQuery("")
             return
         }
         let queryStringBuilder = ""
@@ -59,9 +60,8 @@ export default function QueryBuilder(props) {
 
     // perform actual search will full query
     const confirmQuery = () => {
-        console.log("wger");
         console.log(existingQueries);
-        performSearch(currentSnap, existingQueries, true, []);
+        performSearch(currentSnap, stringQuery.split(" "), true, []);
         toggleDropdown()
         navigate('/searchresults');
     }
