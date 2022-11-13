@@ -63,7 +63,7 @@ export default function SearchBar(props) {
                 // first checks that do not need further string intropolation.
                 if(queryOptions[index].substring(0, queryOptions[index].indexOf(":")) === "sharing"){
                     ifSharing = queryOptions[index].substring(queryOptions[index].indexOf(":") + 1, queryOptions[index].lastIndexOf(":"));
-                    console.log(ifSharing);
+                    // console.log(ifSharing);
                 }
 
                 console.log("burda");
@@ -97,9 +97,9 @@ export default function SearchBar(props) {
                 } else if(queryOption === "path"){
                     existingQueriesMap.set(queryOption + ":path", nameOfFile.substring(nameOfFile.indexOf(":") + 1));
                 } else if(ifSharing.length !== 0) {
-                    console.log("in here");
-                    console.log(ifSharing);
-                    console.log(queryOptions[index].substring(queryOptions[index].indexOf(":")+1))
+                    // console.log("in here");
+                    // console.log(ifSharing);
+                    // console.log(queryOptions[index].substring(queryOptions[index].indexOf(":")+1))
                     // console.log(nameOfFile.substring(nameOfFile.lastIndexOf(":") + 1));
                     if(queryOptions[index].substring(queryOptions[index].indexOf(":")+1) === "none"){
                         existingQueriesMap.set(queryOptions[index], 
@@ -147,8 +147,16 @@ export default function SearchBar(props) {
 
     return (
         <div className="header-center-content-container">
-            <h3 className="switchStatement"> {textOrQuery} </h3>
-            <ToggleSlider onToggle={setQueryOrSearch}/>
+            <div className="query-toggle-label"> {textOrQuery} </div>
+            <div className="query-toggle-container">
+                <ToggleSlider
+                    onToggle={setQueryOrSearch}
+                    handleSize={14}
+                    barHeight={22}
+                    barWidth={40}
+                    barBackgroundColorActive={"#6495EDFF"}
+                />
+            </div>
             <div className="search-bar-container">
                 <form onKeyDown={(e) => handleEnterPress(e)} className="modal-form">
                     <input
@@ -175,7 +183,11 @@ export default function SearchBar(props) {
                 </select>
             </div>
             <div className={`search-dropdown ${showQueryBuilder ? "search-dropdown-open" : ""}`}>
-                <QueryBuilder currentSnap={currentSnap} toggleDropdown={toggleQueryBuilderDisplay} />
+                <QueryBuilder
+                    currentSnap={currentSnap}
+                    toggleDropdown={toggleQueryBuilderDisplay}
+                    dropdownOpen={showQueryBuilder}
+                />
             </div>
         </div>
     );
