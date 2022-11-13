@@ -457,13 +457,14 @@ function UserContextProvider(props) {
         let results = []; 
         let index = 0;
 
-        if(queries[0].display){
-            while(index < queries.length){
-                let temp = queries[index].display;
-                queries[index] = temp;
-                index += 1;
-            }
-        }
+        // TODO redundant code
+        // if(queries[0].display){
+        //     while(index < queries.length){
+        //         let temp = queries[index].display;
+        //         queries[index] = temp;
+        //         index += 1;
+        //     }
+        // }
         
         index = 0;
         while(index < queries.length){
