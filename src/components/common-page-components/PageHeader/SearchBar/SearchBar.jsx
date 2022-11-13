@@ -119,7 +119,8 @@ export default function SearchBar(props) {
             //     index += 1;
             // }
             console.log(queryOptions);
-            performSearch(currentSnap, queryOptions, true);
+            await performSearch(currentSnap, queryOptions, true);
+            getRecentSearches();
             navigate('/searchresults');
         }
     }
