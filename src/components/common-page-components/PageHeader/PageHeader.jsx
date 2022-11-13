@@ -8,7 +8,7 @@ import ProfileDropdownMenu from "./ProfileDropdownMenu/ProfileDropdownMenu";
 
 export default function PageHeader() {
     const {loggedIn} = useContext(UserContext);
-    const [fileName, setFileName] = useState("");
+    const [searchText, setSearchText] = useState("");
 
     if (!loggedIn) {
         return (
@@ -36,10 +36,10 @@ export default function PageHeader() {
                 <span>Cloud Sharing Manager</span>
             </Link>
             <div className="header-section">
-                <SearchBar fileName={fileName} setFileName={setFileName}/>
+                <SearchBar searchText={searchText} setSearchText={setSearchText}/>
             </div>
             <div className="header-section">
-                <ProfileDropdownMenu setFileName={setFileName}/>
+                <ProfileDropdownMenu setSearchText={setSearchText}/>
             </div>
         </div>
     );

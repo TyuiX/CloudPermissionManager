@@ -15,7 +15,7 @@ export default function SearchBar(props) {
     const {isLoading, snapshots, searchByName, getRecentSearches, performSearch} = useContext(UserContext);
     const [currentSnap, setCurrentSnap] = useState(snapshots.length !== 0 ? snapshots[0] : {});
     const navigate = useNavigate();
-    const {setFileName, fileName} = props;
+    const {setSearchText, searchText} = props;
 
     useEffect(() => {
         if (!snapshots) {
@@ -38,7 +38,7 @@ export default function SearchBar(props) {
         }
         else{
             if(snapshots && !isLoading && snapshots.length !== 0){
-                await searchByName(currentSnap._id, fileName);
+                await searchByName(currentSnap._id, searchText);
                 getRecentSearches();
                 navigate('/searchresults');
             }
@@ -47,7 +47,7 @@ export default function SearchBar(props) {
 
     const handleForQuery = async() => {
         if(snapshots && !isLoading && snapshots.length !== 0){
-            let queryOptions = fileName.split(" ");
+            let queryOptions = searchText.split(" ");
             // let existingQueriesMap = new Map();
             // let booleanOps = [];
             // let index = 0;
@@ -163,8 +163,8 @@ export default function SearchBar(props) {
                     <input
                         className="header-search-bar"
                         type="text"
-                        value={fileName}
-                        onChange={({ target }) => setFileName(target.value)}
+                        value={searchText}
+                        onChange={({ target }) => setSearchText(target.value)}
                         placeholder="Search..."
                     />
                 </form>
