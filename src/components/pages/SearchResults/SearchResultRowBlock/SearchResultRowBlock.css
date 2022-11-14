@@ -1,0 +1,29 @@
+.result-table-row {
+    display: flex;
+}
+
+.result-table-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 22.5%;
+    font-size: 14px;
+    padding: 5px;
+    border: 1px solid #c0c0c0;
+    text-align: center;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.result-select-button {
+    width: 2%;
+}
+
+.more-detail-button {
+    width: 3%;
+    font-weight: bold;
+}
+
+.more-detail-button:hover {
+    cursor: pointer;
+}
