@@ -1,9 +1,10 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import PageSideBar from '../../common-page-components/PageSidebar/PageSideBar';
 import {UserContext} from "../../../utils/context/UserContext";
 import "./SearchResults.css"
-import FileInfoSideBar from "../../common-page-components/FileInfoSideBar/FileInfoSideBar";
 import SearchResultRowBlock from "./SearchResultRowBlock/SearchResultRowBlock";
+import {GoogleContext} from "../../../utils/context/GoogleContext";
+import UpdateMultipleSharingModal from "../../modals/UpdateMultipleSharingModal/UpdateMultipleSharingModal";
 
 const SORTING_OPTIONS = [
     "Last Updated (Desc)", "Last Updated (Asc)", "Creation Date (Desc)", "Creation Date (Asc)",
@@ -12,15 +13,25 @@ const SORTING_OPTIONS = [
 
 export default function SearchResults() {
     const {searchResults} = useContext(UserContext);
+    const {allFiles} = useContext(GoogleContext);
     const [sortingElem, setSortingElem] = useState("Last Updated (Desc)")
     const [selectedFiles, setSelectedFiles] = useState([]);
+    const [filesToUpdate, setFilesToUpdate] = useState([]);
+    const [showModal, setShowModal] = useState(false);
 
-    console.log(searchResults)
+    useEffect(() => {
+        if (!selectedFiles) {
+            return
+        }
+        let displayFiles = allFiles.filter(({id}) => selectedFiles.includes(id))
+        setFilesToUpdate(displayFiles)
+    }, [selectedFiles, allFiles])
 
-    const handleCloseSidebar = () => {
-        setSelectedFiles([]);
+    const handleToggleModal = () => {
+        setShowModal(!showModal)
     }
 
+    // handles adding file to list of files wish to update
     const handleChecked = (e, fileId) => {
         let fileIds = JSON.parse(JSON.stringify(selectedFiles));
         let indexFound = fileIds.findIndex(id => id === fileId);
@@ -32,8 +43,7 @@ export default function SearchResults() {
         setSelectedFiles(fileIds);
     }
 
-    console.log(selectedFiles)
-
+    // determine how to sort based on options
     const optionSorter = (a, b) => {
         switch (sortingElem) {
             case "Last Updated (Desc)":
@@ -61,13 +71,16 @@ export default function SearchResults() {
                 <PageSideBar />
                 <div className="page-content">
                     <h2 className="page-content-header">Search Results</h2>
-                    <select className="query-builder-select" onChange={(e) => setSortingElem(e.target.value)} value={sortingElem}>
-                        {SORTING_OPTIONS.map((option) => (
-                            <option>
-                                {option}
-                            </option>
-                        ))}
-                    </select>
+                    <div>
+                        <select className="query-builder-select" onChange={(e) => setSortingElem(e.target.value)} value={sortingElem}>
+                            {SORTING_OPTIONS.map((option) => (
+                                <option>
+                                    {option}
+                                </option>
+                            ))}
+                        </select>
+                        <button onClick={handleToggleModal}>Update Files</button>
+                    </div>
                     <div className="result-table">
                         <div className="result-table-header">
                             <div className="result-table-header-cell result-select-button"></div>
@@ -82,12 +95,10 @@ export default function SearchResults() {
                         ))}
                     </div>
                 </div>
-                <FileInfoSideBar
-                    filesIds={selectedFiles}
-                    shared={false}
-                    closeInfo={handleCloseSidebar}
-                />
             </div>
+            {showModal && filesToUpdate.length > 0 &&
+                <UpdateMultipleSharingModal files={filesToUpdate} toggleModal={handleToggleModal} />
+            }
         </>
     )
 }

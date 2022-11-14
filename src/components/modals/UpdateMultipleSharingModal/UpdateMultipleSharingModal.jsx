@@ -71,7 +71,9 @@ export default function UpdateMultipleSharingModal(props) {
     const executeUpdate = (filesToUpdate) => {
         updateMultipleFiles(filesToUpdate);
         toggleModal();
-        closeInfo();
+        if (closeInfo) {
+            closeInfo();
+        }
     }
 
     const addPendingUpdate = (e, user) => {
