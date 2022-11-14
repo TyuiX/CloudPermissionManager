@@ -43,6 +43,7 @@ export default function UpdateMultipleSharingModal(props) {
                                     id: id,
                                     email: emailAddress,
                                     role: role,
+                                    type: type,
                                     inFiles: [{id: file.id, name: file.name, origin: file.cloudOrigin}]
                                 })
                             } else {
@@ -51,6 +52,7 @@ export default function UpdateMultipleSharingModal(props) {
                                     id: id,
                                     email: emailAddress,
                                     role: role,
+                                    type: type,
                                     inFiles: [{id: file.id, name: file.name, origin: file.cloudOrigin}]
                                 })
                             }
