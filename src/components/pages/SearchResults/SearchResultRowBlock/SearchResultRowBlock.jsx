@@ -1,4 +1,5 @@
 import React from 'react';
+import "./SearchResultRowBlock.css";
 import {IoIosArrowDown, IoIosArrowUp} from "react-icons/io";
 
 export default function SearchResultRowBlock(props) {
