@@ -4,14 +4,21 @@ import {UserContext} from "../../../utils/context/UserContext";
 import {IoIosArrowDown, IoIosArrowUp} from "react-icons/io";
 import "./SearchResults.css"
 import MetaData from './MetaData';
-import { RiContrastDropLine } from 'react-icons/ri';
+
+const SORTING_OPTIONS = [
+    "Last Updated (Desc)", "Last Updated (Asc)", "Creation Date (Desc)", "Creation Date (Asc)",
+    "Name (A-Z)","Name (Z-A)", "Owner (A-Z)", "Owner (Z-A)",
+]
 
 export default function SearchResults() {
-    const {searchResults} = useContext(UserContext);
+    const {searchResults, groupSnapshots} = useContext(UserContext);
     const [openDropdown, setOpenDropdown] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [permissions, setPermissions] = useState([]);
     const [createdOn, setCreatedOn] = useState([]);
+    const [sortingElem, setSortingElem] = useState("Last Updated (Desc)")
+
+    console.log(searchResults)
 
     const handleToggleModal = () => {
         setShowModal(!showModal);
@@ -23,12 +30,32 @@ export default function SearchResults() {
         handleToggleModal();
     }
 
+    const optionSorter = (a, b) => {
+        switch (sortingElem) {
+            case "Last Updated (Desc)":
+                return (a.lastUpdatedOn > b.lastUpdatedOn) ? 1 : (b.lastUpdatedOn > a.lastUpdatedOn) ? -1 : 0;
+            case "Last Updated (Asc)":
+                return (a.lastUpdatedOn < b.lastUpdatedOn) ? 1 : (b.lastUpdatedOn < a.lastUpdatedOn) ? -1 : 0;
+            case "Creation Date (Desc)":
+                return (a.createdOn > b.createdOn) ? 1 : (b.createdOn > a.createdOn) ? -1 : 0;
+            case "Creation Date (Asc)":
+                return (a.createdOn < b.createdOn) ? 1 : (b.createdOn < a.createdOn) ? -1 : 0;
+            case "Name (A-Z)":
+                return (a.name > b.name) ? 1 : (b.name > a.name) ? -1 : 0;
+            case "Name (Z-A)":
+                return (a.name < b.name) ? 1 : (b.name < a.name) ? -1 : 0;
+            case "Owner (A-Z)":
+                return (a.owner > b.owner) ? 1 : (b.owner > a.owner) ? -1 : 0;
+            case "Owner (Z-A)":
+                return (a.owner < b.owner) ? 1 : (b.owner < a.owner) ? -1 : 0;
+        }
+    }
+
     let toPrint;
     let first = 1;
     
     if(searchResults.length !== 0) {
-        toPrint = (searchResults.map((result) => { // 
-            console.log(result);
+        toPrint = (searchResults.sort((a,b) => optionSorter(a,b)).map((result) => {
             let permissions = [];
             
             result.permissions.map(perms => {
@@ -52,7 +79,7 @@ export default function SearchResults() {
             }
 
             let owner = result.owner !== undefined ? result.owner : "Owner not found";
-            console.log(permissions);
+            // console.log(permissions);
 
             return (
                 <table>
@@ -99,6 +126,14 @@ export default function SearchResults() {
         <div className="page-container">
             <PageSideBar />
             <div className="page-content">
+                <h2 className="page-content-header">Search Results</h2>
+                <select className="query-builder-select" onChange={(e) => setSortingElem(e.target.value)} value={sortingElem}>
+                    {SORTING_OPTIONS.map((option) => (
+                        <option>
+                            {option}
+                        </option>
+                    ))}
+                </select>
                 {toPrint}
             </div>
             
