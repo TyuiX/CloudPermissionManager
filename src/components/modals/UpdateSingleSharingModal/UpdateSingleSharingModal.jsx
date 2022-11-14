@@ -25,19 +25,30 @@ export default function UpdateSingleSharingModal(props) {
             return;
         }
         let users = existingPerms.filter(({role}) => role !== "owner" )
-            .map(({displayName, id, role, type, emailAddress}) => {
-                if (type !== "anyone") {
+            .map(({displayName, id, role, type, emailAddress, domain}) => {
+                if (type === "anyone") {
                     return {
-                        name: displayName,
+                        name: "Anyone with Link",
                         id: id,
                         email: emailAddress,
                         origin: origin,
                         role: role,
                         type: type
                     }
-                } else {
+                }
+                else if (type === "domain") {
                     return {
-                        name: "Anyone with Link",
+                        name: displayName,
+                        id: id,
+                        email: domain,
+                        origin: origin,
+                        role: role,
+                        type: type
+                    }
+                }
+                else {
+                    return {
+                        name: displayName,
                         id: id,
                         email: emailAddress,
                         origin: origin,
@@ -175,7 +186,6 @@ export default function UpdateSingleSharingModal(props) {
                                                 <option value="reader">Reader</option>
                                                 <option value="commenter">Commenter</option>
                                                 <option value="unshared" >Unshared</option>
-                                                <option value="editor">Editor</option>
                                             </select>
                                         </div>
                                     )
@@ -211,7 +221,6 @@ export default function UpdateSingleSharingModal(props) {
                                                 <option value="writer">Writer</option>
                                                 <option value="reader">Reader</option>
                                                 <option value="commenter">Commenter</option>
-                                                <option value="editor">Editor</option>
                                             </select>
                                         </div>
                                     )
