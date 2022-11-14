@@ -637,25 +637,8 @@ function UserContextProvider(props) {
     },[checkInDomains])
 
     const getControlReqQueryFiles = useCallback(async (req, snapshot) => {
-        let queryMap = new Map();
         const {query} = req;
-        let splitQueryOps = query.split(" ");
-        
-        splitQueryOps.forEach(query => {
-            let queryParts = query.split(":");
-            if (queryParts.length <= 1) {
-                return
-            }
-            if (Object.hasOwn(ControlReqQueriesLists.QUERIES_MAP, queryParts[0])) {
-                // TODO this is just for while sharing isnt implemented
-                if (queryParts[0] === "sharing") {
-                    return;
-                }
-                const [, ...operand] = queryParts
-                queryMap.set(ControlReqQueriesLists.QUERIES_MAP[queryParts[0]], operand.join(":"))
-            }
-        })
-        return await performSearch(snapshot, queryMap, false)
+        return await performSearch(snapshot, query.split(" "), false, [])
     }, [performSearch])
 
     const checkReqsBeforeUpdate = useCallback(async (filesToUpdate) => {
