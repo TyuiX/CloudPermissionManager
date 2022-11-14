@@ -1,50 +1,48 @@
-th{
-    width: 40%;
-    text-align: left;
-    border: 3px solid pink;
+.result-table {
+    width: 95%;
+    padding: 5px 10px;
 }
 
-table{
-    width: 100%;
-    margin-left: 10%;
-    margin-left: auto;
-    margin-right: auto;
-    border: 3px solid black;
+.result-table-header {
+    display: flex
 }
 
-.file-info-block {
-    border-bottom: 2px solid #adadad;
-    padding: 5px;
-}
-
-.file-info-name {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px;
-    background-color: cornflowerblue;
-    color: white;
+.result-table-header-cell {
+    width: 22.5%;
     font-weight: bold;
+    font-size: 14px;
+    background-color: #d9d9d9;
+    padding: 5px;
+    border: 1px solid #c0c0c0;
+    text-align: center;
 }
 
-.file-info-name:hover {
-    cursor: pointer;
+.result-table-row {
+    display: flex;
 }
 
-.file-info-name svg {
-    color: white;
-}
-
-.update-access-button-container {
+.result-table-cell {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 10px;
-}
-
-.search-result-file-name{
-    width: 300px;
+    width: 22.5%;
+    font-size: 14px;
+    padding: 5px;
+    border: 1px solid #c0c0c0;
+    text-align: center;
     text-overflow: ellipsis;
     overflow: hidden;
-    white-space: nowrap;
+}
+
+.result-select-button {
+    width: 2%;
+}
+
+.more-detail-button {
+    width: 3%;
+    font-weight: bold;
+}
+
+.more-detail-button:hover {
+    cursor: pointer;
 }
