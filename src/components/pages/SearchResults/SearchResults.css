@@ -25,3 +25,7 @@
     width: 3%;
     font-weight: bold;
 }
+
+.result-table-header .more-detail-button:hover {
+    cursor: unset;
+}

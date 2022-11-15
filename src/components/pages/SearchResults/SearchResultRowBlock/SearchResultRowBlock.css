@@ -27,3 +27,16 @@
 .more-detail-button:hover {
     cursor: pointer;
 }
+
+.result-row-more-info-container {
+    width: 99.85%;
+    border-left: 1px solid #c0c0c0;
+    border-right: 1px solid #c0c0c0;
+    background-color: #e1e1e1;
+}
+
+.result-perm-table-label {
+    padding: 5px 20px 0;
+    font-size: 14px;
+    font-weight: bold;
+}

@@ -1,0 +1,48 @@
+.result-perm-table {
+    padding: 5px 10px 15px;
+}
+
+.result-perm-table-header {
+    display: flex
+}
+
+.result-perm-table-header-cell {
+    width: 25%;
+    font-weight: bold;
+    font-size: 12px;
+    background-color: #e8e8e8;
+    padding: 5px;
+    border: 1px solid #c0c0c0;
+    text-align: center;
+}
+
+.result-perm-table-row {
+    display: flex;
+}
+
+.result-perm-table-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 25%;
+    font-size: 12px;
+    padding: 5px;
+    border: 1px solid #c0c0c0;
+    text-align: center;
+    background-color: white;
+}
+
+.no-perm-info-avail-table-msg {
+    width: 99.7%;
+    border: 1px solid #c0c0c0;
+    background-color: white;
+}
+
+.no-perm-info-avail-table-msg div {
+    padding: 5px;
+    font-size: 12px;
+}
+
+.anyone-link-perm-cell {
+    width: 33.33%;
+}
