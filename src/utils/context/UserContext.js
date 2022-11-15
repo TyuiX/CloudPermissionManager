@@ -1,9 +1,8 @@
 import React, {createContext, useCallback, useEffect, useState} from "react";
 import api from '../../api/ShareManagerAPI'
-import {UNSAFE_enhanceManualRouteObjects, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import ControlReqQueriesLists from "../ControlReqQueriesLists";
 import controlReqsList from "../ControlReqQueriesLists";
-import { AiOutlineConsoleSql } from "react-icons/ai";
 import { Stack } from "react-bootstrap";
 
 export const UserContext = createContext({});
@@ -258,6 +257,18 @@ function UserContextProvider(props) {
         }
     }, [user.email])
 
+    /**
+     * searchCheckFile
+     * This function searches through the query operator itself and applies the query operation by checking
+     * specific fields of a file.
+     * @param {*} operator is the query operator, ie: "name" or "owner"
+     * @param {*} operand is the query operand, so may be a specific email or name.
+     * @param {*} filePassed is the file that is currently looked at
+     * @param {*} addedFilesSet is an array of files that is needed for specific query operators.
+     * @param {*} snapshot the snapshot that is passed in - will be passed into helper functions too if needed.
+     * @param {*} folderId is the folderId - value is only present for "folder" and "inFolder" query operators.
+     * @returns an array with the query operator applied to the query operand.
+     */
     const searchCheckFile = (operator, operand, filePassed, addedFilesSet, snapshot, folderId) => {
 
         let filesAdded = null; // update this "dummy" array and then return this as the return for "searchCheckFiles"
@@ -351,9 +362,6 @@ function UserContextProvider(props) {
                     }
                 })
             }
-    // working:
-    // -sharing:none and -writeable:brandon.stillword@gemini.com and -name:cse114_m1review or to:varunvinay.chotalia@stonybrook.edu 
-    // -sharing:none and -writeable:brandon.stillword@gemini.com and name:cse114_m1review or to:varunvinay.chotalia@stonybrook.edu
         }else if(operator === "individual"){
             console.log("in here");
             filePassed.permissions.forEach((perm) => {
@@ -398,8 +406,11 @@ function UserContextProvider(props) {
     }
 
     /**
-     * helper function for "folder:regexp" query operator. This function checks to see if there
-     * exists a sub folder which has files in it, that needs to be shown for the front end.
+     * checkForSubFolders: helper function for "folder:regexp" query operator ONLY. This function checks to see if there
+     * exists a sub folder which has files in it that needs to be shown in the front end.
+     * @param snapshot is the snapshot that will be iterated over.
+     * @param folderId is the id of the folder.
+     * @param addedFiles is the files that are currently stored for the specific folder.
     */
     const checkForSubFolders = (snapshot, folderId, addedFiles) => {
         Object.entries(snapshot.folders).forEach((key, value) => {
@@ -421,27 +432,44 @@ function UserContextProvider(props) {
         return addedFiles;
     }
 
+    /**
+     * searchFolder searches through a folder for the "folder:regexp" and "inFolder:regexp" query operators.
+     * @param {*} operator is the query - either "folder" or "inFolder"
+     * @param {*} snapshot is the snapshot that we are going to iterate over.
+     * @param {*} folderId is the folder id of the folder we are trying to search for.
+     * @returns the files or subFolders, depending on which operator is passed, obtained from the folder id that 
+     * was passed in to the function. 
+     */
     const searchFolder = (operator, snapshot, folderId) => {
         let toAdd = [];
-        console.log(operator);
+        console.log(snapshot);
+        console.log(folderId);
         if(operator === "inFolder"){
             Object.entries(snapshot.folders).forEach((key, value) => {
                 if(key[0] === folderId){
+                    console.log(Object.values(key[1]));
                     let index = 0;
                     while(index < (Object.values(key[1]).length)){
+                        console.log("adding in here");
                         toAdd.push(Object.values(key[1])[index]);
                         index += 1;
                     }
                 }
             })
+            console.log(toAdd);
         } else if(operator === "folder"){
             Object.entries(snapshot.folders).forEach((key, value) => {
                 if(key[0] === folderId){
                     let index = 0;
                     while(index < (Object.values(key[1]).length)){
                         let file = Object.values(key[1])[index];
-                        toAdd = checkForSubFolders(snapshot, file.id, toAdd);
-                        console.log(toAdd);
+                        console.log(file);
+                        if(file.type === "file"){
+                            toAdd.push(file);
+                        } else{
+                            toAdd.push(file); // push in file name.
+                            toAdd = checkForSubFolders(snapshot, file.id, toAdd);
+                        }
                         index += 1;
                     }
                 }
@@ -451,10 +479,22 @@ function UserContextProvider(props) {
         return toAdd;
     }
 
-    const performSearch = useCallback (async (snapshot, queries, save, booleanOps) => {
+    /**
+        performSearch
+        This function performs the query operation.
+        @param snapshot is the snapshot to be iterated over.
+        @param queries is the qeuries array which holds all of the queries and boolean operators.
+        @param save is a boolean which is used at the end to either save or not save the results.
+        @returns "results" which is the result of the query.
+    */
+    const performSearch = useCallback (async (snapshot, queries, save) => {
         
         let set = new Set();
-        let results = []; 
+        let results = [];
+        let inParenthesis = [];
+        let pFlag = 0;
+        let saveIndex = 0;
+        
         let index = 0;
 
         await api.addRecentSearch({
@@ -462,27 +502,35 @@ function UserContextProvider(props) {
             email: user.email
         })
 
-        // TODO redundant code
-        // if(queries[0].display){
-        //     while(index < queries.length){
-        //         let temp = queries[index].display;
-        //         queries[index] = temp;
-        //         index += 1;
-        //     }
-        // }
-        
         index = 0;
         while(index < queries.length){
             let tempResult = [];
             let tempResultIndex = 0;
             let value = queries[index].substring(0, queries[index].indexOf(":"));
             let vFlag = 0;
+            let firstParenthesis = 1;
+            let lastParenthsis = 1;
+
+            console.log(value + ", value[0]: " + value[0]);
             if(value[0] === "-"){
                 value = value.substring(1);
                 vFlag = 1;
+            } else if(value[0] === "("){
+                pFlag = 1;
+                saveIndex = index;
+                firstParenthesis = 0;
+                value = value.substring(1);
             }
 
+            console.log("firstParen: " + firstParenthesis);
             let key = queries[index].substring(queries[index].indexOf(":") + 1);
+            console.log(key);
+            if(key[key.length-1] === ")"){
+                lastParenthsis = 0;
+                key = key.substring(0, key.length-1);
+                console.log(key);
+            }
+
 
             if(key === "none"){
                 value = "none";
@@ -498,14 +546,44 @@ function UserContextProvider(props) {
                 Object.values(snapshot.folders).forEach((folder) => {
                     Object.values(folder).forEach((file) => {
                         if(value === "inFolder"){
+                            let forOneFolder = [];
                             let regexp = new RegExp(key);
                             if(regexp.exec(file.name) && file.type === "folder"){ 
-                                tempResult = searchFolder(value, snapshot, file.id);
+                                forOneFolder = searchFolder(value, snapshot, file.id);
+                                let index = 0;
+                                let tIndex = 0;
+                                console.log(forOneFolder);
+                                while(index < forOneFolder.length){
+                                    console.log(tempResult[tIndex]);
+                                    console.log("index: " + index + ", tIndex: " + tIndex);
+                                    if(tempResult[tIndex]){
+                                        tIndex += 1;
+                                    }else{
+                                        console.log("in else");
+                                        tempResult[tIndex++] = forOneFolder[index++];
+                                    }
+                                }
+                                console.log(tempResult);
                             }
                         } else if(value === "folder"){
+                            let forOneFolder = [];
                             let regexp = new RegExp(key);
-                            if(regexp.exec(file.name) && file.type === "folder"){ 
-                                tempResult = searchFolder(value, snapshot, file.id);
+                            if(regexp.exec(file.name) && file.type === "folder"){
+                                forOneFolder = searchFolder(value, snapshot, file.id);
+                                let index = 0;
+                                let tIndex = 0;
+                                console.log(forOneFolder);
+                                while(index < forOneFolder.length){
+                                    console.log(tempResult[tIndex]);
+                                    console.log("index: " + index + ", tIndex: " + tIndex);
+                                    if(tempResult[tIndex]){
+                                        tIndex += 1;
+                                    }else{
+                                        console.log("in else");
+                                        tempResult[tIndex++] = forOneFolder[index++];
+                                    }
+                                }
+                                console.log(tempResult);
                             }
                         } else{
                             let resultHere = searchCheckFile(value, key, file, set, snapshot, "");
@@ -535,52 +613,155 @@ function UserContextProvider(props) {
                     })
                 }
 
-                if(index === 0) { results = tempResult; }
+                // if it is the first query operator, no other query operator to compare against, so just 
+                // set the value of the results array to the results from the query operation.
+                if(index === 0 && pFlag === 0) { results = tempResult; }
                 else{
                     // apply boolean operator.
-                    if(queries[index-1] === "and"){
-                        let setOfParentFiles = new Set();
-                        let indexHere = 0;
-                        while(indexHere < results.length){
-                            setOfParentFiles.add(results[indexHere++].id);
-                        }
-
-                        indexHere = 0;
-                        let andResults = [];
-                        let andResultsIndex = 0;
-                        while(indexHere < tempResult.length){
-                            if(setOfParentFiles.has(tempResult[indexHere].id)){
-                                andResults[andResultsIndex++] = tempResult[indexHere]; // add this file to it.
+                    console.log("pflag: " + pFlag);
+                    if(pFlag === 0){ // no parenthesis present.
+                        if(queries[index-1] === "and"){
+                            let setOfParentFiles = new Set();
+                            let indexHere = 0;
+                            while(indexHere < results.length){
+                                setOfParentFiles.add(results[indexHere++].id);
                             }
-                            indexHere += 1;
-                        }
 
-                        results = andResults;
-                    } else if(queries[index-1] === "or"){
-                        let orResults = [];
-                        let setHere = new Set(); // don't add duplicate files from below:
-                        let orResultsIndex = 0;
-                        while(orResultsIndex < results.length){
-                            orResults[orResultsIndex] = results[orResultsIndex]; // add this file to it.
-                            setHere.add(results[orResultsIndex]);
-                            orResultsIndex += 1;
-                        }
-                        
-                        let indexHere = 0;
-                        while(indexHere < tempResult.length){
-                            if(!setHere.has(tempResult[indexHere])){
-                                orResults[orResultsIndex] = tempResult[indexHere]; // add this file to it.
+                            indexHere = 0;
+                            let andResults = [];
+                            let andResultsIndex = 0;
+                            while(indexHere < tempResult.length){
+                                if(setOfParentFiles.has(tempResult[indexHere].id)){
+                                    andResults[andResultsIndex++] = tempResult[indexHere]; // add this file to it.
+                                }
+                                indexHere += 1;
+                            }
+                            results = andResults;
+                        } else if(queries[index-1] === "or"){
+                            let orResults = [];
+                            let setHere = new Set();
+                            let orResultsIndex = 0;
+                            while(orResultsIndex < results.length){
+                                orResults[orResultsIndex] = results[orResultsIndex];
+                                setHere.add(results[orResultsIndex]);
                                 orResultsIndex += 1;
                             }
-                            indexHere += 1;
+                            
+                            let indexHere = 0;
+                            while(indexHere < tempResult.length){
+                                if(!setHere.has(tempResult[indexHere])){
+                                    orResults[orResultsIndex] = tempResult[indexHere];
+                                    orResultsIndex += 1;
+                                }
+                                indexHere += 1;
+                            }
+                            results = orResults;
                         }
-                        results = orResults;
+                    } else{ // parenthesis present.
+                        if(firstParenthesis === 0){ // first key/value w/in the parenthesis.
+                            inParenthesis = tempResult;
+                        }
+                        else{ // apply "and" or "or" operators.
+                            if(queries[index-1] === "and"){
+                                let setOfParentFiles = new Set();
+                                let indexHere = 0;
+                                while(indexHere < inParenthesis.length){
+                                    setOfParentFiles.add(inParenthesis[indexHere++].id);
+                                }
+
+                                indexHere = 0;
+                                let andResults = [];
+                                let andResultsIndex = 0;
+                                while(indexHere < tempResult.length){
+                                    if(setOfParentFiles.has(tempResult[indexHere].id)){
+                                        andResults[andResultsIndex++] = tempResult[indexHere];
+                                    }
+                                    indexHere += 1;
+                                }
+                                inParenthesis = andResults;
+                            } else if(queries[index-1] === "or"){
+                                let orResults = [];
+                                let setHere = new Set(); // don't add duplicate files from below:
+                                let orResultsIndex = 0;
+                                while(orResultsIndex < inParenthesis.length){
+                                    orResults[orResultsIndex] = inParenthesis[orResultsIndex];
+                                    setHere.add(results[orResultsIndex]);
+                                    orResultsIndex += 1;
+                                }
+                                
+                                let indexHere = 0;
+                                while(indexHere < tempResult.length){
+                                    if(!setHere.has(tempResult[indexHere])){
+                                        orResults[orResultsIndex] = tempResult[indexHere];
+                                        orResultsIndex += 1;
+                                    }
+                                    indexHere += 1;
+                                }
+                                inParenthesis = orResults;
+                            }
+
+                            // if it is the last parenthesis, then compare to the larger-scoped "results" array
+                            if(lastParenthsis === 0){
+                                // if it was the first index, just set result to the result to the results
+                                // obtained within the parenthesis.
+                                if(saveIndex === 0){
+                                    results = inParenthesis
+                                }
+
+                                // comparing boolean operator between the query operators and opening parenthesis, ie:
+                                // [query1] and ([query2] or [query3]) -> [query1] and the values inside of "()" 
+                                // are compared with the following coniditonals:
+                                if(queries[saveIndex-1] === "and"){
+                                    let setOfParentFiles = new Set();
+                                    let indexHere = 0;
+                                    while(indexHere < results.length){
+                                        setOfParentFiles.add(results[indexHere++].id);
+                                    }
+        
+                                    indexHere = 0;
+                                    let andResults = [];
+                                    let andResultsIndex = 0;
+                                    while(indexHere < inParenthesis.length){
+                                        if(setOfParentFiles.has(inParenthesis[indexHere].id)){
+                                            andResults[andResultsIndex++] = inParenthesis[indexHere];
+                                        }
+                                        indexHere += 1;
+                                    }
+                                    results = andResults;
+                                    console.log(results);
+                                } else if(queries[saveIndex-1] === "or"){
+                                    let orResults = [];
+                                    let setHere = new Set();
+                                    let orResultsIndex = 0;
+                                    while(orResultsIndex < results.length){
+                                        orResults[orResultsIndex] = results[orResultsIndex];
+                                        setHere.add(results[orResultsIndex]);
+                                        orResultsIndex += 1;
+                                    }
+                                    let indexHere = 0;
+                                    while(indexHere < inParenthesis.length){
+                                        if(!setHere.has(inParenthesis[indexHere])){
+                                            orResults[orResultsIndex] = inParenthesis[indexHere];
+                                            orResultsIndex += 1;
+                                        }
+                                        indexHere += 1;
+                                    }
+                                    results = orResults;
+                                }
+                            }
+                            console.log(results);
+                            console.log(inParenthesis);
+                        }
                     }
                 }
             }
+            // if it is the last parenthesis, reset the value of "lastParenthsis" since we do not want to 
+            // assume that we are still inside of parentheses.
+            if(lastParenthsis === 0){ pFlag = 0; }
             index += 1;
         }
-        //name:pdf$ and owner:emirhan.akkaya@stonybrook.edu or writeable:varunvinay.chotalia@stonybrook.edu
+        // name:pdf$ and (owner:emirhan.akkaya@stonybrook.edu or writeable:varunvinay.chotalia@stonybrook.edu)
+        
         if (save) {
             setSearchResults(results)
         }

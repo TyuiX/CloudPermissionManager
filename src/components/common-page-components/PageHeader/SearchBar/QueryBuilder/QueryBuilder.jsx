@@ -61,7 +61,7 @@ export default function QueryBuilder(props) {
     // perform actual search will full query
     const confirmQuery = async () => {
         console.log(existingQueries);
-        await performSearch(currentSnap, stringQuery.split(" "), true, []);
+        await performSearch(currentSnap, stringQuery.split(" "), true);
         getRecentSearches();
         toggleDropdown()
         navigate('/searchresults');
