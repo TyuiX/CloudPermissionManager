@@ -3,7 +3,7 @@ import "./SearchResultRowBlock.css";
 import SearchResultRowPermsTable from "../SearchResultRowPermsTable/SearchResultRowPermsTable";
 
 export default function SearchResultRowBlock(props) {
-    const {file, addToSelected} = props
+    const {file, addToSelected, snapId} = props
     const {name, owner, lastUpdatedOn, createdOn, permissions, id, ownedByMe} = file
     const [openDropdown, setOpenDropdown] = useState(false);
 
@@ -35,13 +35,13 @@ export default function SearchResultRowBlock(props) {
             {openDropdown &&
                 <div className="result-row-more-info-container">
                     <div className="result-perm-table-label">Users</div>
-                    <SearchResultRowPermsTable permissions={permissions} permType={"user"} />
+                    <SearchResultRowPermsTable permissions={permissions} permType={"user"} snapId={snapId} />
                     <div className="result-perm-table-label">Groups</div>
-                    <SearchResultRowPermsTable permissions={permissions} permType={"group"} />
+                    <SearchResultRowPermsTable permissions={permissions} permType={"group"} snapId={snapId} />
                     <div className="result-perm-table-label">Domains</div>
-                    <SearchResultRowPermsTable permissions={permissions} permType={"domain"} />
+                    <SearchResultRowPermsTable permissions={permissions} permType={"domain"} snapId={snapId} />
                     <div className="result-perm-table-label">Anyone with Link</div>
-                    <SearchResultRowPermsTable permissions={permissions} permType={"anyone"} />
+                    <SearchResultRowPermsTable permissions={permissions} permType={"anyone"} snapId={snapId} />
                 </div>
             }
         </>

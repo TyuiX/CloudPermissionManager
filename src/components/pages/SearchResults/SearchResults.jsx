@@ -94,8 +94,8 @@ export default function SearchResults() {
                             <div className="result-table-header-cell">Created On</div>
                             <div className="result-table-header-cell more-detail-button">More</div>
                         </div>
-                        {searchResults.sort((a,b) => optionSorter(a,b)).map((file) => (
-                            <SearchResultRowBlock file={file} addToSelected={handleChecked} />
+                        {searchResults.results.sort((a,b) => optionSorter(a,b)).map((file) => (
+                            <SearchResultRowBlock file={file} addToSelected={handleChecked} snapId={searchResults.snapshot} />
                         ))}
                     </div>
                 </div>
