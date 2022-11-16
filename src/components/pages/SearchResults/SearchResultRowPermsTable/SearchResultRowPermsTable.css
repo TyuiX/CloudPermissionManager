@@ -46,3 +46,16 @@
 .anyone-link-perm-cell {
     width: 33.33%;
 }
+
+.expand-group-mem-button {
+    width: 2%;
+    font-weight: bold;
+}
+
+.expand-group-mem-button:hover {
+    cursor: pointer;
+}
+
+.result-perm-table-header-cell:hover {
+    cursor: unset;
+}

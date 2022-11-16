@@ -78,7 +78,7 @@ export default function SearchResults() {
                     <div>
                         <select className="query-builder-select" onChange={(e) => setSortingElem(e.target.value)} value={sortingElem}>
                             {SORTING_OPTIONS.map((option) => (
-                                <option>
+                                <option key={option}>
                                     {option}
                                 </option>
                             ))}
@@ -94,8 +94,8 @@ export default function SearchResults() {
                             <div className="result-table-header-cell">Created On</div>
                             <div className="result-table-header-cell more-detail-button">More</div>
                         </div>
-                        {searchResults.results.sort((a,b) => optionSorter(a,b)).map((file) => (
-                            <SearchResultRowBlock file={file} addToSelected={handleChecked} snapId={searchResults.snapshot} />
+                        {searchResults.results.sort((a,b) => optionSorter(a,b)).map((file, index) => (
+                            <SearchResultRowBlock key={index} file={file} addToSelected={handleChecked} snapId={searchResults.snapshot} />
                         ))}
                     </div>
                 </div>
