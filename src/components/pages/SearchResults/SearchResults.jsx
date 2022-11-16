@@ -8,7 +8,7 @@ import UpdateMultipleSharingModal from "../../modals/UpdateMultipleSharingModal/
 
 const SORTING_OPTIONS = [
     "Last Updated (Desc)", "Last Updated (Asc)", "Creation Date (Desc)", "Creation Date (Asc)",
-    "Name (A-Z)","Name (Z-A)", "Owner (A-Z)", "Owner (Z-A)",
+    "Name (A-Z)","Name (Z-A)", "Owner (A-Z)", "Owner (Z-A)", "Owned by me (T-F)", "Owned by me (F-T)"
 ]
 
 export default function SearchResults() {
@@ -62,6 +62,10 @@ export default function SearchResults() {
                 return (a.owner > b.owner) ? 1 : (b.owner > a.owner) ? -1 : 0;
             case "Owner (Z-A)":
                 return (a.owner < b.owner) ? 1 : (b.owner < a.owner) ? -1 : 0;
+            case "Owned by me (T-F)":
+                return (!a.ownedByMe && b.ownedByMe) ? 1 : (!b.ownedByMe && a.ownedByMe) ? -1 : 0;
+            case "Owned by me (F-T)":
+                return (a.ownedByMe && !b.ownedByMe) ? 1 : (b.ownedByMe && !a.ownedByMe) ? -1 : 0;
         }
     }
 
@@ -74,7 +78,7 @@ export default function SearchResults() {
                     <div>
                         <select className="query-builder-select" onChange={(e) => setSortingElem(e.target.value)} value={sortingElem}>
                             {SORTING_OPTIONS.map((option) => (
-                                <option>
+                                <option key={option}>
                                     {option}
                                 </option>
                             ))}
@@ -90,8 +94,8 @@ export default function SearchResults() {
                             <div className="result-table-header-cell">Created On</div>
                             <div className="result-table-header-cell more-detail-button">More</div>
                         </div>
-                        {searchResults.sort((a,b) => optionSorter(a,b)).map((file) => (
-                            <SearchResultRowBlock file={file} addToSelected={handleChecked} />
+                        {searchResults.results.sort((a,b) => optionSorter(a,b)).map((file, index) => (
+                            <SearchResultRowBlock key={index} file={file} addToSelected={handleChecked} snapId={searchResults.snapshot} />
                         ))}
                     </div>
                 </div>

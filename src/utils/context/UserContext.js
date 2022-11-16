@@ -14,7 +14,7 @@ function UserContextProvider(props) {
     const [loggedIn, setLoggedIn] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [recentSearches, setRecentSearches] = useState([]);
-    const [searchResults, setSearchResults] = useState([]);
+    const [searchResults, setSearchResults] = useState({});
     const [groupSnapshots, setGroupSnapshots] = useState([])
     const navigate = useNavigate();
 
@@ -175,12 +175,12 @@ function UserContextProvider(props) {
         }
     }, [])
 
-    const searchByName = useCallback( async (id, fileName) => {
+    const searchByName = useCallback( async (id, searchText) => {
         try{
-            const res = await api.searchByName({name: fileName, id: id, email: user.email});
+            const res = await api.searchByName({name: searchText, id: id, email: user.email});
             if (res.status === 200) {
                 console.log(res.data)
-                setSearchResults(res.data)
+                setSearchResults({results: res.data, snapshot: id})
             }
         }
         catch(err){
@@ -763,7 +763,7 @@ function UserContextProvider(props) {
         // name:pdf$ and (owner:emirhan.akkaya@stonybrook.edu or writeable:varunvinay.chotalia@stonybrook.edu)
         
         if (save) {
-            setSearchResults(results)
+            setSearchResults({results: results, snapshot: snapshot._id})
         }
         else {
             return results;
