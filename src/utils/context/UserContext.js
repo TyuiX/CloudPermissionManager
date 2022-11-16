@@ -270,7 +270,6 @@ function UserContextProvider(props) {
      * @returns an array with the query operator applied to the query operand.
      */
     const searchCheckFile = (operator, operand, filePassed, addedFilesSet, snapshot, folderId) => {
-
         let filesAdded = null; // update this "dummy" array and then return this as the return for "searchCheckFiles"
         console.log(operator);
         console.log(operand);
@@ -479,9 +478,55 @@ function UserContextProvider(props) {
         return toAdd;
     }
 
+    const recursiveSearch = (snapshot, keyOperator, folderId, addedFiles) => {
+        Object.entries(snapshot.folders).forEach((key, value) => {
+            if(key[0] === folderId){
+                let nameToMatch = "";
+                let isLast = keyOperator.indexOf("/");
+                if(isLast === -1){
+                    let index = 0;
+                    while(index < (Object.values(key[1]).length)){
+                        let file = Object.values(key[1])[index];
+                        addedFiles.push(file);
+                        index += 1;
+                    }
+                    console.log(addedFiles);
+                    return addedFiles;
+                } else{
+                    nameToMatch = keyOperator.substring(keyOperator.indexOf("/") + 1);
+                    if(nameToMatch.indexOf("/") !== -1){
+                        nameToMatch = nameToMatch.substring(0, nameToMatch.indexOf("/"));
+                    }
+                }
+                
+                let indexHere = 0;
+                while(indexHere < (Object.values(key[1]).length)){
+                    let file = Object.values(key[1])[indexHere];
+                    if(file.name === nameToMatch){
+                        if(isLast === -1){
+                            let index = 0;
+                            while(index < (Object.values(key[1]).length)){
+                                let file = Object.values(key[1])[index];
+                                addedFiles.push(file);
+                                index += 1;
+                            }
+                            return addedFiles;
+                        } else{
+                            let file = Object.values(key[1])[indexHere];
+                            keyOperator = keyOperator.substring(keyOperator.indexOf("/") + 1);
+                            recursiveSearch(snapshot, keyOperator, file.id, addedFiles);
+                        }
+                    }
+                    indexHere += 1;
+                }
+            }
+        })
+        return addedFiles;
+    }
+
     /**
         performSearch
-        This function performs the query operation.
+        This function performs the search for query operations passed in. There will be helper functions that will be called.
         @param snapshot is the snapshot to be iterated over.
         @param queries is the qeuries array which holds all of the queries and boolean operators.
         @param save is a boolean which is used at the end to either save or not save the results.
@@ -522,15 +567,12 @@ function UserContextProvider(props) {
                 value = value.substring(1);
             }
 
-            console.log("firstParen: " + firstParenthesis);
             let key = queries[index].substring(queries[index].indexOf(":") + 1);
-            console.log(key);
             if(key[key.length-1] === ")"){
                 lastParenthsis = 0;
                 key = key.substring(0, key.length-1);
                 console.log(key);
             }
-
 
             if(key === "none"){
                 value = "none";
@@ -545,27 +587,7 @@ function UserContextProvider(props) {
             if(index % 2 === 0){ // non boolean operator
                 Object.values(snapshot.folders).forEach((folder) => {
                     Object.values(folder).forEach((file) => {
-                        if(value === "inFolder"){
-                            let forOneFolder = [];
-                            let regexp = new RegExp(key);
-                            if(regexp.exec(file.name) && file.type === "folder"){ 
-                                forOneFolder = searchFolder(value, snapshot, file.id);
-                                let index = 0;
-                                let tIndex = 0;
-                                console.log(forOneFolder);
-                                while(index < forOneFolder.length){
-                                    console.log(tempResult[tIndex]);
-                                    console.log("index: " + index + ", tIndex: " + tIndex);
-                                    if(tempResult[tIndex]){
-                                        tIndex += 1;
-                                    }else{
-                                        console.log("in else");
-                                        tempResult[tIndex++] = forOneFolder[index++];
-                                    }
-                                }
-                                console.log(tempResult);
-                            }
-                        } else if(value === "folder"){
+                        if(value === "inFolder" || value === "folder"){
                             let forOneFolder = [];
                             let regexp = new RegExp(key);
                             if(regexp.exec(file.name) && file.type === "folder"){
@@ -585,6 +607,16 @@ function UserContextProvider(props) {
                                 }
                                 console.log(tempResult);
                             }
+                        } else if(value === "path"){
+                            let firstFile = "";
+                            if(key.indexOf("/") === -1){
+                                firstFile = key;
+                            } else{
+                               firstFile = key.substring(0, key.indexOf("/"));
+                            }
+                            if(file.name === firstFile && file.type === "folder"){
+                                tempResult = recursiveSearch(snapshot, key, file.id, []);
+                            }
                         } else{
                             let resultHere = searchCheckFile(value, key, file, set, snapshot, "");
                             console.log(resultHere);
@@ -593,7 +625,6 @@ function UserContextProvider(props) {
                     })
                 })
 
-                console.log("vFlag: " + vFlag);
                 // check all files for a possible "-" in front of their file names.
                 if(vFlag){ // then iterate through all files and only pick the one's that are not in current
                     // temp results array.
@@ -616,7 +647,7 @@ function UserContextProvider(props) {
                 // if it is the first query operator, no other query operator to compare against, so just 
                 // set the value of the results array to the results from the query operation.
                 if(index === 0 && pFlag === 0) { results = tempResult; }
-                else{
+                else {
                     // apply boolean operator.
                     console.log("pflag: " + pFlag);
                     if(pFlag === 0){ // no parenthesis present.
@@ -760,14 +791,9 @@ function UserContextProvider(props) {
             if(lastParenthsis === 0){ pFlag = 0; }
             index += 1;
         }
-        // name:pdf$ and (owner:emirhan.akkaya@stonybrook.edu or writeable:varunvinay.chotalia@stonybrook.edu)
-        
-        if (save) {
-            setSearchResults(results)
-        }
-        else {
-            return results;
-        }
+
+        if (save) { setSearchResults(results); } 
+        else { return results; }
     },[searchCheckFile, searchFolder, user.email])
 
     const checkInDomains = useCallback ((user, domains) => {
