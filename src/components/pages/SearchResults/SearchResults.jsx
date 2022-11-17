@@ -1,116 +1,108 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import PageSideBar from '../../common-page-components/PageSidebar/PageSideBar';
 import {UserContext} from "../../../utils/context/UserContext";
-import {IoIosArrowDown, IoIosArrowUp} from "react-icons/io";
 import "./SearchResults.css"
-import MetaData from './MetaData';
-import { RiContrastDropLine } from 'react-icons/ri';
+import SearchResultRowBlock from "./SearchResultRowBlock/SearchResultRowBlock";
+import {GoogleContext} from "../../../utils/context/GoogleContext";
+import UpdateMultipleSharingModal from "../../modals/UpdateMultipleSharingModal/UpdateMultipleSharingModal";
+
+const SORTING_OPTIONS = [
+    "Last Updated (Desc)", "Last Updated (Asc)", "Creation Date (Desc)", "Creation Date (Asc)",
+    "Name (A-Z)","Name (Z-A)", "Owner (A-Z)", "Owner (Z-A)", "Owned by me (T-F)", "Owned by me (F-T)"
+]
 
 export default function SearchResults() {
     const {searchResults} = useContext(UserContext);
-    const [openDropdown, setOpenDropdown] = useState(false);
+    const {allFiles} = useContext(GoogleContext);
+    const [sortingElem, setSortingElem] = useState("Last Updated (Desc)")
+    const [selectedFiles, setSelectedFiles] = useState([]);
+    const [filesToUpdate, setFilesToUpdate] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    const [permissions, setPermissions] = useState([]);
-    const [createdOn, setCreatedOn] = useState([]);
+
+    useEffect(() => {
+        if (!selectedFiles) {
+            return
+        }
+        let displayFiles = allFiles.filter(({id}) => selectedFiles.includes(id))
+        setFilesToUpdate(displayFiles)
+    }, [selectedFiles, allFiles])
 
     const handleToggleModal = () => {
-        setShowModal(!showModal);
+        setShowModal(!showModal)
     }
 
-    const setPermsAndToggle = (permissions, createdAt) => {
-        setPermissions(permissions);
-        setCreatedOn(createdAt);
-        handleToggleModal();
+    // handles adding file to list of files wish to update
+    const handleChecked = (e, fileId) => {
+        let fileIds = JSON.parse(JSON.stringify(selectedFiles));
+        let indexFound = fileIds.findIndex(id => id === fileId);
+        if (e.target.checked) {
+            fileIds.push(fileId);
+        } else {
+            fileIds.splice(indexFound, 1);
+        }
+        setSelectedFiles(fileIds);
     }
 
-    let toPrint;
-    let first = 1;
-    
-    if(searchResults.length !== 0) {
-        toPrint = (searchResults.map((result) => { // 
-            console.log(result);
-            let permissions = [];
-            
-            result.permissions.map(perms => {
-                permissions.push(perms.emailAddress + ", " + perms.role);
-                permissions.push(<br></br>)
-            })
-            if(permissions.length === 0){
-                permissions.push("Information not provided");
-                permissions.push(<br></br>)
-            }
-            
-            let createdAt = "";
-            if(result.createdOn !== undefined){
-                createdAt = "" + result.createdOn;
-                let year = createdAt.substring(0, 4);
-                let month = createdAt.substring(5, 7);
-                let day = createdAt.substring(8, 10);
-                createdAt = month + "/" + day + "/" + year;
-            } else{
-                createdAt = "Information not provided";
-            }
-
-            let owner = result.owner !== undefined ? result.owner : "Owner not found";
-            console.log(permissions);
-
-            return (
-                <table>
-                    <tr>
-                        <th>{first === 1 ? "Name" : null}</th>
-                        <th>{first === 1 ? "Owner" : null}</th>
-                        {first = null}
-                    </tr>
-                    <tr>
-                        <th className="user-menu-item" key={result.id}> 
-                        <div className="search-result-file-name">{result.name} </div>
-                        </th>
-                        <th>
-                            <div>{owner} </div>
-                        </th>
-                        <div className="file-info-block">
-                            <div className="file-info-name" onClick={() => setPermsAndToggle(permissions, createdAt)}>
-                                <div>MetaData</div>
-                                {openDropdown ?
-                                    <IoIosArrowUp size={20}/>
-                                    :
-                                    <IoIosArrowDown size={20}/>
-                                }
-                            
-                            </div>
-                            
-                        </div>
-                    </tr>
-                </table>
-                
-            )
-            
-        }))
-    }
-    else{
-        toPrint =
-            <li className="user-menu-item"  key={null}>
-                <span>{"No Result"}</span>
-            </li>
+    // determine how to sort based on options
+    const optionSorter = (a, b) => {
+        switch (sortingElem) {
+            case "Last Updated (Desc)":
+                return (a.lastUpdatedOn < b.lastUpdatedOn) ? 1 : (b.lastUpdatedOn < a.lastUpdatedOn) ? -1 : 0;
+            case "Last Updated (Asc)":
+                return (a.lastUpdatedOn > b.lastUpdatedOn) ? 1 : (b.lastUpdatedOn > a.lastUpdatedOn) ? -1 : 0;
+            case "Creation Date (Desc)":
+                return (a.createdOn < b.createdOn) ? 1 : (b.createdOn < a.createdOn) ? -1 : 0;
+            case "Creation Date (Asc)":
+                return (a.createdOn > b.createdOn) ? 1 : (b.createdOn > a.createdOn) ? -1 : 0;
+            case "Name (A-Z)":
+                return (a.name > b.name) ? 1 : (b.name > a.name) ? -1 : 0;
+            case "Name (Z-A)":
+                return (a.name < b.name) ? 1 : (b.name < a.name) ? -1 : 0;
+            case "Owner (A-Z)":
+                return (a.owner > b.owner) ? 1 : (b.owner > a.owner) ? -1 : 0;
+            case "Owner (Z-A)":
+                return (a.owner < b.owner) ? 1 : (b.owner < a.owner) ? -1 : 0;
+            case "Owned by me (T-F)":
+                return (!a.ownedByMe && b.ownedByMe) ? 1 : (!b.ownedByMe && a.ownedByMe) ? -1 : 0;
+            case "Owned by me (F-T)":
+                return (a.ownedByMe && !b.ownedByMe) ? 1 : (b.ownedByMe && !a.ownedByMe) ? -1 : 0;
+        }
     }
 
     return (
         <>
-        <div className="page-container">
-            <PageSideBar />
-            <div className="page-content">
-                {toPrint}
+            <div className="page-container">
+                <PageSideBar />
+                <div className="page-content">
+                    <h2 className="page-content-header">Search Results</h2>
+                    <div>
+                        <select className="query-builder-select" onChange={(e) => setSortingElem(e.target.value)} value={sortingElem}>
+                            {SORTING_OPTIONS.map((option) => (
+                                <option key={option}>
+                                    {option}
+                                </option>
+                            ))}
+                        </select>
+                        <button onClick={handleToggleModal}>Update Files</button>
+                    </div>
+                    <div className="result-table">
+                        <div className="result-table-header">
+                            <div className="result-table-header-cell result-select-button"></div>
+                            <div className="result-table-header-cell">Name</div>
+                            <div className="result-table-header-cell">Owner</div>
+                            <div className="result-table-header-cell">Last Updated</div>
+                            <div className="result-table-header-cell">Created On</div>
+                            <div className="result-table-header-cell more-detail-button">More</div>
+                        </div>
+                        {searchResults.results.sort((a,b) => optionSorter(a,b)).map((file, index) => (
+                            <SearchResultRowBlock key={index} file={file} addToSelected={handleChecked} snapId={searchResults.snapshot} />
+                        ))}
+                    </div>
+                </div>
             </div>
-            
-        </div>
-        {
-            showModal &&
-                <MetaData 
-                    permissions = {permissions}
-                    createdOn = {createdOn}
-                    toggleModal={handleToggleModal}
-                />
-        }
+            {showModal && filesToUpdate.length > 0 &&
+                <UpdateMultipleSharingModal files={filesToUpdate} toggleModal={handleToggleModal} />
+            }
         </>
     )
 }

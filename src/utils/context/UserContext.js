@@ -15,7 +15,7 @@ function UserContextProvider(props) {
     const [loggedIn, setLoggedIn] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [recentSearches, setRecentSearches] = useState([]);
-    const [searchResults, setSearchResults] = useState([]);
+    const [searchResults, setSearchResults] = useState({});
     const [groupSnapshots, setGroupSnapshots] = useState([])
     const navigate = useNavigate();
 
@@ -176,12 +176,12 @@ function UserContextProvider(props) {
         }
     }, [])
 
-    const searchByName = useCallback( async (id, fileName) => {
+    const searchByName = useCallback( async (id, searchText) => {
         try{
-            const res = await api.searchByName({name: fileName, id: id, email: user.email});
+            const res = await api.searchByName({name: searchText, id: id, email: user.email});
             if (res.status === 200) {
                 console.log(res.data)
-                setSearchResults(res.data)
+                setSearchResults({results: res.data, snapshot: id})
             }
         }
         catch(err){
@@ -857,8 +857,12 @@ function UserContextProvider(props) {
             index += 1;
         }
 
-        if (save) { setSearchResults(results); } 
-        else { return results; }
+        if (save) {
+            setSearchResults({results: results, snapshot: snapshot._id})
+        }
+        else {
+            return results;
+        }
     },[searchCheckFile, searchFolder, user.email])
 
     const checkInDomains = useCallback ((user, domains) => {
@@ -909,25 +913,8 @@ function UserContextProvider(props) {
     },[checkInDomains])
 
     const getControlReqQueryFiles = useCallback(async (req, snapshot) => {
-        let queryMap = new Map();
         const {query} = req;
-        let splitQueryOps = query.split(" ");
-        
-        splitQueryOps.forEach(query => {
-            let queryParts = query.split(":");
-            if (queryParts.length <= 1) {
-                return
-            }
-            if (Object.hasOwn(ControlReqQueriesLists.QUERIES_MAP, queryParts[0])) {
-                // TODO this is just for while sharing isnt implemented
-                if (queryParts[0] === "sharing") {
-                    return;
-                }
-                const [, ...operand] = queryParts
-                queryMap.set(ControlReqQueriesLists.QUERIES_MAP[queryParts[0]], operand.join(":"))
-            }
-        })
-        return await performSearch(snapshot, queryMap, false)
+        return await performSearch(snapshot, query.split(" "), false, [])
     }, [performSearch])
 
     const checkReqsBeforeUpdate = useCallback(async (filesToUpdate) => {
