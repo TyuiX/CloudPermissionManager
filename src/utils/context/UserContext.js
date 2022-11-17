@@ -673,11 +673,10 @@ function UserContextProvider(props) {
         return violation
     },[checkViolations, controlReqs, getControlReqQueryFiles, snapshots])
 
+    // check if a files permission is direct or inherited
     const checkPermissionSrc = useCallback( (fileInfo, permId, snapId) => {
-        const {id, parents} = fileInfo;
+        const {parents} = fileInfo;
         let workingSnap = snapshots.find(({_id}) => _id === snapId);
-
-        console.log(permId)
 
         // if parents does not exist, file is likely directly assigned permissions
         if (!parents) {
@@ -685,10 +684,11 @@ function UserContextProvider(props) {
         }
         else {
             let src = "direct"
+            // iterate through each folder
             Object.values(workingSnap.folders).every(file => {
+                // check if folder has parent file of file the permission originates from
                 if (file.hasOwnProperty(parents[0])) {
-                    console.log(file[parents[0]])
-                    console.log(file[parents[0]].permissions.some((perm) => perm.id === permId))
+                    // check if parent file has the permission from the original perm
                     if (file[parents[0]].permissions.some((perm) => perm.id === permId)) {
                         src = "inherited"
                         return false;

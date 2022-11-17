@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import "./SearchResultRowBlock.css";
 import SearchResultRowPermsTable from "../SearchResultRowPermsTable/SearchResultRowPermsTable";
+import {AiOutlineExclamationCircle} from "react-icons/ai";
 
 export default function SearchResultRowBlock(props) {
     const {file, addToSelected, snapId} = props
@@ -34,6 +35,12 @@ export default function SearchResultRowBlock(props) {
             </div>
             {openDropdown &&
                 <div className="result-row-more-info-container">
+                    <div className="result-perm-note">
+                        <AiOutlineExclamationCircle size={20} />
+                        <div>
+                            Note: some permissions listed only as inherited might also be directly assigned.
+                        </div>
+                    </div>
                     <div className="result-perm-table-label">Users</div>
                     <SearchResultRowPermsTable permissions={permissions} permType={"user"} snapId={snapId} file={file}/>
                     <div className="result-perm-table-label">Groups</div>
