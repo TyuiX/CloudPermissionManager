@@ -1,19 +1,22 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import "./SearchResultRowBlock.css";
 import SearchResultRowPermsTable from "../SearchResultRowPermsTable/SearchResultRowPermsTable";
 import {AiOutlineExclamationCircle} from "react-icons/ai";
+import {UserContext} from "../../../../utils/context/UserContext";
 
 export default function SearchResultRowBlock(props) {
     const {file, addToSelected, snapId} = props
     const {name, owner, lastUpdatedOn, createdOn, permissions, id, ownedByMe} = file
     const [openDropdown, setOpenDropdown] = useState(false);
+    const {snapshots} = useContext(UserContext);
 
     return (
         <>
             <div className="result-table-row">
                 <div className="result-table-cell result-select-button">
                     {
-                        ownedByMe &&
+                        // check if user has ownership to update file and search was from most recent snapshot
+                        ownedByMe && snapshots[0]._id === snapId &&
                         <input
                             type="checkbox"
                             id="checkGroup"
