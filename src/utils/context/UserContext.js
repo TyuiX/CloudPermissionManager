@@ -4,6 +4,7 @@ import {useNavigate} from "react-router-dom";
 import ControlReqQueriesLists from "../ControlReqQueriesLists";
 import controlReqsList from "../ControlReqQueriesLists";
 import { Stack } from "react-bootstrap";
+import { queryByTestId } from "@testing-library/react";
 
 export const UserContext = createContext({});
 
@@ -342,6 +343,14 @@ function UserContextProvider(props) {
                 console.log("owned By me");
                 filesAdded = filePassed;
             }
+        } else if(operator === "anyone"){ // sharing:anyone
+            filePassed.permissions.forEach((perm) => {
+                console.log("in here!");
+                if(perm.id === "anyoneWithLink"){
+                    console.log(filePassed);
+                    filesAdded = filePassed;
+                }
+            })
         } else if(operator === "domain"){ // sharing:domain
             /*
                 * doesn't accept a "value" since the sharing:domain automatically goes into
@@ -542,6 +551,58 @@ function UserContextProvider(props) {
         
         let index = 0;
 
+        console.log(queries);
+        while(index < queries.length){
+            let keyValue = "";
+            keyValue = queries[index].substring(queries[index].indexOf(":") + 1);
+            let operator = queries[index].substring(0, queries[index].indexOf(":") + 1);
+            let buildOutKey = "";
+            let startingOutIndex = index;
+            if(keyValue[0] === "\""){
+                while(keyValue[keyValue.length-1] !== "\""){
+                    if(index > queries.length){
+                        break;
+                    }
+                    keyValue = queries[index].substring(queries[index].indexOf(":") + 1);
+                    if(keyValue[0] === "\""){
+                        console.log(keyValue.substring(1));
+                        buildOutKey = keyValue.substring(1); // don't include first starting quote.
+                    } else{
+                        if(keyValue[keyValue.length-1] !== "\""){ buildOutKey += " " + keyValue; } 
+                        else{ buildOutKey += " " + keyValue.substring(0, keyValue.length -1); }   
+                    }
+                    index += 1;
+                }
+
+                let toPutIn = operator + buildOutKey;
+
+                let indexCompare = 0;
+                let newQueries = [];
+                let seenFlag = 0;
+                while(indexCompare < queries.length){
+                    if(indexCompare >= startingOutIndex && seenFlag === 0){
+                        let tempIndex = 0;
+                        while(tempIndex < ((index - startingOutIndex) - 1)){
+                            indexCompare += 1;
+                            tempIndex += 1;
+                        }
+                        newQueries.push(toPutIn); // then push it in.
+                        seenFlag = 1;
+                    } else{
+                        console.log("queries[indexCompare]: " + queries[indexCompare]);
+                        newQueries.push(queries[indexCompare]);
+                    }
+                    indexCompare += 1;
+                }
+                queries = newQueries;
+                console.log(queries);
+            } else{
+                index += 1; // if no quotes, just go on with the code.
+            }
+        }
+       
+        console.log(queries);
+
         await api.addRecentSearch({
             query: queries.join(" "),
             email: user.email
@@ -578,8 +639,11 @@ function UserContextProvider(props) {
                 value = "none";
             } else if(key === "domain"){
                 value = "domain";
-            } else if(value === "sharing"){
-                value = "individual"
+            } else if(value === "sharing" && key !== "anyone"){
+                console.log("in here");
+                value = "individual";
+            } else if(value === "sharing" && key === "anyone"){
+                value = "anyone";
             }
 
             console.log("value: " + value + ", key: " + key);
@@ -587,6 +651,7 @@ function UserContextProvider(props) {
             if(index % 2 === 0){ // non boolean operator
                 Object.values(snapshot.folders).forEach((folder) => {
                     Object.values(folder).forEach((file) => {
+                        console.log(file);
                         if(value === "inFolder" || value === "folder"){
                             let forOneFolder = [];
                             let regexp = new RegExp(key);
