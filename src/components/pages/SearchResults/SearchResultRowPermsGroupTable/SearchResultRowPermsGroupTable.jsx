@@ -3,8 +3,8 @@ import {UserContext} from "../../../../utils/context/UserContext";
 import "./SearchResultRowPermsGroupTable.css";
 
 export default function SearchResultRowPermsGroupTable(props) {
-    const {perm, snapId} = props
-    const {snapshots, groupSnapshots} = useContext(UserContext)
+    const {perm, snapId, file} = props
+    const {snapshots, groupSnapshots, checkPermissionSrc} = useContext(UserContext)
     const [groupMembers, setGroupMembers] = useState([]);
     const [grpMemAvail, setGrpMemAvail] = useState(false);
     const [showMembers, setShowMembers] = useState(false)
@@ -54,7 +54,7 @@ export default function SearchResultRowPermsGroupTable(props) {
                     {perm.role}
                 </div>
                 <div className="result-perm-table-cell">
-                    inheritfunction
+                    {checkPermissionSrc(file, perm.id, snapId)}
                 </div>
                 <div className="result-perm-table-cell expand-group-mem-button" onClick={() => setShowMembers(!showMembers)}>
                     {showMembers ? "-" : "+"}

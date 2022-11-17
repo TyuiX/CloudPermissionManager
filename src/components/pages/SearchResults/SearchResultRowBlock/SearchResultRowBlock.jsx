@@ -35,13 +35,13 @@ export default function SearchResultRowBlock(props) {
             {openDropdown &&
                 <div className="result-row-more-info-container">
                     <div className="result-perm-table-label">Users</div>
-                    <SearchResultRowPermsTable permissions={permissions} permType={"user"} snapId={snapId} />
+                    <SearchResultRowPermsTable permissions={permissions} permType={"user"} snapId={snapId} file={file}/>
                     <div className="result-perm-table-label">Groups</div>
-                    <SearchResultRowPermsTable permissions={permissions} permType={"group"} snapId={snapId} />
+                    <SearchResultRowPermsTable permissions={permissions} permType={"group"} snapId={snapId} file={file}/>
                     <div className="result-perm-table-label">Domains</div>
-                    <SearchResultRowPermsTable permissions={permissions} permType={"domain"} snapId={snapId} />
+                    <SearchResultRowPermsTable permissions={permissions} permType={"domain"} snapId={snapId} file={file}/>
                     <div className="result-perm-table-label">Anyone with Link</div>
-                    <SearchResultRowPermsTable permissions={permissions} permType={"anyone"} snapId={snapId} />
+                    <SearchResultRowPermsTable permissions={permissions} permType={"anyone"} snapId={snapId} file={file}/>
                 </div>
             }
         </>

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import "./SearchResultRowPermsTable.css";
 import SearchResultRowPermsGroupTable from "../SearchResultRowPermsGroupTable/SearchResultRowPermsGroupTable";
+import {UserContext} from "../../../../utils/context/UserContext";
 
 // generates static headers for each table
 const SearchTableHeader = (hasEmail, group) => {
@@ -28,7 +29,8 @@ const SearchTableHeader = (hasEmail, group) => {
 }
 
 export default function SearchResultRowPermsTable(props) {
-    const {permissions, permType, snapId} = props
+    const {permissions, permType, snapId, file} = props
+    const {checkPermissionSrc} = useContext(UserContext)
 
     if (permType === "anyone") {
         return (
@@ -44,7 +46,7 @@ export default function SearchResultRowPermsTable(props) {
                                 {perm.role}
                             </div>
                             <div className="result-perm-table-cell anyone-link-perm-cell">
-                                inheritfunction
+                                {checkPermissionSrc(file, perm.id, snapId)}
                             </div>
                         </div>
                     ))
@@ -66,7 +68,7 @@ export default function SearchResultRowPermsTable(props) {
                 {
                     if (permType === "group") {
                         return (
-                            <SearchResultRowPermsGroupTable key={perm.id} perm={perm} snapId={snapId} />
+                            <SearchResultRowPermsGroupTable key={perm.id} perm={perm} snapId={snapId} file={file}/>
                         )
                     }
                     return(
@@ -81,7 +83,7 @@ export default function SearchResultRowPermsTable(props) {
                                 {perm.role}
                             </div>
                             <div className="result-perm-table-cell">
-                                inheritfunction
+                                {checkPermissionSrc(file, perm.id, snapId)}
                             </div>
                         </div>
                     )

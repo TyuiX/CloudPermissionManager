@@ -949,12 +949,39 @@ function UserContextProvider(props) {
         return violation
     },[checkViolations, controlReqs, getControlReqQueryFiles, snapshots])
 
+    const checkPermissionSrc = useCallback( (fileInfo, permId, snapId) => {
+        const {id, parents} = fileInfo;
+        let workingSnap = snapshots.find(({_id}) => _id === snapId);
+
+        console.log(permId)
+
+        // if parents does not exist, file is likely directly assigned permissions
+        if (!parents) {
+            return "direct"
+        }
+        else {
+            let src = "direct"
+            Object.values(workingSnap.folders).every(file => {
+                if (file.hasOwnProperty(parents[0])) {
+                    console.log(file[parents[0]])
+                    console.log(file[parents[0]].permissions.some((perm) => perm.id === permId))
+                    if (file[parents[0]].permissions.some((perm) => perm.id === permId)) {
+                        src = "inherited"
+                        return false;
+                    }
+                }
+                return true
+            })
+            return src
+        }
+    },[snapshots])
+
     return (
         <UserContext.Provider value={{
             user, snapshots, isLoading, loggedIn, recentSearches, createUser, loginUser, logoutUser, startLoading, finishLoading, 
             setGoogleAcc, createNewSnapshot, getFolderFileDif, getSnapShotDiff, searchByName, getRecentSearches, createNewControlReq,
             controlReqs, deleteControlReq, setIsLoading, performSearch, searchResults, groupSnapshots, createNewGroupSnapshot,
-            getControlReqQueryFiles, checkInDomains, checkViolations, checkReqsBeforeUpdate, getDeviantFiles
+            getControlReqQueryFiles, checkInDomains, checkViolations, checkReqsBeforeUpdate, getDeviantFiles, checkPermissionSrc
         }}>
             {props.children}
         </UserContext.Provider>
