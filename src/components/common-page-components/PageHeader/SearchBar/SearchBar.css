@@ -31,6 +31,9 @@
 .search-filter-button {
     padding: 6px;
     border: 1px solid black;
+    position: relative;
+    right: 1px;
+    border-radius: 0 5px 5px 0;
 }
 
 .search-filter-button:hover {
@@ -74,10 +77,16 @@
     color: white;
 }
 
-.switchStatement{
-    background-color: lightgray;
-    margin-right: 1%;
-    font-size: 20px;
+.query-toggle-label{
+    margin-right: 5px;
+    font-size: 16px;
     white-space: nowrap;
-    font-family: cursive;
+    font-weight: bold;
+    width: 120px;
+    text-align: right;
+    color: cornflowerblue;
+}
+
+.query-toggle-container {
+    margin-right: 10px;
 }

@@ -13,6 +13,7 @@ import Home from "./components/pages/Home/Home";
 import {UserContext} from "./utils/context/UserContext";
 import LoadingScreen from "./components/common-page-components/LoadingScreen/LoadingScreen";
 import SearchResults from './components/pages/SearchResults/SearchResults';
+import GroupSnapshots from "./components/pages/GroupSnapshots/GroupSnapshots";
 
 function App() {
     const {isLoading} = useContext(UserContext)
@@ -33,9 +34,9 @@ function App() {
               <Route path="/signup" element={<SignUp />} />
               <Route path="/files" element={<MyFiles />} />
               <Route path="/sharedfiles" element={<SharedFiles />} />
-              <Route path="/folder/:folderId" element={<div>OpenFolder</div>} />
+              {/*<Route path="/folder/:folderId" element={<div>OpenFolder</div>} />*/}
               <Route path="/filesnapshot" element={<MySnapshots />} />
-              <Route path="/groupsnapshot" element={<div>GroupSnapshot</div>} />
+              <Route path="/groupsnapshot" element={<GroupSnapshots />} />
               <Route path="/searchresults" element={<SearchResults/>}/>
           </Routes>
       </>

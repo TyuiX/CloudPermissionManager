@@ -18,19 +18,44 @@ export default function UpdateSingleSharingModal(props) {
     const {checkReqsBeforeUpdate, snapshots} = useContext(UserContext)
     const [showConfirmModal, setShowConfirmModal] = useState(false);
 
+    console.log(existingUsers)
+
     useEffect(() => {
         if (!existingPerms) {
             return;
         }
-        let users = existingPerms.filter(({type, role}) => type === "user" && role !== "owner" ).map(({displayName, id, role, type, emailAddress}) => {
-            return {
-                name: displayName,
-                id: id,
-                email: emailAddress,
-                origin: origin,
-                role: role,
-                type: type
-            }
+        let users = existingPerms.filter(({role}) => role !== "owner" )
+            .map(({displayName, id, role, type, emailAddress, domain}) => {
+                if (type === "anyone") {
+                    return {
+                        name: "Anyone with Link",
+                        id: id,
+                        email: emailAddress,
+                        origin: origin,
+                        role: role,
+                        type: type
+                    }
+                }
+                else if (type === "domain") {
+                    return {
+                        name: displayName,
+                        id: id,
+                        email: domain,
+                        origin: origin,
+                        role: role,
+                        type: type
+                    }
+                }
+                else {
+                    return {
+                        name: displayName,
+                        id: id,
+                        email: emailAddress,
+                        origin: origin,
+                        role: role,
+                        type: type
+                    }
+                }
         })
         setExistingUsers(users);
     },[existingPerms, origin])
@@ -69,6 +94,18 @@ export default function UpdateSingleSharingModal(props) {
         let userIndex = addedUsers.findIndex(({email}) => email === user.email);
         addedUsers[userIndex].role = e.target.value;
         setNewUsers(addedUsers);
+    }
+
+    const addAnyoneLink = (e) => {
+        e.preventDefault();
+        let addedUsers = JSON.parse(JSON.stringify(newUsers));
+        addedUsers.push({
+            email: "Anyone with Link",
+            origin: origin,
+            role: "writer",
+            type: "anyone"
+        })
+        setNewUsers(addedUsers)
     }
 
     const removeNewUser = (user) => {
@@ -127,7 +164,7 @@ export default function UpdateSingleSharingModal(props) {
     return (
         <>
             <div className="modal-background">
-                <div className="modal-container">
+                <div className="modal-container sharing-modal-container">
                     <div className="modal-header">
                         <span>{fileName}</span>
                         <AiOutlineClose className="sidebar-close-button" onClick={toggleModal} />
@@ -149,7 +186,6 @@ export default function UpdateSingleSharingModal(props) {
                                                 <option value="reader">Reader</option>
                                                 <option value="commenter">Commenter</option>
                                                 <option value="unshared" >Unshared</option>
-                                                <option value="editor">Editor</option>
                                             </select>
                                         </div>
                                     )
@@ -185,7 +221,6 @@ export default function UpdateSingleSharingModal(props) {
                                                 <option value="writer">Writer</option>
                                                 <option value="reader">Reader</option>
                                                 <option value="commenter">Commenter</option>
-                                                <option value="editor">Editor</option>
                                             </select>
                                         </div>
                                     )
@@ -196,6 +231,10 @@ export default function UpdateSingleSharingModal(props) {
                         </div>
                     </div>
                     <div className="modal-footer">
+                        {/*handles adding an "Anyone with Link" element to the file*/}
+                        {!existingUsers.some(user => user.type === "anyone") && !newUsers.some(user => user.type === "anyone") &&
+                            <button className="add-anyone-link" onClick={(e) => addAnyoneLink(e)}>Add Anyone with Link</button>
+                        }
                         <button className="modal-button modal-confirm" onClick={(e) => confirmUpdate(e)}>Confirm</button>
                         <button className="modal-button modal-cancel" onClick={toggleModal}>Cancel</button>
                     </div>

@@ -53,6 +53,19 @@
     align-items: center;
 }
 
+.add-anyone-link {
+    border-radius: 5px;
+    font-weight: bold;
+    padding: 10px;
+    margin-left: 20px;
+    position: relative;
+    right: 190px;
+}
+
+.add-anyone-link:hover {
+    cursor: pointer;
+}
+
 .modal-form-input {
     position: relative;
     font-size: 16px;
@@ -132,4 +145,16 @@
 
 .modal-add-text-button:hover {
     cursor: pointer;
+}
+
+.modal-footnote {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    margin-left: 10px;
+    font-weight: normal;
+}
+
+.modal-footnote div {
+    padding-left: 15px;
 }

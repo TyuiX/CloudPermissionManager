@@ -1,0 +1,21 @@
+.query-operation-tag {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: cornflowerblue;
+    color: white;
+    border-radius: 20px;
+    padding: 3px 6px;
+    font-size: 12px;
+    font-weight: normal;
+    margin-right: 5px;
+    margin-top: 5px;
+}
+
+.query-operation-remove-button {
+    margin-left: 2px;
+}
+
+.query-operation-remove-button:hover {
+    cursor: pointer;
+}

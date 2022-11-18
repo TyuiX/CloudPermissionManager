@@ -27,8 +27,8 @@ export default function UpdateMultipleSharingModal(props) {
 
         files.forEach((file) => {
             if (file.permissions) {
-                file.permissions.filter(({type, role}) => type === "user" && role !== "owner" )
-                    .forEach(({id, displayName, emailAddress, role, }) => {
+                file.permissions.filter(({role}) => role !== "owner" )
+                    .forEach(({id, displayName, emailAddress, role, type}) => {
                         let index = existingPerms.findIndex((perm) => perm.id === id)
                         if (index !== -1) {
                             if (existingPerms[index].role !== role) {
@@ -37,13 +37,25 @@ export default function UpdateMultipleSharingModal(props) {
                             existingPerms[index].inFiles.push({id: file.id, name: file.name, origin: file.cloudOrigin})
                         }
                         else {
-                            existingPerms.push({
-                                name: displayName,
-                                id: id,
-                                email: emailAddress,
-                                role: role,
-                                inFiles: [{id: file.id, name: file.name, origin: file.cloudOrigin}]
-                            })
+                            if (type !== "anyone") {
+                                existingPerms.push({
+                                    name: displayName,
+                                    id: id,
+                                    email: emailAddress,
+                                    role: role,
+                                    type: type,
+                                    inFiles: [{id: file.id, name: file.name, origin: file.cloudOrigin}]
+                                })
+                            } else {
+                                existingPerms.push({
+                                    name: "Anyone with Link",
+                                    id: id,
+                                    email: emailAddress,
+                                    role: role,
+                                    type: type,
+                                    inFiles: [{id: file.id, name: file.name, origin: file.cloudOrigin}]
+                                })
+                            }
                         }
                     })
             }
@@ -59,7 +71,9 @@ export default function UpdateMultipleSharingModal(props) {
     const executeUpdate = (filesToUpdate) => {
         updateMultipleFiles(filesToUpdate);
         toggleModal();
-        closeInfo();
+        if (closeInfo) {
+            closeInfo();
+        }
     }
 
     const addPendingUpdate = (e, user) => {
@@ -252,7 +266,7 @@ export default function UpdateMultipleSharingModal(props) {
                             }
                         </div>
                     </div>
-                    <div className="multiple-sharing-note">
+                    <div className="modal-footnote">
                         <AiOutlineExclamationCircle size={25} />
                         <div>
                             Note, these changes are applied to all selected files.

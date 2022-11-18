@@ -11,6 +11,7 @@ export default function ProfileDropdownMenu(props) {
     const wrapperRef = useRef(null);
     const [showSearchModal, setShowSearchModal] = useState(false);
     const [showControlReqModal, setShowControlReqModal] = useState(false);
+    const {setSearchText} = props;
 
     useEffect(() => {
         document.addEventListener("click", handleClickOutside, false);
@@ -57,7 +58,7 @@ export default function ProfileDropdownMenu(props) {
         </div>
         {showSearchModal &&
             <RecentSearchModal
-                toggleModal={handleToggleRecentSearchModal} setFileName={props.setFileName}
+                toggleModal={handleToggleRecentSearchModal} setSearchText={setSearchText}
             />
         }
         {showControlReqModal &&

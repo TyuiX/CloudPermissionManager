@@ -14,10 +14,13 @@ export const setLinkedGoogle = (payload) => api.post(`/google`, payload)
 export const getFileFolderDif = (id) => api.get(`/fileFolderDiff/${id}`)
 export const snapshotDiff = (payload) => api.post(`/snapShotDiff`, payload)
 export const searchByName = (payload) => api.post(`/searchByName`, payload)
+export const addRecentSearch = (payload) => api.post(`/search/add`, payload)
 export const getControlReqs = (payload) => api.post(`/control/requirements`, payload)
 export const deleteControlReq = (payload) => api.delete(`/control/requirements`, {data: payload})
 export const createNewControlReqs = (payload) => api.post(`/control/requirements/add`, payload)
 export const deviant = (payload) => api.post(`/getDeviantFiles`, payload)
+export const createNewGroupSnapshot = (payload) => api.post(`/snapshot/group/add`, payload)
+export const getGroupSnapshots = (payload) => api.post(`/snapshot/group/list`, payload)
 
 const managerAPI = {
     createUser,
@@ -33,7 +36,10 @@ const managerAPI = {
     getControlReqs,
     deleteControlReq,
     createNewControlReqs,
-    deviant
+    deviant,
+    createNewGroupSnapshot,
+    getGroupSnapshots,
+    addRecentSearch,
 }
 
 export default managerAPI

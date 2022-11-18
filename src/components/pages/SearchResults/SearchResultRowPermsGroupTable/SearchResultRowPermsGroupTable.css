@@ -1,0 +1,16 @@
+.result-group-mem-list {
+    width: 99.85%;
+    background-color: white;
+    border: 1px solid #c0c0c0;
+    font-size: 12px;
+}
+
+.result-group-mem-item {
+    width: 100%;
+    border-bottom: 1px solid #c0c0c0;
+}
+
+.result-group-mem-item div {
+    padding: 2px 10px;
+}
+

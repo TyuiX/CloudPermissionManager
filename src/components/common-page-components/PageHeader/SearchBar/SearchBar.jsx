@@ -15,7 +15,7 @@ export default function SearchBar(props) {
     const {isLoading, snapshots, searchByName, getRecentSearches, performSearch} = useContext(UserContext);
     const [currentSnap, setCurrentSnap] = useState(snapshots.length !== 0 ? snapshots[0] : {});
     const navigate = useNavigate();
-    const {setFileName, fileName} = props;
+    const {setSearchText, searchText} = props;
 
     useEffect(() => {
         if (!snapshots) {
@@ -38,7 +38,7 @@ export default function SearchBar(props) {
         }
         else{
             if(snapshots && !isLoading && snapshots.length !== 0){
-                await searchByName(currentSnap._id, fileName);
+                await searchByName(currentSnap._id, searchText);
                 getRecentSearches();
                 navigate('/searchresults');
             }
@@ -47,53 +47,9 @@ export default function SearchBar(props) {
 
     const handleForQuery = async() => {
         if(snapshots && !isLoading && snapshots.length !== 0){
-            let queryOptions = fileName.split(" ");
-            let existingQueriesMap = new Map();
-            let index = 0;
-
-            while(index < queryOptions.length){
-                let nameOfFile = queryOptions[index];
-                let queryOption = queryOptions[index];
-                let ifSharing = "";
-                console.log(queryOptions)
-                console.log(queryOptions[index].substring(0, queryOptions[index].indexOf(":")));
-                if(queryOptions[index].substring(0, queryOptions[index].indexOf(":")) === "sharing"){
-                    ifSharing = queryOptions[index].substring(queryOptions[index].indexOf(":") + 1, queryOptions[index].lastIndexOf(":"));
-                    console.log(ifSharing);
-                }
-                console.log(queryOption);
-                queryOption = queryOptions[index].substring(0, queryOptions[index].indexOf(":"));
-                if(queryOption === "owner" || queryOption === "creator" ||
-                queryOption === "from" || queryOption === "to" || queryOption === "readable" ||
-                    queryOption === "writeable" || queryOption === "shareable"){
-                        existingQueriesMap.set(queryOption + ":user", nameOfFile.substring(nameOfFile.indexOf(":") + 1));
-                } else if(queryOption === "drive"){
-                    existingQueriesMap.set(queryOption + ":drive", nameOfFile.substring(nameOfFile.indexOf(":") + 1));
-                } else if(queryOption === "name" || queryOption === "inFolder" || queryOption === "folder"){
-                    existingQueriesMap.set(queryOption + ":regexp", nameOfFile.substring(nameOfFile.indexOf(":") + 1));
-                } else if(queryOption === "path"){
-                    existingQueriesMap.set(queryOption + ":path", nameOfFile.substring(nameOfFile.indexOf(":") + 1));
-                } else if(ifSharing.length !== 0) {
-                    console.log("in here");
-                    console.log(ifSharing);
-                    console.log(queryOptions[index].substring(queryOptions[index].indexOf(":")+1))
-                    // console.log(nameOfFile.substring(nameOfFile.lastIndexOf(":") + 1));
-                    if(queryOptions[index].substring(queryOptions[index].indexOf(":")+1) === "none"){
-                        existingQueriesMap.set(queryOptions[index], 
-                            nameOfFile.substring(nameOfFile.lastIndexOf(":") + 1));
-                    } else if(ifSharing === "individual"){
-                        existingQueriesMap.set(queryOptions[index].substring(0, queryOptions[index].lastIndexOf(":")), 
-                            nameOfFile.substring(nameOfFile.lastIndexOf(":") + 1));
-                    }
-                } // else{
-                //     console.log(queryOption);
-                //     console.log(nameOfFile);
-                //     existingQueriesMap.set(nameOfFile, nameOfFile.substring(nameOfFile.indexOf(":") + 1));
-                // }
-                index += 1;
-            }
-            
-            performSearch(currentSnap, existingQueriesMap, true);
+            let queryOptions = searchText.split(" ");
+            await performSearch(currentSnap, queryOptions, true);
+            getRecentSearches();
             navigate('/searchresults');
         }
     }
@@ -121,15 +77,23 @@ export default function SearchBar(props) {
 
     return (
         <div className="header-center-content-container">
-            <h3 className="switchStatement"> {textOrQuery} </h3>
-            <ToggleSlider onToggle={setQueryOrSearch}/>
+            <div className="query-toggle-label"> {textOrQuery} </div>
+            <div className="query-toggle-container">
+                <ToggleSlider
+                    onToggle={setQueryOrSearch}
+                    handleSize={14}
+                    barHeight={22}
+                    barWidth={40}
+                    barBackgroundColorActive={"#6495EDFF"}
+                />
+            </div>
             <div className="search-bar-container">
                 <form onKeyDown={(e) => handleEnterPress(e)} className="modal-form">
                     <input
                         className="header-search-bar"
                         type="text"
-                        value={fileName}
-                        onChange={({ target }) => setFileName(target.value)}
+                        value={searchText}
+                        onChange={({ target }) => setSearchText(target.value)}
                         placeholder="Search..."
                     />
                 </form>
@@ -149,7 +113,11 @@ export default function SearchBar(props) {
                 </select>
             </div>
             <div className={`search-dropdown ${showQueryBuilder ? "search-dropdown-open" : ""}`}>
-                <QueryBuilder currentSnap={currentSnap} toggleDropdown={toggleQueryBuilderDisplay} />
+                <QueryBuilder
+                    currentSnap={currentSnap}
+                    toggleDropdown={toggleQueryBuilderDisplay}
+                    dropdownOpen={showQueryBuilder}
+                />
             </div>
         </div>
     );
