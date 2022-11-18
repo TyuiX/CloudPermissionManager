@@ -44,15 +44,19 @@ export default function QueryBuilder(props) {
         let queryOp = e.target.value
         // check if a "sharing:..." operation was selected
         if (queryOp.startsWith("sharing:")) {
-            let queryCopy = JSON.parse(JSON.stringify(existingQueries))
-            queryCopy.push({
-                opt: queryOp,
-                arg: queryOp,
-                display: queryOp
-            })
-            setExistingQueries(queryCopy);
-            setSelectedQueryOp("drive:drive")
-            setSelectedQueryArg("")
+            if (queryOp === "sharing:individual") {
+                setSelectedQueryOp(queryOp);
+            } else {
+                let queryCopy = JSON.parse(JSON.stringify(existingQueries))
+                queryCopy.push({
+                    opt: queryOp,
+                    arg: queryOp,
+                    display: queryOp
+                })
+                setExistingQueries(queryCopy);
+                setSelectedQueryOp("drive:drive")
+                setSelectedQueryArg("")
+            }
         } else {
             setSelectedQueryOp(queryOp);
         }
