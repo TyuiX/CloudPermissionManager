@@ -14,6 +14,8 @@ import {UserContext} from "./utils/context/UserContext";
 import LoadingScreen from "./components/common-page-components/LoadingScreen/LoadingScreen";
 import SearchResults from './components/pages/SearchResults/SearchResults';
 import GroupSnapshots from "./components/pages/GroupSnapshots/GroupSnapshots";
+import SharedDrives from "./components/pages/SharedDrives/SharedDrives";
+import OpenSharedDrive from "./components/pages/OpenSharedDrive/OpenSharedDrive";
 
 function App() {
     const {isLoading} = useContext(UserContext)
@@ -34,7 +36,8 @@ function App() {
               <Route path="/signup" element={<SignUp />} />
               <Route path="/files" element={<MyFiles />} />
               <Route path="/sharedfiles" element={<SharedFiles />} />
-              {/*<Route path="/folder/:folderId" element={<div>OpenFolder</div>} />*/}
+              <Route path="/shared/drives" element={<SharedDrives />} />
+              <Route path="/shared/drive/:driveId/:driveName" element={<OpenSharedDrive />} />
               <Route path="/filesnapshot" element={<MySnapshots />} />
               <Route path="/groupsnapshot" element={<GroupSnapshots />} />
               <Route path="/searchresults" element={<SearchResults/>}/>

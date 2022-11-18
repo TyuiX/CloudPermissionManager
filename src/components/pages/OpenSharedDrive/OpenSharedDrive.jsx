@@ -1,25 +1,40 @@
 import React, {useContext, useEffect, useState} from 'react';
-import PageSideBar from "../../common-page-components/PageSidebar/PageSideBar";
-import "../index.css";
-import FileCell from "../../common-page-components/FileCell/FileCell";
+import {useParams} from "react-router-dom";
 import {GoogleContext} from "../../../utils/context/GoogleContext";
+import PageSideBar from "../../common-page-components/PageSidebar/PageSideBar";
+import FileCell from "../../common-page-components/FileCell/FileCell";
 import FileInfoSideBar from "../../common-page-components/FileInfoSideBar/FileInfoSideBar";
 
-export default function MyFiles() {
-    const { myFiles } = useContext(GoogleContext);
+export default function OpenSharedDrive() {
+    const params = useParams();
+    const {sharedDrives, email} = useContext(GoogleContext)
     const [filesList, setFilesList] = useState([]);
     const [foldersList, setFoldersList] = useState([]);
     const [selectedFiles, setSelectedFiles] = useState([]);
+    const [isOrganizer, setIsOrganizer] = useState(false);
+
+    console.log(isOrganizer)
 
     useEffect(() => {
-        if (!myFiles) {
+        if (!params || !sharedDrives || !email) {
             return
         }
-        let file = myFiles.filter(file => file.type !== "folder")
-        let folder = myFiles.filter(file => file.type === "folder")
+        let drive = sharedDrives.find(({id}) => id === params.driveId);
+        let file = drive.sharedFiles.filter(file => file.type !== "folder")
+        let folder = drive.sharedFiles.filter(file => file.type === "folder")
         setFilesList(file)
         setFoldersList(folder)
-    }, [myFiles])
+        if (drive.sharedFiles.length > 0) {
+            let user = drive.sharedFiles[0].permissions.find(({emailAddress}) => emailAddress === email)
+            console.log(user)
+            if (user && user.role === "organizer") {
+                setIsOrganizer(true)
+            } else {
+                setIsOrganizer(false)
+            }
+        }
+    },[email, params, sharedDrives])
+
 
     const handleFileClick = (fileId) => {
         let fileIds = JSON.parse(JSON.stringify(selectedFiles));
@@ -41,7 +56,7 @@ export default function MyFiles() {
         <div className="page-container">
             <PageSideBar />
             <div className="page-content">
-                <h2 className="page-content-header">My Files</h2>
+                <h2 className="page-content-header">{`Shared Drive / ${params.driveName}`}</h2>
                 {filesList &&
                     <>
                         <h3 className="category-title">Files</h3>
@@ -77,9 +92,9 @@ export default function MyFiles() {
             </div>
             <FileInfoSideBar
                 filesIds={selectedFiles}
-                shared={false}
+                shared={!isOrganizer}
                 closeInfo={handleCloseSidebar}
             />
         </div>
-    );
+    )
 }

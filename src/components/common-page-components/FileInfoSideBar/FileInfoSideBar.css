@@ -2,6 +2,7 @@
     min-width: 400px;
     border-left: 2px solid black;
     border-right: 2px solid black;
+    min-height: 95vh;
 }
 
 .info-sidebar-header {
