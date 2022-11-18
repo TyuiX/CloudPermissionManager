@@ -7,10 +7,12 @@ import {RiGroupFill} from "react-icons/ri";
 import LinkGoogleLink from "./LinkGoogleLink/LinkGoogleLink";
 import {GoogleContext} from "../../../utils/context/GoogleContext";
 import {UserContext} from "../../../utils/context/UserContext";
+import {FiHardDrive} from "react-icons/fi";
 
 const links = [
     {path: "/files", name: "My Files"},
     {path: "/sharedfiles", name: "Shared with me"},
+    {path: "/shared/drives", name: "Shared Drives"},
     {path: "/filesnapshot", name: "File Snapshots"},
     {path: "/groupsnapshot", name: "Group Snapshots"},
 ]
@@ -30,6 +32,8 @@ export default function PageSideBar() {
                 return <FaCamera size={20} />
             case "/groupsnapshot":
                 return <FaCameraRetro size={20} />
+            case "/shared/drives":
+                return <FiHardDrive size={20} />
             default:
                 return null;
         }

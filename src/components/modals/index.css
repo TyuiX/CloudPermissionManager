@@ -60,10 +60,15 @@
     margin-left: 20px;
     position: relative;
     right: 190px;
+    color: white;
+    background-color: cornflowerblue;
+    border: 1px solid white;
+    transition: 0.2s;
 }
 
 .add-anyone-link:hover {
     cursor: pointer;
+    background-color: royalblue;
 }
 
 .modal-form-input {

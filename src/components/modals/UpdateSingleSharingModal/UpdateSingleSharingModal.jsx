@@ -181,12 +181,16 @@ export default function UpdateSingleSharingModal(props) {
                                                 <div className="modal-user-name">{name}</div>
                                                 <div className="modal-user-email">{email}</div>
                                             </div>
-                                            <select defaultValue={role} onChange={(e) => addPendingUpdate(e, user)}>
-                                                <option value="writer">Writer</option>
-                                                <option value="reader">Reader</option>
-                                                <option value="commenter">Commenter</option>
-                                                <option value="unshared" >Unshared</option>
-                                            </select>
+                                            {(role === "owner" || role === "organizer" || role === "fileOrganizer") ?
+                                                <div className="modal-user-role">{role}</div>
+                                                :
+                                                <select defaultValue={role} onChange={(e) => addPendingUpdate(e, user)}>
+                                                    <option value="writer">Writer</option>
+                                                    <option value="reader">Reader</option>
+                                                    <option value="commenter">Commenter</option>
+                                                    <option value="unshared" >Unshared</option>
+                                                </select>
+                                            }
                                         </div>
                                     )
                                 })
