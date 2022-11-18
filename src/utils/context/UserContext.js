@@ -1,11 +1,6 @@
 import React, {createContext, useCallback, useEffect, useState} from "react";
 import api from '../../api/ShareManagerAPI'
 import {useNavigate} from "react-router-dom";
-import ControlReqQueriesLists from "../ControlReqQueriesLists";
-import controlReqsList from "../ControlReqQueriesLists";
-import { Stack } from "react-bootstrap";
-import { queryByTestId } from "@testing-library/react";
-
 export const UserContext = createContext({});
 
 function UserContextProvider(props) {
@@ -19,6 +14,7 @@ function UserContextProvider(props) {
     const [groupSnapshots, setGroupSnapshots] = useState([])
     const navigate = useNavigate();
 
+    // check if user is already logged in
     useEffect(() => {
         const loggedInUser = localStorage.getItem("user");
         if (loggedInUser) {
@@ -33,6 +29,7 @@ function UserContextProvider(props) {
         setIsLoading(false);
     }, []);
 
+    // if user is logged in, load all resources
     useEffect(() => {
         if (!user.email) {
             return
@@ -161,7 +158,6 @@ function UserContextProvider(props) {
         }
     }, [])
 
-
     const getSnapShotDiff = useCallback( async (oldSnapshot, currSnapshot) => {
         try {
             const res = await api.snapshotDiff({oldSnapshot: oldSnapshot, currSnapshot: currSnapshot});
@@ -176,6 +172,7 @@ function UserContextProvider(props) {
         }
     }, [])
 
+    // method to perform a textual name search
     const searchByName = useCallback( async (id, searchText) => {
         try{
             const res = await api.searchByName({name: searchText, id: id, email: user.email});
@@ -233,7 +230,6 @@ function UserContextProvider(props) {
             return err.response.data.errorMessage;
         }
     }, [user.email])
-
 
     const getGroupSnapshots = useCallback(async () => {
         try {
@@ -874,11 +870,13 @@ function UserContextProvider(props) {
         }
     },[searchCheckFile, searchFolder, user.email])
 
+    // check if a specific user email is within a specific domain
     const checkInDomains = useCallback ((user, domains) => {
         let found = domains.find(domain => user.endsWith(domain))
         return !!found;
     },[])
 
+    // checks if any files within a snapshot have violations to control reqs
     const checkViolations = useCallback((emailAddress, role, fileName, req, violationsList) => {
         console.log(emailAddress)
         console.log(role)
@@ -893,11 +891,13 @@ function UserContextProvider(props) {
             return;
         }
         if (role === "reader" || role === "commenter") {
+            // check if user is a reader but part of DR set
             if (dr.emails.length > 0 || dr.domains.length > 0) {
                 if (dr.emails.includes(emailAddress) || checkInDomains(emailAddress, dr.domains)) {
                     currentViol.violation = "Denied Reader";
                 }
             }
+            // check if user is a reader but not a part of AR set
             else if (ar.emails.length > 0 || ar.domains.length > 0) {
                 if (!ar.emails.includes(emailAddress) && !checkInDomains(emailAddress, ar.domains)) {
                     currentViol.violation = "Allowed Reader";
@@ -905,11 +905,13 @@ function UserContextProvider(props) {
             }
         }
         else if (role === "writer" || role === "editor") {
+            // check if user is a writer but part of DW set
             if (dw.emails.length > 0 || dw.domains.length > 0) {
                 if (dw.emails.includes(emailAddress) || checkInDomains(emailAddress, dw.domains)) {
                     currentViol.violation = "Denied Writer";
                 }
             }
+            // check if user is a writer but not a part of AW set
             else if (aw.emails.length > 0 || aw.domains.length > 0) {
                 if (!aw.emails.includes(emailAddress) && !checkInDomains(emailAddress, aw.domains)) {
                     currentViol.violation = "Allowed Writer";
@@ -921,11 +923,13 @@ function UserContextProvider(props) {
         }
     },[checkInDomains])
 
+    // gets all files that are relevant to the search query for a given control requirement
     const getControlReqQueryFiles = useCallback(async (req, snapshot) => {
         const {query} = req;
         return await performSearch(snapshot, query.split(" "), false, [])
     }, [performSearch])
 
+    // check if the resulting changes to a users perm would result in a violation of any existing control reqs or not
     const checkReqsBeforeUpdate = useCallback(async (filesToUpdate) => {
         console.log(filesToUpdate)
         let violation = false;
@@ -936,15 +940,19 @@ function UserContextProvider(props) {
                 index: index + 1,
                 violations: [],
             }
+            // get relevant files of search query
             let searchResults = await getControlReqQueryFiles(req, snapshots[0])
             console.log(searchResults)
+            // find which files you are currently updating that are relevant to any control requirement search queries
             let filteredFiles = filesToUpdate.filter(({name}) => searchResults.some((file) => file.name === name))
             console.log(filteredFiles)
             filteredFiles.forEach(({name, updatedUsers, newUsers}) => {
+                // check if any update to existing users causes violation
                 updatedUsers.forEach(user => {
                     const {email, role} = user;
                     checkViolations(email, role, name, req, currentViolations)
                 })
+                // check if any newly added users causes violation
                 newUsers.forEach(user => {
                     const {email, role} = user;
                     checkViolations(email, role, name, req, currentViolations)

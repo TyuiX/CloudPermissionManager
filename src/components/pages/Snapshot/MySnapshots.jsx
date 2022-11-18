@@ -9,7 +9,7 @@ import "../SnapshotPages.css";
 import {AiOutlinePlus} from "react-icons/ai";
 
 export default function MySnapshots() {
-    const {allFiles} = useContext(GoogleContext);
+    const {allFiles, sharedDrives} = useContext(GoogleContext);
     const {snapshots, createNewSnapshot} = useContext(UserContext);
     const [showModal, setShowModal] = useState(false);
     const [analysisType, setAnalysisType] = useState("")
@@ -33,12 +33,20 @@ export default function MySnapshots() {
         }
         // console.log(myFiles)
 
-        allFiles.forEach((file) => {
+        // combine both mydrive and shared drive files
+        let summedFiles = JSON.parse(JSON.stringify(allFiles));
+        sharedDrives.forEach(drive => {
+            summedFiles = summedFiles.concat(drive.sharedFiles)
+        })
+
+        summedFiles.forEach((file) => {
             const {id, parents, permissions} = file;
             console.log(permissions);
             console.log(file);
 
+            // check if file is "orphaned" or not
             if (!parents){
+                // create orphan folder if doesnt exist
                 if (!snapshot.folders.has("orphan")){
                     snapshot.folders.set("orphan", new Map());
                 }
@@ -63,7 +71,6 @@ export default function MySnapshots() {
                     rootCandidate.delete(id);
                 }
             }
-
             else if (parents) {
                 let fileCopy = JSON.parse(JSON.stringify(file));
                 let newPerms = new Map();
