@@ -214,15 +214,16 @@ export default function UpdateMultipleSharingModal(props) {
                                                 </span>
                                                 </div>
                                             </div>
-                                            <select defaultValue={role} onChange={(e) => addPendingUpdate(e, user)}>
-                                                {role === "mixed" &&
-                                                    <option value="mixed">Mixed</option>
-                                                }
-                                                <option value="writer">Writer</option>
-                                                <option value="reader">Reader</option>
-                                                <option value="commenter">Commenter</option>
-                                                <option value="unshared">Unshared</option>
-                                            </select>
+                                            {(role === "owner" || role === "organizer" || role === "fileOrganizer") ?
+                                                <div className="modal-user-role">{role}</div>
+                                                :
+                                                <select defaultValue={role} onChange={(e) => addPendingUpdate(e, user)}>
+                                                    <option value="writer">Writer</option>
+                                                    <option value="reader">Reader</option>
+                                                    <option value="commenter">Commenter</option>
+                                                    <option value="unshared" >Unshared</option>
+                                                </select>
+                                            }
                                         </div>
                                     )
                                 })

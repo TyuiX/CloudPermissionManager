@@ -10,6 +10,11 @@
     font-size: 14px;
 }
 
+.modal-user-role {
+    font-weight: bold;
+    font-size: 12px;
+}
+
 .modal-user-email {
     font-size: 12px;
 }
