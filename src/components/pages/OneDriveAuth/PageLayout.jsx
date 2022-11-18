@@ -2,16 +2,14 @@ import React, {useState, useContext} from "react";
 import { useIsAuthenticated } from "@azure/msal-react";
 import { SignInButton } from "./SignInButton";
 import { SignOutButton } from "./SignOutButton"
-import { callMsGraph } from "./graph";
+import { callMsGraph, callGetSubFiles, createOneDriveSnapshot } from "./graph";
 import { useMsal } from "@azure/msal-react";
 import { loginRequest } from "./authConfig";
-// import { OneDriveContext } from "../../../utils/context/OneDriveContext";
 /**
  * Renders the navbar component with a sign-in button if a user is not authenticated
  */
 export const PageLayout = (props) => {
     const isAuthenticated = useIsAuthenticated();
-    // const {apiData} = useContext(OneDriveContext);
 
     const { instance, accounts, inProgress } = useMsal();
     const [accessToken, setAccessToken] = useState(null);
@@ -27,6 +25,7 @@ export const PageLayout = (props) => {
 
         // Silently acquires an access token which is then attached to a request for Microsoft Graph data
         instance.acquireTokenSilent(request).then((response) => {
+            console.log(response);
             setAccessToken(response.accessToken);
         }).catch((e) => {
             instance.acquireTokenPopup(request).then((response) => {
@@ -58,11 +57,13 @@ export const PageLayout = (props) => {
     const handleClick = () =>{
         if(isAuthenticated){
             // console.log(name);
-            // RequestAccessToken();
+            RequestAccessToken();
             // console.log(accessToken);
-            RequestProfileData();
-            console.log(graphData);
+            // RequestProfileData();
+            // console.log(graphData);
+            // callGetSubFiles(accessToken);
             // console.log(apiData);
+            createOneDriveSnapshot(accessToken);
         }
     }
 

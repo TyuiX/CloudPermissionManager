@@ -8,6 +8,7 @@ export const UserContext = createContext({});
 function UserContextProvider(props) {
     const [user, setUser] = useState({});
     const [snapshots, setSnapshots] = useState([]);
+    const [oneDriveSnapshots, setOneDriveSnapshots] = useState([]);
     const [controlReqs, setControlReqs] = useState([]);
     const [loggedIn, setLoggedIn] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -122,6 +123,18 @@ function UserContextProvider(props) {
         }
     },[user.email])
 
+    const getOneDriveSnapshots = useCallback( async () => {
+        try {
+            const res = await api.getUserProfile({email: user.email});
+            console.log(res.data)
+            const res2 = await api.getOneDriveSnapshots(res.data.oneDriveSnap)
+            setOneDriveSnapshots(res2.data)
+        }
+        catch (err) {
+            return err.response.data.errorMessage;
+        }
+    },[user.email])
+
     const createNewSnapshot = useCallback( async (snapshot, email) => {
         try {
             const res = await api.createSnapshot({snapshot: snapshot, email: email})
@@ -133,6 +146,18 @@ function UserContextProvider(props) {
             return err.response.data.errorMessage;
         }
     }, [getSnapshots])
+
+    const createNewOneDriveSnapshot = useCallback( async (snapshot, email) => {
+        try{
+            const res = await api.createOneDriveSnapshot({snapshot: snapshot, email: email})
+            if (res.status === 200) {
+                await getOneDriveSnapshots()
+            }
+        }
+        catch(err){
+            return err.response.data.errorMessage;
+        }
+    }, [getOneDriveSnapshots])
 
     const getFolderFileDif = useCallback( async (id) => {
         try {
