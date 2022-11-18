@@ -616,16 +616,22 @@ function UserContextProvider(props) {
             let vFlag = 0;
             let firstParenthesis = 1;
             let lastParenthsis = 1;
+            let vPFlag = 0;
 
             console.log(value + ", value[0]: " + value[0]);
             if(value[0] === "-"){
                 value = value.substring(1);
                 vFlag = 1;
             } else if(value[0] === "("){
+                if(value[1] === "-"){
+                    vPFlag = 1;
+                    value = value.substring(1); // get rid of the "(" in the value string
+                }
                 pFlag = 1;
                 saveIndex = index;
                 firstParenthesis = 0;
-                value = value.substring(1);
+                value = value.substring(1); // get rid of the "-" in the value string
+                console.log(value);
             }
 
             let key = queries[index].substring(queries[index].indexOf(":") + 1);
@@ -690,8 +696,10 @@ function UserContextProvider(props) {
                     })
                 })
 
+                console.log(tempResult);
+                console.log("vPFlag; " + vPFlag);
                 // check all files for a possible "-" in front of their file names.
-                if(vFlag){ // then iterate through all files and only pick the one's that are not in current
+                if(vFlag || vPFlag){ // then iterate through all files and only pick the one's that are not in current
                     // temp results array.
                     let indexHere = 0;
                     let setHere = new Set(); // don't add duplicate files from below:
@@ -708,6 +716,7 @@ function UserContextProvider(props) {
                         })
                     })
                 }
+                console.log(tempResult);
 
                 // if it is the first query operator, no other query operator to compare against, so just 
                 // set the value of the results array to the results from the query operation.
