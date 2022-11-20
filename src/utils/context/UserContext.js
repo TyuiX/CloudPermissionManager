@@ -368,15 +368,20 @@ function UserContextProvider(props) {
             }
         }else if(operator === "individual"){
             console.log("in here");
-            filePassed.permissions.forEach((perm) => {
-                if(filePassed.ownedByMe){
-                    if (perm.emailAddress === operand) {
-                        if(perm.role === "writer" || perm.role === "reader"){
-                            filesAdded = filePassed;
-                        }
-                    }
-                }
-            })
+            console.log(filePassed);
+            console.log(filePassed); 
+            if(filePassed.permissions.length === 2){
+                filesAdded = filePassed;
+            }
+            // filePassed.permissions.forEach((perm) => {
+            //     if(filePassed.ownedByMe){
+            //         if (perm.emailAddress === operand) {
+            //             if(perm.role === "writer" || perm.role === "reader"){
+            //                 filesAdded = filePassed;
+            //             }
+            //         }
+            //     }
+            // })
         } else if(operator === "inFolder"){
             console.log(snapshot);
             console.log(folderId);
@@ -418,21 +423,17 @@ function UserContextProvider(props) {
     */
     const checkForSubFolders = (snapshot, folderId, addedFiles) => {
         Object.entries(snapshot.folders).forEach((key, value) => {
-            console.log(folderId);
             if(key[0] === folderId){
                 let index = 0;
                 while(index < (Object.values(key[1]).length)){
                     let file = Object.values(key[1])[index];
-                    console.log(file);
                     
                     addedFiles.push(file);
-                    console.log(addedFiles);
                     checkForSubFolders(snapshot, file.id, addedFiles);
                     index += 1;
                 }
             }
         })
-        console.log(addedFiles);
         return addedFiles;
     }
 
@@ -445,29 +446,23 @@ function UserContextProvider(props) {
      * was passed in to the function. 
      */
     const searchFolder = (operator, snapshot, folderId) => {
-        let toAdd = [];
-        console.log(snapshot);
-        console.log(folderId);
+        let toAdd = []; // toAdd: global array that will be returned in this function.
         if(operator === "inFolder"){
             Object.entries(snapshot.folders).forEach((key, value) => {
                 if(key[0] === folderId){
-                    console.log(Object.values(key[1]));
                     let index = 0;
                     while(index < (Object.values(key[1]).length)){
-                        console.log("adding in here");
                         toAdd.push(Object.values(key[1])[index]);
                         index += 1;
                     }
                 }
             })
-            console.log(toAdd);
         } else if(operator === "folder"){
             Object.entries(snapshot.folders).forEach((key, value) => {
                 if(key[0] === folderId){
                     let index = 0;
                     while(index < (Object.values(key[1]).length)){
                         let file = Object.values(key[1])[index];
-                        console.log(file);
                         if(file.type === "file"){
                             toAdd.push(file);
                         } else{
@@ -479,23 +474,30 @@ function UserContextProvider(props) {
                 }
             })
         }
-        console.log(toAdd);
         return toAdd;
     }
 
+    /**
+     * recursiveSearch: function used for the path query operator which recursivrly searches
+     * through the folders present for the snapshot passed.
+     * @param {*} snapshot is the snapshot that was passed.
+     * @param {*} keyOperator the current query operator.
+     * @param {*} folderId the id of the folder
+     * @param {*} addedFiles result array to be returned.
+     * @returns addedFiles
+     */
     const recursiveSearch = (snapshot, keyOperator, folderId, addedFiles) => {
         Object.entries(snapshot.folders).forEach((key, value) => {
             if(key[0] === folderId){
-                let nameToMatch = "";
-                let isLast = keyOperator.indexOf("/");
+                let nameToMatch = ""; // nameToMatch: will check the name of the folder
+                let isLast = keyOperator.indexOf("/"); // isLast: flag to check whehter or not path is complete.
                 if(isLast === -1){
-                    let index = 0;
+                    let index = 0; // index: used to iterate over keys length. 
                     while(index < (Object.values(key[1]).length)){
                         let file = Object.values(key[1])[index];
                         addedFiles.push(file);
                         index += 1;
                     }
-                    console.log(addedFiles);
                     return addedFiles;
                 } else{
                     nameToMatch = keyOperator.substring(keyOperator.indexOf("/") + 1);
@@ -539,21 +541,20 @@ function UserContextProvider(props) {
     */
     const performSearch = useCallback (async (snapshot, queries, save) => {
         
-        let set = new Set();
-        let results = [];
-        let inParenthesis = [];
-        let pFlag = 0;
-        let saveIndex = 0;
+        let set = new Set(); // set: will check to see if the file already exists in the array to be returned.
+        let results = []; // result: where all of the files are stored that are to be returned.
+        let inParenthesis = []; // inParenthesis: will be holding the files that are present for the temporary result within parenthesis.
+        let pFlag = 0; // pFlag: is the flag to be used to check if there is a parenthesis present.
+        let saveIndex = 0; // saveIndex: int variable that holds the index for where the first "(" was seen.
         
-        let index = 0;
+        let index = 0; // index: int variable used to iterate over the queries array that was passed in.
 
-        console.log(queries);
         while(index < queries.length){
-            let keyValue = "";
+            let keyValue = ""; // keyValue: is the key for the current query operator.
             keyValue = queries[index].substring(queries[index].indexOf(":") + 1);
-            let operator = queries[index].substring(0, queries[index].indexOf(":") + 1);
-            let buildOutKey = "";
-            let startingOutIndex = index;
+            let operator = queries[index].substring(0, queries[index].indexOf(":") + 1); // operator: is the operator for the current query operator.
+            let buildOutKey = ""; // buildOutKey: used for edge cases where there could be a "(" or "-" in front of the key.
+            let startingOutIndex = index; // startingOutIndex is used to if there is a "(" or "-" present.
             if(keyValue[0] === "\""){
                 while(keyValue[keyValue.length-1] !== "\""){
                     if(index > queries.length){
@@ -561,8 +562,7 @@ function UserContextProvider(props) {
                     }
                     keyValue = queries[index].substring(queries[index].indexOf(":") + 1);
                     if(keyValue[0] === "\""){
-                        console.log(keyValue.substring(1));
-                        buildOutKey = keyValue.substring(1); // don't include first starting quote.
+                        buildOutKey = keyValue.substring(1); // don't include first starting quote since the starting quote isn't a part of the actual query.
                     } else{
                         if(keyValue[keyValue.length-1] !== "\""){ buildOutKey += " " + keyValue; } 
                         else{ buildOutKey += " " + keyValue.substring(0, keyValue.length -1); }   
@@ -570,14 +570,15 @@ function UserContextProvider(props) {
                     index += 1;
                 }
 
-                let toPutIn = operator + buildOutKey;
+                let toPutIn = operator + buildOutKey; // toPutIn: updates the operator to include all of the spaces that are present in between the quotes.
+                                                        // ie: name:"JJEV Assignment 05" -> toPutin would be: name:JJEV Assignment 05
 
-                let indexCompare = 0;
-                let newQueries = [];
-                let seenFlag = 0;
+                let indexCompare = 0; // indexCompare: used to check if the index is the first index in the below loop.
+                let newQueries = []; // newQueries: queries result is set to "newQueries" once below loop finishes.
+                let seenFlag = 0; // used to check if a duplicate operator will be parsed through.
                 while(indexCompare < queries.length){
                     if(indexCompare >= startingOutIndex && seenFlag === 0){
-                        let tempIndex = 0;
+                        let tempIndex = 0; // tempIndex: used to iterator over the queries inside of the parentheses.
                         while(tempIndex < ((index - startingOutIndex) - 1)){
                             indexCompare += 1;
                             tempIndex += 1;
@@ -585,125 +586,107 @@ function UserContextProvider(props) {
                         newQueries.push(toPutIn); // then push it in.
                         seenFlag = 1;
                     } else{
-                        console.log("queries[indexCompare]: " + queries[indexCompare]);
                         newQueries.push(queries[indexCompare]);
                     }
                     indexCompare += 1;
                 }
                 queries = newQueries;
-                console.log(queries);
             } else{
                 index += 1; // if no quotes, just go on with the code.
             }
         }
-       
-        console.log(queries);
 
-        await api.addRecentSearch({
+        await api.addRecentSearch({ // adds the most recent query operator search to the recent searches array. 
             query: queries.join(" "),
             email: user.email
         })
 
-        index = 0;
+        index = 0; // index reset to 0 to iterator through query operators and call helper functions to check query. 
         while(index < queries.length){
-            let tempResult = [];
-            let tempResultIndex = 0;
-            let value = queries[index].substring(0, queries[index].indexOf(":"));
-            let vFlag = 0;
-            let firstParenthesis = 1;
-            let lastParenthsis = 1;
-            let vPFlag = 0;
+            let tempResult = []; // result for one query - tempResult result is compared to the global results array.
+            let tempResultIndex = 0; // index used to set values of tempResult throughout this while loop.
+            let value = queries[index].substring(0, queries[index].indexOf(":")); // is the value of the query operator.
+            let vFlag = 0; // used to check to see if there is a "-" in front of the query.
+            let firstParenthesis = 1; // set to 0 if the first parenthesis was seen.
+            let lastParenthsis = 1; // set to 0 if the last parenthesis was seen.
+            let vPFlag = 0; // flag to check whether or not both a "(" and "-" was seen.
 
-            console.log(value + ", value[0]: " + value[0]);
             if(value[0] === "-"){
-                value = value.substring(1);
+                value = value.substring(1); // don't include "(" in the actual query search.
                 vFlag = 1;
             } else if(value[0] === "("){
                 if(value[1] === "-"){
                     vPFlag = 1;
-                    value = value.substring(1); // get rid of the "(" in the value string
+                    value = value.substring(1); // get rid of the "-" in the value string
                 }
                 pFlag = 1;
                 saveIndex = index;
                 firstParenthesis = 0;
-                value = value.substring(1); // get rid of the "-" in the value string
+                value = value.substring(1); // get rid of the "(" in the value string
                 console.log(value);
             }
 
-            let key = queries[index].substring(queries[index].indexOf(":") + 1);
-            if(key[key.length-1] === ")"){
+            let key = queries[index].substring(queries[index].indexOf(":") + 1); // is the key for the query operator.
+            if(key[key.length-1] === ")"){ // if closing parenthesis is seen, then operators within the parens can be evaluated.
                 lastParenthsis = 0;
                 key = key.substring(0, key.length-1);
-                console.log(key);
             }
 
+            // special query operators below (for our implementation): 
+            console.log("value: " + value + ", key: " + key);
             if(key === "none"){
                 value = "none";
             } else if(key === "domain"){
                 value = "domain";
-            } else if(value === "sharing" && key !== "anyone"){
-                console.log("in here");
+            } else if(value === "sharing" && key === "individual"){
                 value = "individual";
             } else if(value === "sharing" && key === "anyone"){
                 value = "anyone";
             }
-
-            console.log("value: " + value + ", key: " + key);
             
-            if(index % 2 === 0){ // non boolean operator
-                Object.values(snapshot.folders).forEach((folder) => {
-                    Object.values(folder).forEach((file) => {
-                        console.log(file);
-                        if(value === "inFolder" || value === "folder"){
+            if(index % 2 === 0){ // non boolean operator since boolean operators allways fall in the odd index.
+                Object.values(snapshot.folders).forEach((folder) => { // iterating over each folder in the snapshot passed.
+                    Object.values(folder).forEach((file) => { // iterate over each file in each respective folder.
+                        if(value === "inFolder" || value === "folder"){ // inFolder or folder operator only
                             let forOneFolder = [];
                             let regexp = new RegExp(key);
                             if(regexp.exec(file.name) && file.type === "folder"){
                                 forOneFolder = searchFolder(value, snapshot, file.id);
-                                let index = 0;
-                                let tIndex = 0;
-                                console.log(forOneFolder);
+                                let index = 0; // index: used to iteratrate over the loop below
+                                let tIndex = 0; // tIndex: int to store current index of the temp array
                                 while(index < forOneFolder.length){
-                                    console.log(tempResult[tIndex]);
-                                    console.log("index: " + index + ", tIndex: " + tIndex);
-                                    if(tempResult[tIndex]){
-                                        tIndex += 1;
-                                    }else{
-                                        console.log("in else");
-                                        tempResult[tIndex++] = forOneFolder[index++];
-                                    }
+                                    if(tempResult[tIndex]){ tIndex += 1; }
+                                    else{ tempResult[tIndex++] = forOneFolder[index++]; }
                                 }
-                                console.log(tempResult);
                             }
-                        } else if(value === "path"){
+                        } else if(value === "path"){ // path variable only
                             let firstFile = "";
-                            if(key.indexOf("/") === -1){
+                            if(key.indexOf("/") === -1){ // no more sub folders to consider. 
                                 firstFile = key;
                             } else{
                                firstFile = key.substring(0, key.indexOf("/"));
                             }
-                            if(file.name === firstFile && file.type === "folder"){
+                            if(file.name === firstFile && file.type === "folder"){ 
                                 tempResult = recursiveSearch(snapshot, key, file.id, []);
                             }
-                        } else{
+                        } else{ // all other query operator values.
                             let resultHere = searchCheckFile(value, key, file, set, snapshot, "");
-                            console.log(resultHere);
                             if(resultHere){ tempResult[tempResultIndex++] = resultHere; }
                         }
                     })
                 })
 
-                console.log(tempResult);
-                console.log("vPFlag; " + vPFlag);
                 // check all files for a possible "-" in front of their file names.
                 if(vFlag || vPFlag){ // then iterate through all files and only pick the one's that are not in current
                     // temp results array.
-                    let indexHere = 0;
+                    let indexHere = 0; // indexHere: used to iterate over below array.
                     let setHere = new Set(); // don't add duplicate files from below:
                     while(indexHere < tempResult.length){
                         setHere.add(tempResult[indexHere++].id);
                     }
-                    let tempIndex = 0;
-                    tempResult = [];
+
+                    let tempIndex = 0; // tempIndex: int to store current index of the temp array
+                    tempResult = []; // tempResult: contains result of query operator.
                     Object.values(snapshot.folders).forEach((folder) => {
                         Object.values(folder).forEach((file) => {
                             if(!setHere.has(file.id)){
@@ -712,25 +695,22 @@ function UserContextProvider(props) {
                         })
                     })
                 }
-                console.log(tempResult);
 
                 // if it is the first query operator, no other query operator to compare against, so just 
                 // set the value of the results array to the results from the query operation.
                 if(index === 0 && pFlag === 0) { results = tempResult; }
                 else {
                     // apply boolean operator.
-                    console.log("pflag: " + pFlag);
                     if(pFlag === 0){ // no parenthesis present.
                         if(queries[index-1] === "and"){
+                            
                             let setOfParentFiles = new Set();
                             let indexHere = 0;
-                            while(indexHere < results.length){
-                                setOfParentFiles.add(results[indexHere++].id);
-                            }
+                            while(indexHere < results.length){ setOfParentFiles.add(results[indexHere++].id); }
 
                             indexHere = 0;
-                            let andResults = [];
-                            let andResultsIndex = 0;
+                            let andResults = []; // andResults: storing temp results if boolean operator is "and" 
+                            let andResultsIndex = 0; // andResultsIndex: index for and array.
                             while(indexHere < tempResult.length){
                                 if(setOfParentFiles.has(tempResult[indexHere].id)){
                                     andResults[andResultsIndex++] = tempResult[indexHere]; // add this file to it.
@@ -739,16 +719,16 @@ function UserContextProvider(props) {
                             }
                             results = andResults;
                         } else if(queries[index-1] === "or"){
-                            let orResults = [];
-                            let setHere = new Set();
-                            let orResultsIndex = 0;
+                            let orResults = []; // orResults: storing temp results if boolean operator is "or" 
+                            let setHere = new Set(); // setHere: intiailized so there is no duplicate files.
+                            let orResultsIndex = 0; // orResultsIndex: index for or array.
                             while(orResultsIndex < results.length){
                                 orResults[orResultsIndex] = results[orResultsIndex];
                                 setHere.add(results[orResultsIndex]);
                                 orResultsIndex += 1;
                             }
                             
-                            let indexHere = 0;
+                            let indexHere = 0; // indexHere: int variable to loop over below array.
                             while(indexHere < tempResult.length){
                                 if(!setHere.has(tempResult[indexHere])){
                                     orResults[orResultsIndex] = tempResult[indexHere];
@@ -756,7 +736,7 @@ function UserContextProvider(props) {
                                 }
                                 indexHere += 1;
                             }
-                            results = orResults;
+                            results = orResults; // setting global results to result obtained from current operator.
                         }
                     } else{ // parenthesis present.
                         if(firstParenthesis === 0){ // first key/value w/in the parenthesis.
@@ -771,8 +751,8 @@ function UserContextProvider(props) {
                                 }
 
                                 indexHere = 0;
-                                let andResults = [];
-                                let andResultsIndex = 0;
+                                let andResults = []; // andResults: storing temp results if boolean operator is "and" 
+                                let andResultsIndex = 0; // andResultsIndex: index for and array.
                                 while(indexHere < tempResult.length){
                                     if(setOfParentFiles.has(tempResult[indexHere].id)){
                                         andResults[andResultsIndex++] = tempResult[indexHere];
@@ -781,16 +761,16 @@ function UserContextProvider(props) {
                                 }
                                 inParenthesis = andResults;
                             } else if(queries[index-1] === "or"){
-                                let orResults = [];
+                                let orResults = []; // orResults: storing temp results if boolean operator is "or" 
                                 let setHere = new Set(); // don't add duplicate files from below:
-                                let orResultsIndex = 0;
+                                let orResultsIndex = 0; // orResultsIndex: index for or array.
                                 while(orResultsIndex < inParenthesis.length){
                                     orResults[orResultsIndex] = inParenthesis[orResultsIndex];
                                     setHere.add(results[orResultsIndex]);
                                     orResultsIndex += 1;
                                 }
                                 
-                                let indexHere = 0;
+                                let indexHere = 0; // indexHere: used to iterate over below loop.
                                 while(indexHere < tempResult.length){
                                     if(!setHere.has(tempResult[indexHere])){
                                         orResults[orResultsIndex] = tempResult[indexHere];
@@ -809,19 +789,19 @@ function UserContextProvider(props) {
                                     results = inParenthesis
                                 }
 
-                                // comparing boolean operator between the query operators and opening parenthesis, ie:
+                                // comparing boolean ope`rator between the query operators and opening parenthesis, ie:
                                 // [query1] and ([query2] or [query3]) -> [query1] and the values inside of "()" 
                                 // are compared with the following coniditonals:
                                 if(queries[saveIndex-1] === "and"){
-                                    let setOfParentFiles = new Set();
-                                    let indexHere = 0;
+                                    let setOfParentFiles = new Set(); // setOfParentFiles: used to check for "and" condition
+                                    let indexHere = 0; // indexHere: for loop below
                                     while(indexHere < results.length){
                                         setOfParentFiles.add(results[indexHere++].id);
                                     }
         
-                                    indexHere = 0;
-                                    let andResults = [];
-                                    let andResultsIndex = 0;
+                                    indexHere = 0; // indexHere: loop variable reset to loop over second array.
+                                    let andResults = []; // andResults: storing temp results if boolean operator is "and" 
+                                    let andResultsIndex = 0; // andResultsIndex: index for and array. 
                                     while(indexHere < inParenthesis.length){
                                         if(setOfParentFiles.has(inParenthesis[indexHere].id)){
                                             andResults[andResultsIndex++] = inParenthesis[indexHere];
@@ -829,11 +809,10 @@ function UserContextProvider(props) {
                                         indexHere += 1;
                                     }
                                     results = andResults;
-                                    console.log(results);
                                 } else if(queries[saveIndex-1] === "or"){
-                                    let orResults = [];
-                                    let setHere = new Set();
-                                    let orResultsIndex = 0;
+                                    let orResults = []; // orResults: storing temp results if boolean operator is "or" 
+                                    let setHere = new Set(); // don't add duplicate files from below:
+                                    let orResultsIndex = 0; // orResultsIndex: index for or array.
                                     while(orResultsIndex < results.length){
                                         orResults[orResultsIndex] = results[orResultsIndex];
                                         setHere.add(results[orResultsIndex]);
@@ -850,8 +829,6 @@ function UserContextProvider(props) {
                                     results = orResults;
                                 }
                             }
-                            console.log(results);
-                            console.log(inParenthesis);
                         }
                     }
                 }
