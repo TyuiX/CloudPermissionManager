@@ -12,7 +12,7 @@ export default function AddControlReqModalPage(props) {
     const [allowedReaders, setAllowedReaders] = useState({emails: [], domains: [], size: 0});
     const [deniedWriters, setDeniedWriters] = useState({emails: [], domains: [], size: 0});
     const [deniedReaders, setDeniedReaders] = useState({emails: [], domains: [], size: 0});
-    const [checkGroups, setCheckGroups] = useState(false);
+    const [checkGroups, setCheckGroups] = useState(true);
     const [errorMsg, setErrorMsg] = useState("");
 
     const confirmUpdate = (e) => {
@@ -27,13 +27,24 @@ export default function AddControlReqModalPage(props) {
             }
             else {
                 setIsLoading(true)
+                let fullQuery = searchQuery;
+                let accForGrp = checkGroups;
+                // additional checks if user explicitly added "groups:off" to search query (takes precedence over checkbox)
+                if (fullQuery.startsWith("groups:off and ")) {
+                    accForGrp = false;
+                } else {
+                    // check if user wanted to account for grp mems or not if "groups:off" wasn't explicitly in text
+                    if (!checkGroups) {
+                        fullQuery = "groups:off and " + fullQuery;
+                    }
+                }
                 let newReq = {
-                    query: searchQuery,
+                    query: fullQuery,
                     aw: allowedWriters,
                     ar: allowedReaders,
                     dw: deniedWriters,
                     dr: deniedReaders,
-                    group: checkGroups
+                    group: accForGrp
                 }
                 createNewControlReq(newReq);
                 postUpdate()
@@ -69,7 +80,7 @@ export default function AddControlReqModalPage(props) {
             <AddControlReqTypeSection title={"Denied Readers"} updateList={setDeniedReaders} />
             <div className="add-req-footer">
                 <div className="add-req-footer-section">
-                    <input type="checkbox" id="checkGroup" name="checkGroup" onChange={(e) => handleChecked(e)}/>
+                    <input defaultChecked={checkGroups} type="checkbox" id="checkGroup" name="checkGroup" onChange={(e) => handleChecked(e)}/>
                     <label className="check-group-mem-checkbox-label" htmlFor="checkGroup">Account for Group
                         Membership</label>
                 </div>
