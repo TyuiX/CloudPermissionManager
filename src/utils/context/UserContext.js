@@ -910,16 +910,21 @@ function UserContextProvider(props) {
 
     // check if a specific user email is within a specific domain
     const checkInDomains = useCallback ((user, domains) => {
-        let found = domains.find(domain => user.endsWith(domain))
+        let found;
+        if (user.includes("@")) {
+            found = domains.find(domain => user.endsWith("@" + domain))
+        } else {
+            found = domains.find(domain => user === domain)
+        }
         return !!found;
     },[])
 
     // checks if any files within a snapshot have violations to control reqs
     const checkViolations = useCallback((emailAddress, role, fileName, req, violationsList) => {
-        console.log(emailAddress)
-        console.log(role)
-        const {aw, ar, dw, dr, grp} = req;
-        console.log(ar)
+        // console.log(emailAddress)
+        // console.log(role)
+        const {aw, ar, dw, dr} = req;
+        // console.log(ar)
         let currentViol = {
             file: fileName,
             user: emailAddress,
@@ -964,15 +969,16 @@ function UserContextProvider(props) {
     // gets all files that are relevant to the search query for a given control requirement
     const getControlReqQueryFiles = useCallback(async (req, snapshot) => {
         const {query} = req;
-        return await performSearch(snapshot, query.split(" "), false, [])
+        console.log(query)
+        return await performSearch(snapshot, query.split(" "), false)
     }, [performSearch])
 
     // check if the resulting changes to a users perm would result in a violation of any existing control reqs or not
     const checkReqsBeforeUpdate = useCallback(async (filesToUpdate) => {
-        console.log(filesToUpdate)
+        // console.log(filesToUpdate)
         let violation = false;
         for (const req of controlReqs) {
-            console.log(req)
+            // console.log(req)
             const index = controlReqs.indexOf(req);
             let currentViolations = {
                 index: index + 1,
@@ -987,13 +993,39 @@ function UserContextProvider(props) {
             filteredFiles.forEach(({name, updatedUsers, newUsers}) => {
                 // check if any update to existing users causes violation
                 updatedUsers.forEach(user => {
-                    const {email, role} = user;
-                    checkViolations(email, role, name, req, currentViolations)
+                    const {email, role, type} = user;
+                    switch (type) {
+                        case "user":
+                        case "domain":
+                            checkViolations(email, role, name, req, currentViolations)
+                            break;
+                        case "group":
+                            let members = checkForGroupMemSnapshot(snapshots[0], email);
+                            members.forEach(member => checkViolations(member, role, name, req, currentViolations))
+                            break;
+                        default:
+                            break;
+                    }
                 })
                 // check if any newly added users causes violation
                 newUsers.forEach(user => {
-                    const {email, role} = user;
-                    checkViolations(email, role, name, req, currentViolations)
+                    const {email, role, type} = user;
+                    // check if new user is an existing group within snapshots
+                    if (email.endsWith("@googlegroups.com")) {
+                        let members = checkForGroupMemSnapshot(snapshots[0], email);    // get members from a snapshot
+                        members.forEach(member => checkViolations(member, role, name, req, currentViolations)) // check if each member violates control req
+                    } else {
+                        switch (type) {
+                            case "user":
+                            case "domain":
+                                checkViolations(email, role, name, req, currentViolations)
+                                break;
+                            case "group":
+                                break;
+                            default:
+                                break;
+                        }
+                    }
                 })
             })
             if (currentViolations.violations.length > 0) {
@@ -1036,7 +1068,8 @@ function UserContextProvider(props) {
             user, snapshots, isLoading, loggedIn, recentSearches, createUser, loginUser, logoutUser, startLoading, finishLoading, 
             setGoogleAcc, createNewSnapshot, getFolderFileDif, getSnapShotDiff, searchByName, getRecentSearches, createNewControlReq,
             controlReqs, deleteControlReq, setIsLoading, performSearch, searchResults, groupSnapshots, createNewGroupSnapshot,
-            getControlReqQueryFiles, checkInDomains, checkViolations, checkReqsBeforeUpdate, getDeviantFiles, checkPermissionSrc
+            getControlReqQueryFiles, checkInDomains, checkViolations, checkReqsBeforeUpdate, getDeviantFiles, checkPermissionSrc,
+            checkForGroupMemSnapshot
         }}>
             {props.children}
         </UserContext.Provider>
