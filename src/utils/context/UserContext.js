@@ -307,6 +307,15 @@ function UserContextProvider(props) {
             console.log(filePassed);
             if(filePassed.owner === operand){
                 filesAdded = filePassed;
+            } else{ // then the email passed is not the owner of the file - only other way to have 
+                    // sharing capabilites is if the user has the "organizer" role present.
+                filePassed.permissions.forEach((perm) => {
+                    if (perm.emailAddress === operand) { 
+                        if(perm.role === "organizer"){
+                            filesAdded = filePassed;
+                        }
+                    }
+                })
             }
         }else if(operator === "to"){
             console.log("in here");
