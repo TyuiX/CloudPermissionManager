@@ -114,8 +114,8 @@ export default function QueryBuilder(props) {
                     }
                 </div>
                 <div className="query-tags-list">
-                    {existingQueries.map(({display}) => (
-                        <QueryBuilderQueryTag label={display} removeTag={handleRemoveOperation} />
+                    {existingQueries.map(({display}, index) => (
+                        <QueryBuilderQueryTag key={index} label={display} removeTag={handleRemoveOperation} />
                     ))}
                 </div>
                 <div className="query-operator-desc">
@@ -125,7 +125,7 @@ export default function QueryBuilder(props) {
                 <div className="query-builder-operations-container">
                     <select className="query-builder-select" onChange={(e) => handleSelectOperator(e)} value={selectedQueryOp}>
                         {Object.values(ControlReqQueriesLists.QUERY_DESCRIPTIONS).map(({opt}) => (
-                            <option>
+                            <option key={opt}>
                                 {opt}
                             </option>
                         ))}

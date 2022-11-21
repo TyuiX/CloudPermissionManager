@@ -7,12 +7,10 @@ export default function RecentSearchModal(props) {
     const {toggleModal, setSearchText} = props;
     const {recentSearches} = useContext(UserContext);
     const [selectedOption, setSelectedOption] = useState();
-    console.log(recentSearches);
 
     // applies selected recent search to search bar
     const confirmUpdate = (e) => {
         e.preventDefault();
-        console.log("confirm");
         setSearchText(selectedOption);
         toggleModal();
     }

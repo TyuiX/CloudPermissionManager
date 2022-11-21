@@ -5,7 +5,7 @@ import {AiOutlineCheckCircle} from "react-icons/ai";
 import ControlReqViolationBlock from "./ControlReqViolationBlock/ControlReqViolationBlock";
 
 export default function CheckControlReqModalPage() {
-    const {controlReqs, snapshots, getControlReqQueryFiles, checkViolations} = useContext(UserContext);
+    const {controlReqs, snapshots, getControlReqQueryFiles, checkViolations, checkForGroupMemSnapshot} = useContext(UserContext);
     const [selectedSnap, setSelectedSnap] = useState(snapshots.length !== 0 ? snapshots[0] : {});
     const [violations, setViolations] = useState([]);
     const [searchedViolations, setSearchedViolations] = useState(false)
@@ -28,13 +28,25 @@ export default function CheckControlReqModalPage() {
                 violations: [],
             }
             let searchResults = await getControlReqQueryFiles(req, selectedSnap)
-            // console.log(searchResults)
             searchResults.forEach(({name, permissions}) => {
                 if (!permissions) {
                     return;
                 }
-                permissions.filter(({type}) => type === "user").forEach(({emailAddress, role}) => {
-                    checkViolations(emailAddress, role, name, req, currentViolations)
+                permissions.forEach(({emailAddress, role, type, domain}) => {
+                    switch (type) {
+                        case "user":
+                            checkViolations(emailAddress, role, name, req, currentViolations)
+                            break;
+                        case "group":
+                            let members = checkForGroupMemSnapshot(selectedSnap, emailAddress);
+                            members.forEach(member => checkViolations(member, role, name, req, currentViolations))
+                            break;
+                        case "domain":
+                            checkViolations(domain, role, name, req, currentViolations)
+                            break;
+                        default:
+                            break;
+                    }
                 })
             })
             if (currentViolations.violations.length > 0) {

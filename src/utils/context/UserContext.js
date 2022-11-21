@@ -264,12 +264,13 @@ function UserContextProvider(props) {
      * @param {*} addedFilesSet is an array of files that is needed for specific query operators.
      * @param {*} snapshot the snapshot that is passed in - will be passed into helper functions too if needed.
      * @param {*} folderId is the folderId - value is only present for "folder" and "inFolder" query operators.
+     * @param checkGrpMem flag to check if system should check group memberships or not
      * @returns an array with the query operator applied to the query operand.
      */
-    const searchCheckFile = (operator, operand, filePassed, addedFilesSet, snapshot, folderId) => {
+    const searchCheckFile = (operator, operand, filePassed, addedFilesSet, snapshot, folderId, checkGrpMem) => {
         let filesAdded = null; // update this "dummy" array and then return this as the return for "searchCheckFiles"
-        console.log(operator);
-        console.log(operand);
+        // console.log(operator);
+        // console.log(operand);
         if(operator === "drive"){
             if(operand === "MyDrive"){
                 console.log(filePassed);
@@ -292,18 +293,14 @@ function UserContextProvider(props) {
             }
         } else if(operator === "readable"){
             filePassed.permissions.forEach((perm) => {
-                if (perm.emailAddress === operand) {
-                    if(perm.role === "reader"){
-                        filesAdded = filePassed;
-                    }
+                if (checkFileHasOperandWithRole(perm, "reader", operand, checkGrpMem, snapshot)) {
+                    filesAdded = filePassed;
                 }
             })
         } else if(operator === "writeable"){
             filePassed.permissions.forEach((perm) => {
-                if (perm.emailAddress === operand) {
-                    if(perm.role === "writer"){
-                        filesAdded = filePassed;
-                    }
+                if (checkFileHasOperandWithRole(perm, "writer", operand, checkGrpMem, snapshot)) {
+                    filesAdded = filePassed;
                 }
             })
         } else if(operator === "shareable"){
@@ -412,6 +409,63 @@ function UserContextProvider(props) {
             })
         }
         return filesAdded;
+    }
+
+    const checkFileHasOperandWithRole = (perm, role, operand, checkGrpMem, snapshot) => {
+        switch (perm.type) {
+            case "user":
+                if (perm.emailAddress === operand) {
+                    if(perm.role === role){
+                        return true;
+                    }
+                }
+                break;
+            case "domain":
+                if (operand.endsWith("@" + perm.domain)) {
+                    if(perm.role === role){
+                        return true
+                    }
+                }
+                break;
+            case "group":
+                if (checkGrpMem) {
+                    let members = checkForGroupMemSnapshot(snapshot, perm.emailAddress)
+                    if (members.includes(operand) && perm.role === "reader") {
+                        return true
+                    }
+                }
+                break;
+            default:
+                return false
+        }
+        return false
+    }
+
+    // Helper function to help check group members within
+    const checkForGroupMemSnapshot = (fileSnapshot, groupEmail) => {
+        // get selected snapshots timestamp
+        let searchedFileSnapTime = new Date(fileSnapshot.date).getTime();
+
+        // check if exists a grp snapshot for given email
+        if (groupSnapshots.some(({email}) => email === groupEmail)) {
+            // filter for current groups snapshots and map their difference in times to file snapshot
+            let currentGrpSnaps = groupSnapshots.filter(({email}) => email === groupEmail).map((snap) => {
+                const {_id, members, date} = snap
+                return (
+                    {
+                        id: _id,
+                        members: Array.from(new Set(members)),
+                        timeDiff: Math.abs(searchedFileSnapTime - new Date(date).getTime())
+                    }
+                )
+            })
+            // find grp snapshot with the closest timestamp to searched file snapshots timestamp and return members
+            return (currentGrpSnaps.reduce(function(prev, curr) {
+                return prev.timeDiff < curr.timeDiff ? prev : curr;
+            }).members)
+        } else {
+            return [];
+        }
     }
 
     /**
@@ -546,10 +600,11 @@ function UserContextProvider(props) {
         let inParenthesis = []; // inParenthesis: will be holding the files that are present for the temporary result within parenthesis.
         let pFlag = 0; // pFlag: is the flag to be used to check if there is a parenthesis present.
         let saveIndex = 0; // saveIndex: int variable that holds the index for where the first "(" was seen.
+        let grpFlag = true; // grpFlag: flag to check whether to take group memberships into account or not.
         
         let index = 0; // index: int variable used to iterate over the queries array that was passed in.
 
-        while(index < queries.length){
+        while(index < queries.length) {
             let keyValue = ""; // keyValue: is the key for the current query operator.
             keyValue = queries[index].substring(queries[index].indexOf(":") + 1);
             let operator = queries[index].substring(0, queries[index].indexOf(":") + 1); // operator: is the operator for the current query operator.
@@ -601,7 +656,13 @@ function UserContextProvider(props) {
             email: user.email
         })
 
-        index = 0; // index reset to 0 to iterator through query operators and call helper functions to check query. 
+        // check if query starts with "groups:off and" directive and set flag to true if true
+        if (queries[0].includes("groups:off") &&  queries[1] === "and") {
+            grpFlag = false;
+            queries.splice(0,2)
+        }
+
+        index = 0; // index reset to 0 to iterator through query operators and call helper functions to check query.
         while(index < queries.length){
             let tempResult = []; // result for one query - tempResult result is compared to the global results array.
             let tempResultIndex = 0; // index used to set values of tempResult throughout this while loop.
@@ -670,7 +731,7 @@ function UserContextProvider(props) {
                                 tempResult = recursiveSearch(snapshot, key, file.id, []);
                             }
                         } else{ // all other query operator values.
-                            let resultHere = searchCheckFile(value, key, file, set, snapshot, "");
+                            let resultHere = searchCheckFile(value, key, file, set, snapshot, "", grpFlag);
                             if(resultHere){ tempResult[tempResultIndex++] = resultHere; }
                         }
                     })
@@ -849,16 +910,21 @@ function UserContextProvider(props) {
 
     // check if a specific user email is within a specific domain
     const checkInDomains = useCallback ((user, domains) => {
-        let found = domains.find(domain => user.endsWith(domain))
+        let found;
+        if (user.includes("@")) {
+            found = domains.find(domain => user.endsWith("@" + domain))
+        } else {
+            found = domains.find(domain => user === domain)
+        }
         return !!found;
     },[])
 
     // checks if any files within a snapshot have violations to control reqs
     const checkViolations = useCallback((emailAddress, role, fileName, req, violationsList) => {
-        console.log(emailAddress)
-        console.log(role)
-        const {aw, ar, dw, dr, grp} = req;
-        console.log(ar)
+        // console.log(emailAddress)
+        // console.log(role)
+        const {aw, ar, dw, dr} = req;
+        // console.log(ar)
         let currentViol = {
             file: fileName,
             user: emailAddress,
@@ -903,15 +969,16 @@ function UserContextProvider(props) {
     // gets all files that are relevant to the search query for a given control requirement
     const getControlReqQueryFiles = useCallback(async (req, snapshot) => {
         const {query} = req;
-        return await performSearch(snapshot, query.split(" "), false, [])
+        console.log(query)
+        return await performSearch(snapshot, query.split(" "), false)
     }, [performSearch])
 
     // check if the resulting changes to a users perm would result in a violation of any existing control reqs or not
     const checkReqsBeforeUpdate = useCallback(async (filesToUpdate) => {
-        console.log(filesToUpdate)
+        // console.log(filesToUpdate)
         let violation = false;
         for (const req of controlReqs) {
-            console.log(req)
+            // console.log(req)
             const index = controlReqs.indexOf(req);
             let currentViolations = {
                 index: index + 1,
@@ -926,13 +993,39 @@ function UserContextProvider(props) {
             filteredFiles.forEach(({name, updatedUsers, newUsers}) => {
                 // check if any update to existing users causes violation
                 updatedUsers.forEach(user => {
-                    const {email, role} = user;
-                    checkViolations(email, role, name, req, currentViolations)
+                    const {email, role, type} = user;
+                    switch (type) {
+                        case "user":
+                        case "domain":
+                            checkViolations(email, role, name, req, currentViolations)
+                            break;
+                        case "group":
+                            let members = checkForGroupMemSnapshot(snapshots[0], email);
+                            members.forEach(member => checkViolations(member, role, name, req, currentViolations))
+                            break;
+                        default:
+                            break;
+                    }
                 })
                 // check if any newly added users causes violation
                 newUsers.forEach(user => {
-                    const {email, role} = user;
-                    checkViolations(email, role, name, req, currentViolations)
+                    const {email, role, type} = user;
+                    // check if new user is an existing group within snapshots
+                    if (email.endsWith("@googlegroups.com")) {
+                        let members = checkForGroupMemSnapshot(snapshots[0], email);    // get members from a snapshot
+                        members.forEach(member => checkViolations(member, role, name, req, currentViolations)) // check if each member violates control req
+                    } else {
+                        switch (type) {
+                            case "user":
+                            case "domain":
+                                checkViolations(email, role, name, req, currentViolations)
+                                break;
+                            case "group":
+                                break;
+                            default:
+                                break;
+                        }
+                    }
                 })
             })
             if (currentViolations.violations.length > 0) {
@@ -975,7 +1068,8 @@ function UserContextProvider(props) {
             user, snapshots, isLoading, loggedIn, recentSearches, createUser, loginUser, logoutUser, startLoading, finishLoading, 
             setGoogleAcc, createNewSnapshot, getFolderFileDif, getSnapShotDiff, searchByName, getRecentSearches, createNewControlReq,
             controlReqs, deleteControlReq, setIsLoading, performSearch, searchResults, groupSnapshots, createNewGroupSnapshot,
-            getControlReqQueryFiles, checkInDomains, checkViolations, checkReqsBeforeUpdate, getDeviantFiles, checkPermissionSrc
+            getControlReqQueryFiles, checkInDomains, checkViolations, checkReqsBeforeUpdate, getDeviantFiles, checkPermissionSrc,
+            checkForGroupMemSnapshot
         }}>
             {props.children}
         </UserContext.Provider>
