@@ -267,20 +267,19 @@ function UserContextProvider(props) {
      * @param checkGrpMem flag to check if system should check group memberships or not
      * @returns an array with the query operator applied to the query operand.
      */
-    const searchCheckFile = (operator, operand, filePassed, addedFilesSet, snapshot, folderId, checkGrpMem) => {
+    const searchCheckFile = (operator, operand, filePassed, addedFilesSet, snapshot, folderId, checkGrpMem, sharedDrives) => {
         let filesAdded = null; // update this "dummy" array and then return this as the return for "searchCheckFiles"
         // console.log(operator);
         // console.log(operand);
+        console.log(sharedDrives);
         if(operator === "drive"){
             if(operand === "MyDrive"){
                 console.log(filePassed);
-                if(filePassed.ownedByMe === true){
+                if(filePassed.ownedByMe === true || filePassed.shared === true){
                     filesAdded = filePassed;
                 }
-            } else{
-                if(filePassed.ownedByMe === false){
-                    filesAdded = filePassed;
-                }
+            } else{ // shared drive. -> then name is passed in.
+                // shouldn't go in here.
             }
         } else if(operator === "owner"){
             console.log(filePassed)
@@ -373,21 +372,9 @@ function UserContextProvider(props) {
                 })
             }
         }else if(operator === "individual"){
-            console.log("in here");
-            console.log(filePassed);
-            console.log(filePassed); 
             if(filePassed.permissions.length === 2){
                 filesAdded = filePassed;
             }
-            // filePassed.permissions.forEach((perm) => {
-            //     if(filePassed.ownedByMe){
-            //         if (perm.emailAddress === operand) {
-            //             if(perm.role === "writer" || perm.role === "reader"){
-            //                 filesAdded = filePassed;
-            //             }
-            //         }
-            //     }
-            // })
         } else if(operator === "inFolder"){
             console.log(snapshot);
             console.log(folderId);
@@ -594,6 +581,22 @@ function UserContextProvider(props) {
         return addedFiles;
     }
 
+    const searchThroughForDrive = (snapshot, file, sharedDrives) => {
+        let result = [];
+        let resultIndex = 0;
+        let index = 0
+        console.log(sharedDrives);
+        while(index < sharedDrives.length){
+            let secondIndex = 0;
+            while(secondIndex < sharedDrives[index].files.length){
+                result[resultIndex++] = sharedDrives[index].files[secondIndex].name;
+                secondIndex += 1;
+            }
+            index += 1;
+        }
+        return result;
+    }
+
     /**
         performSearch
         This function performs the search for query operations passed in. There will be helper functions that will be called.
@@ -602,7 +605,7 @@ function UserContextProvider(props) {
         @param save is a boolean which is used at the end to either save or not save the results.
         @returns "results" which is the result of the query.
     */
-    const performSearch = useCallback (async (snapshot, queries, save) => {
+    const performSearch = useCallback (async (snapshot, queries, save, sharedDrives) => {
         
         let set = new Set(); // set: will check to see if the file already exists in the array to be returned.
         let results = []; // result: where all of the files are stored that are to be returned.
@@ -697,6 +700,9 @@ function UserContextProvider(props) {
             }
 
             let key = queries[index].substring(queries[index].indexOf(":") + 1); // is the key for the query operator.
+            if(value === "drive"){
+                key = queries[index].substring(queries[index].lastIndexOf(":") + 1);
+            }
             if(key[key.length-1] === ")"){ // if closing parenthesis is seen, then operators within the parens can be evaluated.
                 lastParenthsis = 0;
                 key = key.substring(0, key.length-1);
@@ -739,8 +745,17 @@ function UserContextProvider(props) {
                             if(file.name === firstFile && file.type === "folder"){ 
                                 tempResult = recursiveSearch(snapshot, key, file.id, []);
                             }
+                        } else if(value === "drive" && key !== "MyDrive"){
+                            let filesHere = searchThroughForDrive(snapshot, file, sharedDrives);
+                            let index = 0; // index: used to iteratrate over the loop below
+                            let tIndex = 0; // tIndex: int to store current index of the temp array
+                            console.log(filesHere);
+                            while(index < filesHere.length){
+                                if(tempResult[tIndex]){ tIndex += 1; }
+                                else{ tempResult[tIndex++] = filesHere[index++]; }
+                            }
                         } else{ // all other query operator values.
-                            let resultHere = searchCheckFile(value, key, file, set, snapshot, "", grpFlag);
+                            let resultHere = searchCheckFile(value, key, file, set, snapshot, "", grpFlag, sharedDrives);
                             if(resultHere){ tempResult[tempResultIndex++] = resultHere; }
                         }
                     })

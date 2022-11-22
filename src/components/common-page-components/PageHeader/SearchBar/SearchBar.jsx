@@ -2,6 +2,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import {GoDeviceCamera} from 'react-icons/go';
 import {AiOutlineSearch} from 'react-icons/ai';
 import {UserContext} from "../../../../utils/context/UserContext";
+import {GoogleContext} from "../../../../utils/context/GoogleContext"
 import "./SearchBar.css";
 import {useNavigate} from "react-router-dom";
 import QueryBuilder from "./QueryBuilder/QueryBuilder";
@@ -13,10 +14,12 @@ export default function SearchBar(props) {
     const [showQueryBuilder, setShowQueryBuilder] = useState(false);
     const [textSearch, setTextSearch] = useState(true);
     const {isLoading, snapshots, searchByName, getRecentSearches, performSearch} = useContext(UserContext);
+    const {sharedDrives} = useContext(GoogleContext);
     const [currentSnap, setCurrentSnap] = useState(snapshots.length !== 0 ? snapshots[0] : {});
     const navigate = useNavigate();
     const {setSearchText, searchText} = props;
 
+    // let sharedDrives = "";
     useEffect(() => {
         if (!snapshots) {
             return
@@ -48,7 +51,8 @@ export default function SearchBar(props) {
     const handleForQuery = async() => {
         if(snapshots && !isLoading && snapshots.length !== 0){
             let queryOptions = searchText.split(" ");
-            await performSearch(currentSnap, queryOptions, true);
+            console.log(sharedDrives);
+            await performSearch(currentSnap, queryOptions, true, sharedDrives);
             getRecentSearches();
             navigate('/searchresults');
         }
