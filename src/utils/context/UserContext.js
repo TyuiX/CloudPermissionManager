@@ -581,17 +581,24 @@ function UserContextProvider(props) {
         return addedFiles;
     }
 
-    const searchThroughForDrive = (snapshot, file, sharedDrives) => {
+    const searchThroughForDrive = (snapshot, key, sharedDrives) => {
         let result = [];
         let resultIndex = 0;
         let index = 0
         console.log(sharedDrives);
         while(index < sharedDrives.length){
             let secondIndex = 0;
-            while(secondIndex < sharedDrives[index].files.length){
-                result[resultIndex++] = sharedDrives[index].files[secondIndex].name;
-                secondIndex += 1;
-            }
+            if(sharedDrives[index].name === key) {
+                console.log(sharedDrives[index]);
+                while(secondIndex < sharedDrives[index].sharedFiles.length){
+                    result[resultIndex++] = sharedDrives[index].sharedFiles[secondIndex];
+                    secondIndex += 1;
+                }
+                if(secondIndex !== 0){
+                    console.log(result);
+                    break;
+                }
+            } // drive:drive:JJEV-shared
             index += 1;
         }
         return result;
@@ -746,17 +753,19 @@ function UserContextProvider(props) {
                                 tempResult = recursiveSearch(snapshot, key, file.id, []);
                             }
                         } else if(value === "drive" && key !== "MyDrive"){
-                            let filesHere = searchThroughForDrive(snapshot, file, sharedDrives);
-                            let index = 0; // index: used to iteratrate over the loop below
-                            let tIndex = 0; // tIndex: int to store current index of the temp array
-                            console.log(filesHere);
-                            while(index < filesHere.length){
-                                if(tempResult[tIndex]){ tIndex += 1; }
-                                else{ tempResult[tIndex++] = filesHere[index++]; }
-                            }
+                            console.log(sharedDrives);
+                            tempResult = searchThroughForDrive(snapshot, key, sharedDrives);
+                            console.log(tempResult);
+                            // let index = 0; // index: used to iteratrate over the loop below
+                            // let tIndex = 0; // tIndex: int to store current index of the temp array
+                            // console.log(filesHere);
+                            // while(index < filesHere.length){
+                            //     if(tempResult[tIndex]){ tIndex += 1; }
+                            //     else{ tempResult[tIndex++] = filesHere[index++]; }
+                            // }
                         } else{ // all other query operator values.
                             let resultHere = searchCheckFile(value, key, file, set, snapshot, "", grpFlag, sharedDrives);
-                            if(resultHere){ tempResult[tempResultIndex++] = resultHere; }
+                            if(resultHere){ tempResult[tempResultIndex++] = resultHere; console.log(tempResult); }
                         }
                     })
                 })
