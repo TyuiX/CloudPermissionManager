@@ -21,6 +21,7 @@ export const createNewControlReqs = (payload) => api.post(`/control/requirements
 export const deviant = (payload) => api.post(`/getDeviantFiles`, payload)
 export const createNewGroupSnapshot = (payload) => api.post(`/snapshot/group/add`, payload)
 export const getGroupSnapshots = (payload) => api.post(`/snapshot/group/list`, payload)
+export const updateRecentSnapshot = (payload) => api.post(`/snapshot/update`, payload)
 
 const managerAPI = {
     createUser,
@@ -40,6 +41,7 @@ const managerAPI = {
     createNewGroupSnapshot,
     getGroupSnapshots,
     addRecentSearch,
+    updateRecentSnapshot,
 }
 
 export default managerAPI
