@@ -13,6 +13,7 @@ export default function QueryBuilder(props) {
     const [selectedQueryArg, setSelectedQueryArg] = useState("");
     const [existingQueries, setExistingQueries] = useState([]);
     const [stringQuery, setStringQuery] = useState("");
+    const [checkGroups, setCheckGroups] = useState(true);
     const navigate = useNavigate();
 
     // refresh values when dropdown is closed and opened
@@ -38,6 +39,14 @@ export default function QueryBuilder(props) {
         queryStringBuilder = queryStringBuilder.slice(0, -5);
         setStringQuery(queryStringBuilder)
     },[existingQueries])
+
+    const handleCheckGroups = (e) => {
+        if (e.target.checked) {
+            setCheckGroups(true);
+        } else {
+            setCheckGroups(false);
+        }
+    }
 
     const handleSelectOperator = (e) => {
         e.preventDefault()
@@ -65,7 +74,11 @@ export default function QueryBuilder(props) {
     // perform actual search will full query
     const confirmQuery = async () => {
         console.log(existingQueries);
-        await performSearch(currentSnap, stringQuery.split(" "), true);
+        let searchQuery = stringQuery;
+        if (checkGroups) {
+            searchQuery = "groups:off and " + searchQuery;
+        }
+        await performSearch(currentSnap, searchQuery.split(" "), true);
         getRecentSearches();
         toggleDropdown()
         navigate('/searchresults');
@@ -108,6 +121,7 @@ export default function QueryBuilder(props) {
                 <div className="query-string-label">Query String:</div>
                 <div className="query-string">
                     {stringQuery ?
+                        checkGroups ? "groups:off and " + stringQuery :
                         stringQuery
                         :
                         "Query Placeholder..."
@@ -143,6 +157,11 @@ export default function QueryBuilder(props) {
                 </div>
             </div>
             <div className="query-builder-footer">
+                <div className="query-builder-acc-groups">
+                    <input defaultChecked={checkGroups} type="checkbox" id="checkGroupQuery" name="checkGroupQuery" onChange={(e) => handleCheckGroups(e)}/>
+                    <label className="check-group-mem-checkbox-label" htmlFor="checkGroupQuery">Account for Group Membership</label>
+                </div>
+
                 <button onClick={confirmQuery} className="execute-query-button">Search</button>
             </div>
         </>
