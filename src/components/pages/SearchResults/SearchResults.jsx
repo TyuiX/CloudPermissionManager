@@ -75,15 +75,15 @@ export default function SearchResults() {
                 <PageSideBar />
                 <div className="page-content">
                     <h2 className="page-content-header">Search Results</h2>
-                    <div>
-                        <select className="query-builder-select" onChange={(e) => setSortingElem(e.target.value)} value={sortingElem}>
+                    <div className="search-result-buttons">
+                        <select className="search-result-sort" onChange={(e) => setSortingElem(e.target.value)} value={sortingElem}>
                             {SORTING_OPTIONS.map((option) => (
                                 <option key={option}>
                                     {option}
                                 </option>
                             ))}
                         </select>
-                        <button onClick={handleToggleModal}>Update Files</button>
+                        <button className="snapshot-page-button" onClick={handleToggleModal}>Update Files</button>
                     </div>
                     <div className="result-table">
                         <div className="result-table-header">
