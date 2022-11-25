@@ -15,6 +15,12 @@ const links = [
     {path: "/groupsnapshot", name: "Group Snapshots"},
 ]
 
+const ODlinks = [
+    {path: "/ODfiles", name: "My Files"},
+    {path: "/ODsharedfiles", name: "Shared with me"},
+    {path: "/ODfilesnapshot", name: "File Snapshots"},
+]
+
 export default function PageSideBar() {
     const location = useLocation();
     const {email} = useContext(GoogleContext);
@@ -30,6 +36,12 @@ export default function PageSideBar() {
                 return <FaCamera size={20} />
             case "/groupsnapshot":
                 return <FaCameraRetro size={20} />
+            case "/ODfiles":
+                return  <FaFolder size={20} />
+            case "/ODsharedfiles":
+                    return <RiGroupFill size={20} />
+            case "/ODfilesnapshot":
+                    return <FaCamera size={20} />
             default:
                 return null;
         }
@@ -37,6 +49,13 @@ export default function PageSideBar() {
 
     return (
         <div className="sidebar-container">
+            <div className="linked-drives-list">
+                {
+                    email && email === user.googleId ?
+                        <SideBarDriveLink driveType="google" linked={true} email={user.googleId} /> :
+                    <LinkGoogleLink />
+                }
+            </div>
             <div className="sidebar-nav">
                 {links.map(({path, name}) => (
                     <Link className={"sidebar-link"}
@@ -54,12 +73,23 @@ export default function PageSideBar() {
                 ))}
             </div>
             <div className="linked-drives-list">
-                {
-                    email && email === user.googleId ?
-                        <SideBarDriveLink driveType="google" linked={true} email={user.googleId} /> :
-                    <LinkGoogleLink />
-                }
                 <SideBarDriveLink driveType="one" linked={false} />
+            </div>
+            <div className="sidebar-nav">
+                {ODlinks.map(({path, name}) => (
+                    <Link className={"sidebar-link"}
+                          key={path}
+                          to={path}
+                    >
+                        <div className="sidebar-link-label">
+                            {pathIcon(path)}
+                            <span>{name}</span>
+                        </div>
+                        {location.pathname === path &&
+                            <span>{'\u27A4'}</span>
+                        }
+                    </Link>
+                ))}
             </div>
         </div>
     );

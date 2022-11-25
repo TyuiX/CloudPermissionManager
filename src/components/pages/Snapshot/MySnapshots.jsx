@@ -35,8 +35,6 @@ export default function MySnapshots() {
 
         allFiles.forEach((file) => {
             const {id, parents, permissions} = file;
-            console.log(permissions);
-            console.log(file);
 
             if (!parents){
                 if (!snapshot.folders.has("orphan")){
@@ -100,7 +98,7 @@ export default function MySnapshots() {
         snapshot.folders = Object.fromEntries(snapshot.folders)
         console.log(snapshot)
         // uncomment below
-        createNewSnapshot(snapshot, user.email)
+        createNewSnapshot(snapshot, user.email, "googleDrive")
     }
 
     const openAnalyzeSnapshot = async () => {

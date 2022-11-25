@@ -39,7 +39,7 @@ function UserContextProvider(props) {
             return
         }
         const loadResources = async () => {
-            await Promise.all([getSnapshots(), getRecentSearches(), getControlReqs(), getGroupSnapshots()])
+            await Promise.all([getSnapshots(), getRecentSearches(), getControlReqs(), getGroupSnapshots(), getOneDriveSnapshots()])
         }
         loadResources()
     }, [user.email])
@@ -126,21 +126,28 @@ function UserContextProvider(props) {
 
     const getOneDriveSnapshots = useCallback( async () => {
         try {
+            console.log("in get od");
             const res = await api.getUserProfile({email: user.email});
-            console.log(res.data)
-            const res2 = await api.getOneDriveSnapshots(res.data.oneDriveSnap)
-            setOneDriveSnapshots(res2.data)
+            console.log(res.data);
+            const res2 = await api.getSnapshots(res.data.oneDriveSnap);
+            console.log(res2);
+            setOneDriveSnapshots(res2.data);
+            console.log(oneDriveSnapshots);
         }
         catch (err) {
             return err.response.data.errorMessage;
         }
     },[user.email])
 
-    const createNewSnapshot = useCallback( async (snapshot, email) => {
+    const createNewSnapshot = useCallback( async (snapshot, email, drive) => {
         try {
-            const res = await api.createSnapshot({snapshot: snapshot, email: email})
-            if (res.status === 200) {
-                await getSnapshots()
+            const res = await api.createSnapshot({snapshot: snapshot, email: email, drive: drive})
+            if (res.status === 200 && drive == "googleDrive") {
+                await getSnapshots();
+            }
+            if(res.status === 200 && drive =="oneDrive"){
+                console.log("getting new od snap");
+                await getOneDriveSnapshots();
             }
         }
         catch (err) {
@@ -1015,7 +1022,7 @@ function UserContextProvider(props) {
             user, snapshots, isLoading, loggedIn, recentSearches, createUser, loginUser, logoutUser, startLoading, finishLoading, 
             setGoogleAcc, createNewSnapshot, getFolderFileDif, getSnapShotDiff, searchByName, getRecentSearches, createNewControlReq,
             controlReqs, deleteControlReq, setIsLoading, performSearch, searchResults, groupSnapshots, createNewGroupSnapshot,
-            getControlReqQueryFiles, checkInDomains, checkViolations, checkReqsBeforeUpdate, getDeviantFiles, checkPermissionSrc
+            getControlReqQueryFiles, checkInDomains, checkViolations, checkReqsBeforeUpdate, getDeviantFiles, checkPermissionSrc, oneDriveSnapshots
         }}>
             {props.children}
         </UserContext.Provider>

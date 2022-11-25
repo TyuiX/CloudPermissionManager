@@ -5,19 +5,21 @@ import { SignOutButton } from "./SignOutButton"
 import { callMsGraph, callGetSubFiles, createOneDriveSnapshot } from "./graph";
 import { useMsal } from "@azure/msal-react";
 import { loginRequest } from "./authConfig";
+import { UserContext } from "../../../utils/context/UserContext";
 /**
  * Renders the navbar component with a sign-in button if a user is not authenticated
  */
 export const PageLayout = (props) => {
     const isAuthenticated = useIsAuthenticated();
-
+    const {createNewSnapshot, user} = useContext(UserContext);
     const { instance, accounts, inProgress } = useMsal();
     const [accessToken, setAccessToken] = useState(null);
     const [graphData, setGraphData] = useState(null);
 
     const name = accounts[0] && accounts[0].name;
 
-    function RequestAccessToken() {
+    async function RequestAccessToken() {
+        let files = [];
         const request = {
             ...loginRequest,
             account: accounts[0]
@@ -25,13 +27,14 @@ export const PageLayout = (props) => {
 
         // Silently acquires an access token which is then attached to a request for Microsoft Graph data
         instance.acquireTokenSilent(request).then((response) => {
-            console.log(response);
             setAccessToken(response.accessToken);
+            // files = response.accessToken;
         }).catch((e) => {
             instance.acquireTokenPopup(request).then((response) => {
                 setAccessToken(response.accessToken);
             });
         });
+        // return files;
     }
 
     async function RequestProfileData() {
@@ -54,16 +57,15 @@ export const PageLayout = (props) => {
         //     callMsGraph(accessToken).then(response => setGraphData(response));
     }
 
-    const handleClick = () =>{
+    const handleClick = async () =>{
         if(isAuthenticated){
             // console.log(name);
             RequestAccessToken();
-            // console.log(accessToken);
             // RequestProfileData();
             // console.log(graphData);
             // callGetSubFiles(accessToken);
             // console.log(apiData);
-            createOneDriveSnapshot(accessToken);
+            createOneDriveSnapshot(accessToken, createNewSnapshot, user);
         }
     }
 
