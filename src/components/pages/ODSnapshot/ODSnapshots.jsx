@@ -14,7 +14,6 @@ export default function ODSnapshots(){
     const {oneDriveSnapshots, createNewSnapshot, user} = useContext(UserContext);
     const [showModal, setShowModal] = useState(false);
     const [analysisType, setAnalysisType] = useState("");
-    console.log(oneDriveSnapshots);
 
     const handleToggleModal = () => {
         setShowModal(!showModal)
@@ -23,10 +22,9 @@ export default function ODSnapshots(){
     const createSnapshotData = async() =>{
         if(accessToken){
             createOneDriveSnapshot(accessToken, createNewSnapshot, user);
-            console.log(oneDriveSnapshots);
         }
         else
-            console.log("no  access token");
+            console.log("no access token");
     }
 
     const openAnalyzeSnapshot = async () => {
@@ -80,6 +78,7 @@ export default function ODSnapshots(){
                 <AnalyzeSharingModal
                     analysisType={analysisType}
                     toggleModal={handleToggleModal}
+                    isGoogle={false}
                 />
             }
         </>

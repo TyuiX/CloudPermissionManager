@@ -154,6 +154,7 @@ export default function MySnapshots() {
                 <AnalyzeSharingModal
                     analysisType={analysisType}
                     toggleModal={handleToggleModal}
+                    isGoogle={true}
                 />
             }
         </>

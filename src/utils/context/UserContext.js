@@ -155,18 +155,6 @@ function UserContextProvider(props) {
         }
     }, [getSnapshots])
 
-    const createNewOneDriveSnapshot = useCallback( async (snapshot, email) => {
-        try{
-            const res = await api.createOneDriveSnapshot({snapshot: snapshot, email: email})
-            if (res.status === 200) {
-                await getOneDriveSnapshots()
-            }
-        }
-        catch(err){
-            return err.response.data.errorMessage;
-        }
-    }, [getOneDriveSnapshots])
-
     const getFolderFileDif = useCallback( async (id) => {
         try {
             const res = await api.getFileFolderDif(id)
@@ -180,9 +168,24 @@ function UserContextProvider(props) {
         }
     }, [])
 
-    const getDeviantFiles = useCallback( async (snapshot) => {
+    const getODFolderFileDif = useCallback( async (id) => {
         try {
-            const res = await api.deviant({snapshot: snapshot})
+            console.log(id);
+            const res = await api.getODFileFolderDif(id);
+            if (res.status === 200) {
+                console.log(res.data)
+                return res.data;
+            }
+        }
+        catch (err) {
+            console.log(err);
+            return err.response.data.errorMessage;
+        }
+    }, [])
+
+    const getDeviantFiles = useCallback( async (snapshot, threshold) => {
+        try {
+            const res = await api.deviant({snapshot: snapshot, threshold: threshold})
             if (res.status === 200) {
                 console.log(res.data)
                 return res.data
@@ -193,6 +196,17 @@ function UserContextProvider(props) {
         }
     }, [])
 
+    const getODDeviantFiles = useCallback( async (snapshot, threshold) => {
+        try {
+            const res = await api.getODDeviant({snapshot: snapshot, threshold: threshold})
+            if (res.status === 200) {
+                return res.data
+            }
+        }
+        catch (err) {
+            return err.response.data.errorMessage;
+        }
+    }, [])
 
     const getSnapShotDiff = useCallback( async (oldSnapshot, currSnapshot) => {
         try {
@@ -207,6 +221,21 @@ function UserContextProvider(props) {
             return err.response.data.errorMessage;
         }
     }, [])
+
+    const getODSnapShotDiff = useCallback( async (oldSnapshot, currSnapshot) => {
+        try {
+            const res = await api.getODSnapDif({oldSnapshot: oldSnapshot, currSnapshot: currSnapshot});
+            if (res.status === 200) {
+                // set the state of the user
+                console.log(res.data)
+                return res.data
+            }
+        }
+        catch(err){
+            return err.response.data.errorMessage;
+        }
+    }, [])
+    
 
     const searchByName = useCallback( async (id, searchText) => {
         try{
@@ -1022,7 +1051,8 @@ function UserContextProvider(props) {
             user, snapshots, isLoading, loggedIn, recentSearches, createUser, loginUser, logoutUser, startLoading, finishLoading, 
             setGoogleAcc, createNewSnapshot, getFolderFileDif, getSnapShotDiff, searchByName, getRecentSearches, createNewControlReq,
             controlReqs, deleteControlReq, setIsLoading, performSearch, searchResults, groupSnapshots, createNewGroupSnapshot,
-            getControlReqQueryFiles, checkInDomains, checkViolations, checkReqsBeforeUpdate, getDeviantFiles, checkPermissionSrc, oneDriveSnapshots
+            getControlReqQueryFiles, checkInDomains, checkViolations, checkReqsBeforeUpdate, getDeviantFiles, checkPermissionSrc, oneDriveSnapshots, 
+            getODFolderFileDif, getODSnapShotDiff, getODDeviantFiles 
         }}>
             {props.children}
         </UserContext.Provider>

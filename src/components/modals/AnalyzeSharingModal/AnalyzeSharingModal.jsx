@@ -9,32 +9,46 @@ import FileFolderSharingDiffList from "./FileFolderSharingDiffList/FileFolderSha
 import SnapshotDiffList from "./SnapshotDiffList";
 
 export default function AnalyzeSharingModal(props) {
-    const {toggleModal, analysisType} = props;
-    const {snapshots, getFolderFileDif, getSnapShotDiff, getDeviantFiles} = useContext(UserContext);
+    const {toggleModal, analysisType, isGoogle} = props;
+    const {snapshots, getFolderFileDif, getSnapShotDiff, getDeviantFiles, oneDriveSnapshots, getODFolderFileDif, getODSnapShotDiff, getODDeviantFiles } = useContext(UserContext);
     const [selectedSnap, setSelectedSnap] = useState({});
     const [selectedSecondSnap, setSelectedSecondSnap] = useState({});
     const [fileFolderDiff, setFileFolderDiff] = useState([])
     const [deviantSharing, setDeviantSharing] = useState([])
     const [snapshotDiff, setSnapshotDiff] = useState([])
     const [threshold, setThreshold] = useState(0.8)
-
+    const[currentSnapshots, setCurrentSnapshots] = useState(isGoogle?snapshots:oneDriveSnapshots)
     console.log(threshold)
+    // setCurrentSnapshots(isGoogle?snapshots:oneDriveSnapshots);
+    // console.log(currentSnapshots);
 
     useEffect(() => {
-        if (snapshots.length <= 0) {
+        setCurrentSnapshots(isGoogle?snapshots:oneDriveSnapshots);
+        if (currentSnapshots.length <= 0) {
             return
         }
         // set default snapshot to current/most recent
-        setSelectedSnap(snapshots[0])
-        setSelectedSecondSnap(snapshots[0])
-    },[snapshots])
+        console.log(currentSnapshots);
+        setSelectedSnap(currentSnapshots[0])
+        setSelectedSecondSnap(currentSnapshots[0])
+    },[isGoogle?snapshots:oneDriveSnapshots])
 
     // handle file folder diff and deviant sharing calls
     const handleAnalyzeSnapshot = async (e) => {
         e.preventDefault();
         if (analysisType === "analysis") {
             // await getting both analyze sharing and deviant sharing information
-            const [res1, res2] = await Promise.all([getFolderFileDif(selectedSnap._id), getDeviantFiles(selectedSnap, threshold)])
+            let [res1, res2] = [[],[]];
+            if(isGoogle){
+                [res1, res2] = await Promise.all([getFolderFileDif(selectedSnap._id), getDeviantFiles(selectedSnap, threshold)])
+                console.log(res1, res2);
+            }
+            else{
+                // console.log(getODFolderFileDif(selectedSnap._id));
+                // console.log(getODDeviantFiles(selectedSnap, threshold));
+                [res1, res2] = await Promise.all([getODFolderFileDif(selectedSnap._id), getODDeviantFiles(selectedSnap, threshold)])
+                console.log(res1, res2);
+            }
             setFileFolderDiff({
                 "Different Permissions": res1.filter(({type}) => type === "diff"),
                 "Extra Permissions": res1.filter(({type}) => type === "extra"),
@@ -44,7 +58,14 @@ export default function AnalyzeSharingModal(props) {
             setDeviantSharing(res2);
         } else {
             // pass two selected snapshots to backend and await return
-            let data = await getSnapShotDiff(selectedSnap, selectedSecondSnap);
+            let data = [];
+            if(isGoogle){
+                data = await getSnapShotDiff(selectedSnap, selectedSecondSnap);
+            }
+            else{
+                // console.log(getODSnapShotDiff(selectedSnap, selectedSecondSnap));
+                data = await getODSnapShotDiff(selectedSnap, selectedSecondSnap);
+            }
             console.log(data)
 
             setSnapshotDiff({
@@ -60,7 +81,7 @@ export default function AnalyzeSharingModal(props) {
     // handle selection of snapshots
     const handleSnapshotSelect = (e, first) => {
         e.preventDefault()
-        let found = snapshots.find(({_id}) => _id ===  e.target.value)
+        let found = currentSnapshots.find(({_id}) => _id ===  e.target.value)
         if (found) {
             // check if first or second snapshot selection changed
             if (first) {
@@ -84,7 +105,7 @@ export default function AnalyzeSharingModal(props) {
                             <div className="analysis-option-label">{analysisType === "compare" && "First "}Snapshot:</div>
                             <select onChange={(e) => handleSnapshotSelect(e, true)}>
                                 {
-                                    snapshots.map(({_id}) => (
+                                    currentSnapshots.map(({_id}) => (
                                         <option key={_id} value={_id}>{_id}</option>
                                     ))
                                 }
@@ -110,7 +131,7 @@ export default function AnalyzeSharingModal(props) {
                                 <div className="analysis-option-label">Second Snapshot:</div>
                                 <select onChange={(e) => handleSnapshotSelect(e, false)}>
                                     {
-                                        snapshots.map(({_id}) => (
+                                        currentSnapshots.map(({_id}) => (
                                             <option key={_id} value={_id}>{_id}</option>
                                         ))
                                     }
