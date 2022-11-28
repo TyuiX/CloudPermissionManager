@@ -11,7 +11,7 @@ import { createOneDriveSnapshot } from "../OneDriveAuth/graph";
 
 export default function ODSnapshots(){
     const {allFiles, accessToken} = useContext(OneDriveContext);
-    const {oneDriveSnapshots, createNewSnapshot, user} = useContext(UserContext);
+    const {oneDriveSnapshots, createOneDriveSnapshot} = useContext(UserContext);
     const [showModal, setShowModal] = useState(false);
     const [analysisType, setAnalysisType] = useState("");
 
@@ -21,7 +21,7 @@ export default function ODSnapshots(){
 
     const createSnapshotData = async() =>{
         if(accessToken){
-            createOneDriveSnapshot(accessToken, createNewSnapshot, user);
+            createOneDriveSnapshot(accessToken);
         }
         else
             console.log("no access token");

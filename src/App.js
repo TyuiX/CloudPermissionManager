@@ -33,10 +33,10 @@ function App() {
               <Route path="/login/google" element={<LinkGoogleLink />} />
               <Route path="/login/one" element={<PageLayout />} />
               <Route path="/signup" element={<SignUp />} />
-              <Route path="/files" element={<MyFiles />} />
-              <Route path="/ODfiles" element={<div />} />
-              <Route path="/sharedfiles" element={<SharedFiles />} />
-              {/* <Route path="/ODsharedfiles" element={<ODSharedFiles />} /> */}
+              <Route path="/files" element={<MyFiles isGoogle={true}/>} />
+              <Route path="/ODfiles" element={<MyFiles isGoogle={false} />} />
+              <Route path="/sharedfiles" element={<SharedFiles isGoogle={true}/>} />
+              <Route path="/ODsharedfiles" element={<SharedFiles isGoogle={false}/>} />
               <Route path="/folder/:folderId" element={<div>OpenFolder</div>} />
               <Route path="/filesnapshot" element={<MySnapshots />} />
               <Route path="/ODfilesnapshot" element={<ODSnapshots />} />

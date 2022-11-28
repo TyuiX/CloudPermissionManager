@@ -6,6 +6,7 @@ import { useMsal } from "@azure/msal-react";
 import { callMsGraph } from "../../components/pages/OneDriveAuth/graph";
 import { useIsAuthenticated } from "@azure/msal-react";
 import { loginRequest } from "../../components/pages/OneDriveAuth/authConfig";
+// import {gapi} from "gapi-script";
 
 export const OneDriveContext = createContext({});
 
@@ -15,7 +16,9 @@ function OneDriveContextProvider(props){
     const [accessToken, setAccessToken] = useState("");
     const isAuthenticated = useIsAuthenticated();
     const [allFiles, setAllFiles] = useState([]);
-    console.log(allFiles);
+    const [myFiles, setMyFiles] = useState([]);
+    const [sharedFiles, setSharedFiles] = useState([]);
+    const [ODemail, setODEmail] = useState();
 
     useEffect(() => {
         if (!loggedIn) {
@@ -27,20 +30,21 @@ function OneDriveContextProvider(props){
             if(isAuthenticated){
                 if (token){
                     setAccessToken(token);
-                    console.log("got access");
-                    const files = await getOneDriveFiles();
-                    setAllFiles(files);
-                    // const snap = await createOneDriveSnapshot();
-                    // console.log(snap);
+                    await getOneDriveFiles();
                 }
                 else{
-                    console.log("reach");
                     setAllFiles([]);
+                    setMyFiles([]);
+                    setSharedFiles([]);
+                    if(accounts)
+                        setODEmail(accounts[0].username);
+                    console.log(ODemail)
                 }
             }
             finishLoading();
         }
-        start();        
+        start();      
+        // gapi.load('client:auth2', start)  
     }, [finishLoading, loggedIn, startLoading, isAuthenticated, accessToken]);
 
     async function RequestAccessToken() {
@@ -61,109 +65,25 @@ function OneDriveContextProvider(props){
     }
 
     const getOneDriveFiles = useCallback(async ()=>{
-        let res = await api.getFiles({accessToken: accessToken});
-        console.log(res.data.files.value);
-        return res.data.files.value;
-    },[accessToken, allFiles])
-
-    async function getSubFiles(folderId){
-        let emp = "" + folderId;
-        let files = []; 
-        await fetch("https://graph.microsoft.com/v1.0/me/drive/items/"+emp+"/children", {
-            method: "GET",
-            headers: {'Authorization': 'Bearer ' + accessToken,'Content-Type': 'application/json; charset=UTF-8',}
-        }).then(async res => {
-            await res.json().then(function(data) {
-                files = data;
-              });
-            })
-        return files;
-    }
-    
-    async function getRootFiles(){
-        // const headers = new Headers({'Authorization': 'Bearer ' + accessToken,'Content-Type': 'application/json; charset=UTF-8',});
-        let rootFiles = [];
-        await fetch("https://graph.microsoft.com/v1.0/me/drive/root/children", {
-            method: "GET",
-            headers: {'Authorization': 'Bearer ' + accessToken,'Content-Type': 'application/json; charset=UTF-8',}
-        }).then(async res => {
-            await res.json().then(function(data) {
-                rootFiles = data;
-              });
-            })
-        return rootFiles;
-    }
-    
-    async function getPermissions(folderId){
-        let files = [];
-        await fetch("https://graph.microsoft.com/v1.0/me/drive/items/"+ folderId +"/permissions", {
-            method: "GET",
-            headers: {'Authorization': 'Bearer ' + accessToken,'Content-Type': 'application/json; charset=UTF-8',}
-        }).then(async res => {
-            await res.json().then(function(data) {
-                files = data;
-              });
-            })
-        return files;
-    }
-    
-    async function createOneDriveSnapshot(){
-        let snapshot = {
-            //going be double map structure
-            folders: new Map(),
-            //root folder id
-            root: "root"
+        const getOneDriveFiles = async() =>{
+            let res = await api.getMyFiles({accessToken: accessToken});
+            let myFiles = res.data.myFiles;
+            res = await api.getSharedFiles({accessToken: accessToken});
+            let sharedFiles = res.data.sharedFiles;
+            let allFiles = myFiles.concat(sharedFiles);
+            setAllFiles(allFiles);
+            setMyFiles(myFiles);
+            setSharedFiles(sharedFiles);
+            setODEmail(accounts[0].username);
         }
-        snapshot.folders.set("root", new Map());
-        let rootFiles = await getRootFiles();
-        rootFiles = rootFiles.value;
-        for (let file of rootFiles){
-            file.permissions = await getPermissions(file.id);
-            file.permissions = file.permissions.value;
-            file.perm = new Map();
-            for (let per of file.permissions){
-                file.perm.set(per.id, per);
-            }
-            if (file.folder != undefined){
-                file.type = "folder"
-                await getOneDriveHelper(file.id, snapshot)
-            }
-            else {
-                file.type = "file"
-            }
-            snapshot.folders.get("root").set(file.id, file)
-        }
-        console.log(snapshot);
-        return snapshot
-        // createNewSnapshot(snapshot, user.email, "oneDrive")
-    }
-    
-    async function getOneDriveHelper(folderid ,snapshot){
-        let folderFiles = await getSubFiles(folderid)
-        folderFiles = folderFiles.value;
-    
-        snapshot.folders.set(folderid, new Map())
-        for (let file of folderFiles){
-            file.permissions = await getPermissions(file.id);
-            file.permissions = file.permissions.value;
-            file.perm = new Map();
-            for (let per of file.permissions){
-                file.perm.set(per.id, per);
-            }
-            if (file.folder != undefined){
-                file.type = "folder"
-                await getOneDriveHelper(file.id, snapshot)
-            }
-            else {
-                file.type = "file"
-            }
-            snapshot.folders.get(folderid).set(file.id, file)
-        }
-    }
+        startLoading();
+        await getOneDriveFiles();
+        finishLoading();
+    },[finishLoading, startLoading, accessToken])
 
     return (
         <OneDriveContext.Provider value={{
-            accessToken, allFiles
+            accessToken, allFiles, myFiles, sharedFiles, ODemail, getOneDriveFiles
         }}>
             {props.children}
         </OneDriveContext.Provider>

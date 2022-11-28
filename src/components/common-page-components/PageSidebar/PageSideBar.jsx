@@ -7,6 +7,8 @@ import {RiGroupFill} from "react-icons/ri";
 import LinkGoogleLink from "./LinkGoogleLink/LinkGoogleLink";
 import {GoogleContext} from "../../../utils/context/GoogleContext";
 import {UserContext} from "../../../utils/context/UserContext";
+import LinkOneDriveLink from './LinkOneDriveLink/LinkOneDriveLink';
+import { OneDriveContext } from '../../../utils/context/OneDriveContext';
 
 const links = [
     {path: "/files", name: "My Files"},
@@ -24,6 +26,7 @@ const ODlinks = [
 export default function PageSideBar() {
     const location = useLocation();
     const {email} = useContext(GoogleContext);
+    const {ODemail} = useContext(OneDriveContext);
     const {user} = useContext(UserContext);
 
     const pathIcon = (path) => {
@@ -73,7 +76,10 @@ export default function PageSideBar() {
                 ))}
             </div>
             <div className="linked-drives-list">
-                <SideBarDriveLink driveType="one" linked={false} />
+                {    ODemail && ODemail === user.oneDriveId?
+                        <SideBarDriveLink driveType="one" linked={true} email={user.oneDriveId}/>:
+                    <LinkOneDriveLink />
+                }
             </div>
             <div className="sidebar-nav">
                 {ODlinks.map(({path, name}) => (

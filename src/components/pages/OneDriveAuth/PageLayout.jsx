@@ -2,7 +2,7 @@ import React, {useState, useContext} from "react";
 import { useIsAuthenticated } from "@azure/msal-react";
 import { SignInButton } from "./SignInButton";
 import { SignOutButton } from "./SignOutButton"
-import { callMsGraph, callGetSubFiles, createOneDriveSnapshot } from "./graph";
+import { callMsGraph, callGetSubFiles, createOneDriveSnapshot, getAllSharedWithMeFiles} from "./graph";
 import { useMsal } from "@azure/msal-react";
 import { loginRequest } from "./authConfig";
 import { UserContext } from "../../../utils/context/UserContext";
@@ -66,6 +66,7 @@ export const PageLayout = (props) => {
             // callGetSubFiles(accessToken);
             // console.log(apiData);
             createOneDriveSnapshot(accessToken, createNewSnapshot, user);
+            // getAllSharedWithMeFiles(accessToken);
         }
     }
 

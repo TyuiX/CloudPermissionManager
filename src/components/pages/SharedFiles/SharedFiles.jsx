@@ -4,9 +4,11 @@ import "../index.css";
 import FileCell from "../../common-page-components/FileCell/FileCell";
 import {GoogleContext} from "../../../utils/context/GoogleContext";
 import FileInfoSideBar from "../../common-page-components/FileInfoSideBar/FileInfoSideBar";
+import { OneDriveContext } from '../../../utils/context/OneDriveContext';
 
-export default function SharedFiles() {
-    const { sharedFiles } = useContext(GoogleContext)
+export default function SharedFiles(props) {
+    const {isGoogle} = props;
+    const { sharedFiles } = useContext(isGoogle?GoogleContext:OneDriveContext);
     const [filesList, setFilesList] = useState([]);
     const [foldersList, setFoldersList] = useState([]);
     const [selectedFiles, setSelectedFiles] = useState([]);
@@ -19,7 +21,7 @@ export default function SharedFiles() {
         let folder = sharedFiles.filter(file => file.type === "folder")
         setFilesList(file)
         setFoldersList(folder)
-    }, [sharedFiles])
+    }, [sharedFiles, isGoogle])
 
     const handleFileClick = (fileId) => {
         let fileIds = JSON.parse(JSON.stringify(selectedFiles));
@@ -67,7 +69,7 @@ export default function SharedFiles() {
                     </>
                 }
             </div>
-            <FileInfoSideBar filesIds={selectedFiles} shared={true} closeInfo={handleCloseSidebar} />
+            <FileInfoSideBar filesIds={selectedFiles} shared={true} closeInfo={handleCloseSidebar} isGoogle={isGoogle}/>
         </div>
     );
 }

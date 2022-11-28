@@ -5,6 +5,7 @@ import ControlReqQueriesLists from "../ControlReqQueriesLists";
 import controlReqsList from "../ControlReqQueriesLists";
 import { Stack } from "react-bootstrap";
 import { queryByTestId } from "@testing-library/react";
+import { useMsal } from "@azure/msal-react";
 
 export const UserContext = createContext({});
 
@@ -18,6 +19,8 @@ function UserContextProvider(props) {
     const [recentSearches, setRecentSearches] = useState([]);
     const [searchResults, setSearchResults] = useState({});
     const [groupSnapshots, setGroupSnapshots] = useState([])
+    const { instance, accounts } = useMsal();
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -91,6 +94,10 @@ function UserContextProvider(props) {
         setUser({});
         setLoggedIn(false);
         localStorage.clear();
+        // await instance.logoutRedirect({
+        //     account: accounts[0],
+        //     postLogoutRedirectUri: "http://localhost:3000/"
+        // });
         return navigate("/");
     }, [setUser, setLoggedIn, navigate])
 
@@ -104,6 +111,23 @@ function UserContextProvider(props) {
                 localStorage.setItem('user', JSON.stringify(res.data.user))
             }
             return navigate("/files");
+        }
+        catch (err) {
+            return err.response.data.errorMessage;
+        }
+    }, [navigate])
+
+    const setOneDriveAcc = useCallback(async(accEmail, oneDriveEmail) => {
+        try {
+            const res = await api.setLinkedOneDrive({email: accEmail, oneDriveId: oneDriveEmail});
+            if (res.status === 200) {
+                // set the state of the user
+                setUser(res.data.user);
+                // store the user in localStorage
+                localStorage.setItem('user', JSON.stringify(res.data.user))
+            }
+            console.log(user);
+            return navigate("/ODfiles");
         }
         catch (err) {
             return err.response.data.errorMessage;
@@ -154,6 +178,17 @@ function UserContextProvider(props) {
             return err.response.data.errorMessage;
         }
     }, [getSnapshots])
+
+    const createOneDriveSnapshot = useCallback( async (accessToken) => {
+        try{
+            const res = await api.createOneDriveSnapshot({accessToken: accessToken, email: user.email})
+            if(res.status === 200)
+                await getOneDriveSnapshots();
+        }
+        catch(err){
+            return err.response.data.errorMessage;
+        }
+    }, [getOneDriveSnapshots])
 
     const getFolderFileDif = useCallback( async (id) => {
         try {
@@ -1052,7 +1087,7 @@ function UserContextProvider(props) {
             setGoogleAcc, createNewSnapshot, getFolderFileDif, getSnapShotDiff, searchByName, getRecentSearches, createNewControlReq,
             controlReqs, deleteControlReq, setIsLoading, performSearch, searchResults, groupSnapshots, createNewGroupSnapshot,
             getControlReqQueryFiles, checkInDomains, checkViolations, checkReqsBeforeUpdate, getDeviantFiles, checkPermissionSrc, oneDriveSnapshots, 
-            getODFolderFileDif, getODSnapShotDiff, getODDeviantFiles 
+            getODFolderFileDif, getODSnapShotDiff, getODDeviantFiles, setOneDriveAcc, createOneDriveSnapshot 
         }}>
             {props.children}
         </UserContext.Provider>

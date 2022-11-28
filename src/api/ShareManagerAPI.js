@@ -24,6 +24,8 @@ export const getGroupSnapshots = (payload) => api.post(`/snapshot/group/list`, p
 export const getODFileFolderDif = (id) => api.get(`/onedrive/fileFolderDiff/${id}`)
 export const getODSnapDif = (payload) => api.post(`/onedrive/snapShotDiff`, payload)
 export const getODDeviant = (payload) => api.post(`/onedrive/getDeviantFiles`, payload)
+export const setLinkedOneDrive = (payload) => api.post(`/onedrive`, payload)
+export const createOneDriveSnapshot = (payload) => api.post(`/snapshot/addOD`, payload)
 
 const managerAPI = {
     createUser,
@@ -45,7 +47,9 @@ const managerAPI = {
     addRecentSearch,
     getODFileFolderDif,
     getODSnapDif,
-    getODDeviant
+    getODDeviant,
+    setLinkedOneDrive,
+    createOneDriveSnapshot
 }
 
 export default managerAPI

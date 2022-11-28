@@ -4,24 +4,27 @@ import {GoogleContext} from "../../../utils/context/GoogleContext";
 import {AiOutlineClose} from "react-icons/ai";
 import FileInfoBlock from "./FileInfoBlock/FileInfoBlock";
 import UpdateMultipleSharingModal from "../../modals/UpdateMultipleSharingModal/UpdateMultipleSharingModal";
+import { OneDriveContext } from '../../../utils/context/OneDriveContext';
 
 export default function FileInfoSideBar(props) {
-    const {filesIds, shared, closeInfo} = props;
+    const {filesIds, shared, closeInfo, isGoogle} = props;
     const [filesToDisplay, setFilesToDisplay] = useState([]);
-    const {allFiles} = useContext(GoogleContext);
+    const {allFiles} = useContext(isGoogle?GoogleContext:OneDriveContext);
     const [showModal, setShowModal] = useState(false);
 
     const handleToggleModal = () => {
         setShowModal(!showModal)
     }
-
+ 
     useEffect(() => {
         if (!filesIds) {
             return
         }
-        let displayFiles = allFiles.filter(({id}) => filesIds.includes(id))
-        setFilesToDisplay(displayFiles)
-    }, [filesIds, allFiles])
+        if(allFiles){
+            let displayFiles = allFiles.filter(({id}) => filesIds.includes(id))
+            setFilesToDisplay(displayFiles)
+        }
+    }, [filesIds, allFiles, isGoogle])
 
     return (
         <>
@@ -44,7 +47,7 @@ export default function FileInfoSideBar(props) {
                     }
                     {
                         filesToDisplay.map((file) => (
-                            <FileInfoBlock key={file.id} fileInfo={file} shared={shared} closeInfo={closeInfo}/>
+                            <FileInfoBlock key={file.id} fileInfo={file} shared={shared} closeInfo={closeInfo} isGoogle={isGoogle}/>
                         ))
                     }
                 </div>

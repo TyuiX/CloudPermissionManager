@@ -18,7 +18,6 @@ export default function AnalyzeSharingModal(props) {
     const [snapshotDiff, setSnapshotDiff] = useState([])
     const [threshold, setThreshold] = useState(0.8)
     const[currentSnapshots, setCurrentSnapshots] = useState(isGoogle?snapshots:oneDriveSnapshots)
-    console.log(threshold)
     // setCurrentSnapshots(isGoogle?snapshots:oneDriveSnapshots);
     // console.log(currentSnapshots);
 
@@ -28,7 +27,6 @@ export default function AnalyzeSharingModal(props) {
             return
         }
         // set default snapshot to current/most recent
-        console.log(currentSnapshots);
         setSelectedSnap(currentSnapshots[0])
         setSelectedSecondSnap(currentSnapshots[0])
     },[isGoogle?snapshots:oneDriveSnapshots])

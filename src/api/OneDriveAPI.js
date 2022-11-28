@@ -4,10 +4,12 @@ const api = axios.create({
     baseURL: 'http://localhost:8000/onedrive',
 })
 
-export const getFiles = (payload) => api.post(`/ODfiles`, payload)
+export const getMyFiles = (payload) => api.post(`/ODfiles`, payload)
+export const getSharedFiles = (payload) => api.post(`/ODsharedfiles`, payload)
 
 const oneDriveAPI = {
-    getFiles
+    getMyFiles,
+    getSharedFiles
 }
 
 export default oneDriveAPI
