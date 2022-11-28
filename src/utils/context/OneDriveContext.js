@@ -9,14 +9,14 @@ import { loginRequest } from "../../components/pages/OneDriveAuth/authConfig";
 export const OneDriveContext = createContext({});
 
 function OneDriveContextProvider(props){
-    const {user, loggedIn, startLoading, finishLoading } = useContext(UserContext);
+    const {user, loggedIn, startLoading, finishLoading, isLoading } = useContext(UserContext);
     const { instance, inProgress, accounts } = useMsal();
     const [accessToken, setAccessToken] = useState("");
     const isAuthenticated = useIsAuthenticated();
     const [allFiles, setAllFiles] = useState([]);
     const [myFiles, setMyFiles] = useState([]);
     const [sharedFiles, setSharedFiles] = useState([]);
-    const [ODemail, setODEmail] = useState();
+    const [ODemail, setODEmail] = useState("");
 
     useEffect(() => {
         if (!loggedIn) {
@@ -44,7 +44,7 @@ function OneDriveContextProvider(props){
         }
         start();      
         // gapi.load('client:auth2', start)  
-    }, [finishLoading, loggedIn, startLoading, isAuthenticated]);
+    }, [loggedIn, startLoading, isAuthenticated, accounts]);
 
     async function RequestAccessToken() {
         let files = [];
@@ -64,21 +64,21 @@ function OneDriveContextProvider(props){
     }
 
     const getOneDriveFiles = useCallback(async (token) => {
-        const getOneDriveFiles = async(token) =>{
-            let res = await api.getMyFiles({accessToken: token});
-            let myFiles = res.data.myFiles;
-            res = await api.getSharedFiles({accessToken: token});
-            let sharedFiles = res.data.sharedFiles;
-            let allFiles = myFiles.concat(sharedFiles);
-            setAllFiles(allFiles);
-            setMyFiles(myFiles);
-            setSharedFiles(sharedFiles);
-            setODEmail(accounts[0].username);
-        }
         startLoading();
-        await getOneDriveFiles(token);
+        console.log(token)
+        let res = await api.getMyFiles({accessToken: token});
+        let myFiles = res.data.myFiles;
+        console.log(res)
+        res = await api.getSharedFiles({accessToken: token});
+        let sharedFiles = res.data.sharedFiles;
+        let allFiles = myFiles.concat(sharedFiles);
+        setAllFiles(allFiles);
+        setMyFiles(myFiles);
+        setSharedFiles(sharedFiles);
+        console.log(accounts)
+        setODEmail(accounts[0].username);
         finishLoading();
-    },[finishLoading, startLoading, accessToken])
+    },[finishLoading, startLoading, accounts])
 
     return (
         <OneDriveContext.Provider value={{

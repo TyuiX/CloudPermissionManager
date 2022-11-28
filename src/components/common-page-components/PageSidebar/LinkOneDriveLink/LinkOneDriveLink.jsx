@@ -8,7 +8,7 @@ import {ImOnedrive} from "react-icons/im";
 import "./LinkOneDriveLink.css";
 
 export default function LinkOneDriveLink() {
-    const {user, setOneDriveAcc} = useContext(UserContext);
+    const {user, setOneDriveAcc, finishLoading} = useContext(UserContext);
     const {getOneDriveFiles} = useContext(OneDriveContext);
     const {accounts, instance, inProgress} = useMsal();
     const isAuthenticated = useIsAuthenticated();
