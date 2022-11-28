@@ -1,6 +1,5 @@
 import './App.css';
 import PageHeader from "./components/common-page-components/PageHeader/PageHeader";
-import {PageLayout} from "./components/pages/OneDriveAuth/PageLayout";
 import { Route, Routes } from "react-router-dom";
 import MyFiles from "./components/pages/MyFiles/MyFiles";
 import MySnapshots from "./components/pages/Snapshot/MySnapshots";
@@ -17,6 +16,7 @@ import GroupSnapshots from "./components/pages/GroupSnapshots/GroupSnapshots";
 import ODSnapshots from "./components/pages/ODSnapshot/ODSnapshots";
 import SharedDrives from "./components/pages/SharedDrives/SharedDrives";
 import OpenSharedDrive from "./components/pages/OpenSharedDrive/OpenSharedDrive";
+import LinkOneDriveLink from './components/common-page-components/PageSidebar/LinkOneDriveLink/LinkOneDriveLink';
 
 function App() {
     const {isLoading} = useContext(UserContext)
@@ -33,7 +33,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/login/google" element={<LinkGoogleLink />} />
-              <Route path="/login/one" element={<PageLayout />} />
+              <Route path="/login/one" element={<LinkOneDriveLink />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/files" element={<MyFiles isGoogle={true}/>} />
               <Route path="/ODfiles" element={<MyFiles isGoogle={false} />} />

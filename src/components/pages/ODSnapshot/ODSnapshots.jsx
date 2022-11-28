@@ -7,10 +7,9 @@ import {UserContext} from "../../../utils/context/UserContext";
 import AnalyzeSharingModal from "../../modals/AnalyzeSharingModal/AnalyzeSharingModal";
 import "../SnapshotPages.css";
 import {AiOutlinePlus} from "react-icons/ai";
-import { createOneDriveSnapshot } from "../OneDriveAuth/graph";
 
 export default function ODSnapshots(){
-    const {allFiles, accessToken} = useContext(OneDriveContext);
+    const {accessToken} = useContext(OneDriveContext);
     const {oneDriveSnapshots, createOneDriveSnapshot} = useContext(UserContext);
     const [showModal, setShowModal] = useState(false);
     const [analysisType, setAnalysisType] = useState("");

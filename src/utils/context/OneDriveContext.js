@@ -65,24 +65,21 @@ function OneDriveContextProvider(props){
 
     const getOneDriveFiles = useCallback(async (token) => {
         startLoading();
-        console.log(token)
         let res = await api.getMyFiles({accessToken: token});
         let myFiles = res.data.myFiles;
-        console.log(res)
         res = await api.getSharedFiles({accessToken: token});
         let sharedFiles = res.data.sharedFiles;
         let allFiles = myFiles.concat(sharedFiles);
         setAllFiles(allFiles);
         setMyFiles(myFiles);
         setSharedFiles(sharedFiles);
-        console.log(accounts)
         setODEmail(accounts[0].username);
         finishLoading();
     },[finishLoading, startLoading, accounts])
 
     return (
         <OneDriveContext.Provider value={{
-            accessToken, allFiles, myFiles, sharedFiles, ODemail, getOneDriveFiles
+            accessToken, allFiles, myFiles, sharedFiles, ODemail, getOneDriveFiles, RequestAccessToken
         }}>
             {props.children}
         </OneDriveContext.Provider>
