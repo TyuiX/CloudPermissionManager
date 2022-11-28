@@ -79,7 +79,7 @@ export default function MyFiles(props) {
             </div>
             <FileInfoSideBar
                 filesIds={selectedFiles}
-                shared={isGoogle?false:true}
+                shared={!isGoogle}
                 closeInfo={handleCloseSidebar}
                 isGoogle={isGoogle}
             />

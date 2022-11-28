@@ -12,23 +12,6 @@ export default function LinkOneDriveLink() {
     const {getOneDriveFiles} = useContext(OneDriveContext);
     const {accounts, instance, inProgress} = useMsal();
     const isAuthenticated = useIsAuthenticated();
-    // const [onMsalInstanceChange] = useState();
-
-    // const loginHandler = async (err, data, msal) => {
-    //     console.log(err, data);
-    //     // some actions
-    //     if (!err && data) {
-    //         // handleLogin(instance);
-    //         // onMsalInstanceChange(msal);
-    //     }
-    //     if(err){
-    //         onFailure(err);
-    //     }
-    //     else{
-    //         if(isAuthenticated)
-    //             await onSuccess(data);
-    //     }
-    // };
 
     async function handleLogin(instance) {
         instance.loginPopup(loginRequest).catch(e => {
@@ -50,12 +33,6 @@ export default function LinkOneDriveLink() {
 
     return (
         <div>
-            {/* <MicrosoftLogin
-                clientId={msalConfig.auth.clientId}
-                authCallback={loginHandler}
-                useLocalStorageCache={true}
-                graphScopes={loginRequest.scopes}
-            /> */}
             <button onClick={() => handleLogin(instance)}
             className="onedrive-account onedrive-login-link">
                 <ImOnedrive size={20} />
