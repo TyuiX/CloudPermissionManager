@@ -19,7 +19,6 @@ function UserContextProvider(props) {
     const [recentSearches, setRecentSearches] = useState([]);
     const [searchResults, setSearchResults] = useState({});
     const [groupSnapshots, setGroupSnapshots] = useState([])
-    const { instance, accounts } = useMsal();
 
     const navigate = useNavigate();
 
@@ -163,13 +162,9 @@ function UserContextProvider(props) {
 
     const getOneDriveSnapshots = useCallback( async () => {
         try {
-            console.log("in get od");
             const res = await api.getUserProfile({email: user.email});
-            console.log(res.data);
             const res2 = await api.getSnapshots(res.data.oneDriveSnap);
-            console.log(res2);
             setOneDriveSnapshots(res2.data);
-            console.log(oneDriveSnapshots);
         }
         catch (err) {
             return err.response.data.errorMessage;
@@ -194,9 +189,11 @@ function UserContextProvider(props) {
 
     const createOneDriveSnapshot = useCallback( async (accessToken) => {
         try{
+            startLoading();
             const res = await api.createOneDriveSnapshot({accessToken: accessToken, email: user.email})
             if(res.status === 200)
                 await getOneDriveSnapshots();
+            finishLoading();
         }
         catch(err){
             return err.response.data.errorMessage;
