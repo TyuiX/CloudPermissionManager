@@ -14,6 +14,7 @@ import {UserContext} from "./utils/context/UserContext";
 import LoadingScreen from "./components/common-page-components/LoadingScreen/LoadingScreen";
 import SearchResults from './components/pages/SearchResults/SearchResults';
 import GroupSnapshots from "./components/pages/GroupSnapshots/GroupSnapshots";
+import ODSnapshots from "./components/pages/ODSnapshot/ODSnapshots";
 import SharedDrives from "./components/pages/SharedDrives/SharedDrives";
 import OpenSharedDrive from "./components/pages/OpenSharedDrive/OpenSharedDrive";
 
@@ -34,11 +35,16 @@ function App() {
               <Route path="/login/google" element={<LinkGoogleLink />} />
               <Route path="/login/one" element={<PageLayout />} />
               <Route path="/signup" element={<SignUp />} />
+              <Route path="/files" element={<MyFiles isGoogle={true}/>} />
+              <Route path="/ODfiles" element={<MyFiles isGoogle={false} />} />
+              <Route path="/sharedfiles" element={<SharedFiles isGoogle={true}/>} />
+              <Route path="/ODsharedfiles" element={<SharedFiles isGoogle={false}/>} />
               <Route path="/files" element={<MyFiles />} />
               <Route path="/sharedfiles" element={<SharedFiles />} />
               <Route path="/shared/drives" element={<SharedDrives />} />
               <Route path="/shared/drive/:driveId/:driveName" element={<OpenSharedDrive />} />
               <Route path="/filesnapshot" element={<MySnapshots />} />
+              <Route path="/ODfilesnapshot" element={<ODSnapshots />} />
               <Route path="/groupsnapshot" element={<GroupSnapshots />} />
               <Route path="/searchresults" element={<SearchResults/>}/>
           </Routes>

@@ -21,6 +21,11 @@ export const createNewControlReqs = (payload) => api.post(`/control/requirements
 export const deviant = (payload) => api.post(`/getDeviantFiles`, payload)
 export const createNewGroupSnapshot = (payload) => api.post(`/snapshot/group/add`, payload)
 export const getGroupSnapshots = (payload) => api.post(`/snapshot/group/list`, payload)
+export const getODFileFolderDif = (id) => api.get(`/onedrive/fileFolderDiff/${id}`)
+export const getODSnapDif = (payload) => api.post(`/onedrive/snapShotDiff`, payload)
+export const getODDeviant = (payload) => api.post(`/onedrive/getDeviantFiles`, payload)
+export const setLinkedOneDrive = (payload) => api.post(`/onedrive`, payload)
+export const createOneDriveSnapshot = (payload) => api.post(`/snapshot/addOD`, payload)
 export const updateRecentSnapshot = (payload) => api.post(`/snapshot/update`, payload)
 
 const managerAPI = {
@@ -41,7 +46,12 @@ const managerAPI = {
     createNewGroupSnapshot,
     getGroupSnapshots,
     addRecentSearch,
-    updateRecentSnapshot,
+    getODFileFolderDif,
+    getODSnapDif,
+    getODDeviant,
+    setLinkedOneDrive,
+    createOneDriveSnapshot,
+    updateRecentSnapshot
 }
 
 export default managerAPI

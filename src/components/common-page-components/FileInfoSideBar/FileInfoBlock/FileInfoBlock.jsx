@@ -6,7 +6,7 @@ import {IoIosArrowDown, IoIosArrowUp} from "react-icons/io";
 import UpdateSingleSharingModal from "../../../modals/UpdateSingleSharingModal/UpdateSingleSharingModal";
 
 export default function FileInfoBlock(props) {
-    const {fileInfo, shared, closeInfo} = props;
+    const {fileInfo, shared, closeInfo, isGoogle} = props;
     const {name, cloudOrigin, type, permissions, id} = fileInfo;
     const [openDropdown, setOpenDropdown] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -38,19 +38,19 @@ export default function FileInfoBlock(props) {
                         }
                         <div>
                             <div className="file-info-key">Origin</div>
-                            <span className="file-info-value">{drives[cloudOrigin].name}</span>
+                            <span className="file-info-value">{drives[isGoogle?cloudOrigin:"one"].name}</span>
                         </div>
                         <div>
                             <span className="file-info-key">Type</span>
                             <span className="file-info-value">{type.charAt(0).toUpperCase() + type.slice(1)}</span>
                         </div>
                         <div className="files-permissions-list">
-                            {permissions ?
+                            {permissions && isGoogle?
                                 <>
                                     <div className="file-info-key perms-header">Permissions </div>
                                     {
                                         permissions.map((perm) => (
-                                            <PermissionsCell key={perm.id} permInfo={perm} />
+                                            <PermissionsCell key={perm.id} permInfo={perm}/>
                                         ))
                                     }
                                 </>

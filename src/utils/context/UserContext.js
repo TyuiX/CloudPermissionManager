@@ -1,17 +1,26 @@
 import React, {createContext, useCallback, useEffect, useState} from "react";
 import api from '../../api/ShareManagerAPI'
 import {useNavigate} from "react-router-dom";
+import ControlReqQueriesLists from "../ControlReqQueriesLists";
+import controlReqsList from "../ControlReqQueriesLists";
+import { Stack } from "react-bootstrap";
+import { queryByTestId } from "@testing-library/react";
+import { useMsal } from "@azure/msal-react";
+
 export const UserContext = createContext({});
 
 function UserContextProvider(props) {
     const [user, setUser] = useState({});
     const [snapshots, setSnapshots] = useState([]);
+    const [oneDriveSnapshots, setOneDriveSnapshots] = useState([]);
     const [controlReqs, setControlReqs] = useState([]);
     const [loggedIn, setLoggedIn] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [recentSearches, setRecentSearches] = useState([]);
     const [searchResults, setSearchResults] = useState({});
     const [groupSnapshots, setGroupSnapshots] = useState([])
+    const { instance, accounts } = useMsal();
+
     const navigate = useNavigate();
 
     // check if user is already logged in
@@ -35,7 +44,7 @@ function UserContextProvider(props) {
             return
         }
         const loadResources = async () => {
-            await Promise.all([getSnapshots(), getRecentSearches(), getControlReqs(), getGroupSnapshots()])
+            await Promise.all([getSnapshots(), getRecentSearches(), getControlReqs(), getGroupSnapshots(), getOneDriveSnapshots()])
         }
         loadResources()
     }, [user.email])
@@ -87,6 +96,10 @@ function UserContextProvider(props) {
         setUser({});
         setLoggedIn(false);
         localStorage.clear();
+        // await instance.logoutRedirect({
+        //     account: accounts[0],
+        //     postLogoutRedirectUri: "http://localhost:3000/"
+        // });
         return navigate("/");
     }, [setUser, setLoggedIn, navigate])
 
@@ -100,6 +113,23 @@ function UserContextProvider(props) {
                 localStorage.setItem('user', JSON.stringify(res.data.user))
             }
             return navigate("/files");
+        }
+        catch (err) {
+            return err.response.data.errorMessage;
+        }
+    }, [navigate])
+
+    const setOneDriveAcc = useCallback(async(accEmail, oneDriveEmail) => {
+        try {
+            const res = await api.setLinkedOneDrive({email: accEmail, oneDriveId: oneDriveEmail});
+            if (res.status === 200) {
+                // set the state of the user
+                setUser(res.data.user);
+                // store the user in localStorage
+                localStorage.setItem('user', JSON.stringify(res.data.user))
+            }
+            console.log(user);
+            return navigate("/ODfiles");
         }
         catch (err) {
             return err.response.data.errorMessage;
@@ -120,17 +150,47 @@ function UserContextProvider(props) {
         }
     },[user.email])
 
-    const createNewSnapshot = useCallback( async (snapshot, email) => {
+    const getOneDriveSnapshots = useCallback( async () => {
         try {
-            const res = await api.createSnapshot({snapshot: snapshot, email: email})
-            if (res.status === 200) {
-                await getSnapshots()
+            console.log("in get od");
+            const res = await api.getUserProfile({email: user.email});
+            console.log(res.data);
+            const res2 = await api.getSnapshots(res.data.oneDriveSnap);
+            console.log(res2);
+            setOneDriveSnapshots(res2.data);
+            console.log(oneDriveSnapshots);
+        }
+        catch (err) {
+            return err.response.data.errorMessage;
+        }
+    },[user.email])
+
+    const createNewSnapshot = useCallback( async (snapshot, email, drive) => {
+        try {
+            const res = await api.createSnapshot({snapshot: snapshot, email: email, drive: drive})
+            if (res.status === 200 && drive == "googleDrive") {
+                await getSnapshots();
+            }
+            if(res.status === 200 && drive =="oneDrive"){
+                console.log("getting new od snap");
+                await getOneDriveSnapshots();
             }
         }
         catch (err) {
             return err.response.data.errorMessage;
         }
     }, [getSnapshots])
+
+    const createOneDriveSnapshot = useCallback( async (accessToken) => {
+        try{
+            const res = await api.createOneDriveSnapshot({accessToken: accessToken, email: user.email})
+            if(res.status === 200)
+                await getOneDriveSnapshots();
+        }
+        catch(err){
+            return err.response.data.errorMessage;
+        }
+    }, [getOneDriveSnapshots])
 
     const getFolderFileDif = useCallback( async (id) => {
         try {
@@ -145,11 +205,38 @@ function UserContextProvider(props) {
         }
     }, [])
 
-    const getDeviantFiles = useCallback( async (snapshot) => {
+    const getODFolderFileDif = useCallback( async (id) => {
         try {
-            const res = await api.deviant({snapshot: snapshot})
+            console.log(id);
+            const res = await api.getODFileFolderDif(id);
             if (res.status === 200) {
                 console.log(res.data)
+                return res.data;
+            }
+        }
+        catch (err) {
+            console.log(err);
+            return err.response.data.errorMessage;
+        }
+    }, [])
+
+    const getDeviantFiles = useCallback( async (snapshot, threshold) => {
+        try {
+            const res = await api.deviant({snapshot: snapshot, threshold: threshold})
+            if (res.status === 200) {
+                console.log(res.data)
+                return res.data
+            }
+        }
+        catch (err) {
+            return err.response.data.errorMessage;
+        }
+    }, [])
+
+    const getODDeviantFiles = useCallback( async (snapshot, threshold) => {
+        try {
+            const res = await api.getODDeviant({snapshot: snapshot, threshold: threshold})
+            if (res.status === 200) {
                 return res.data
             }
         }
@@ -172,7 +259,21 @@ function UserContextProvider(props) {
         }
     }, [])
 
-    // method to perform a textual name search
+    const getODSnapShotDiff = useCallback( async (oldSnapshot, currSnapshot) => {
+        try {
+            const res = await api.getODSnapDif({oldSnapshot: oldSnapshot, currSnapshot: currSnapshot});
+            if (res.status === 200) {
+                // set the state of the user
+                console.log(res.data)
+                return res.data
+            }
+        }
+        catch(err){
+            return err.response.data.errorMessage;
+        }
+    }, [])
+    
+
     const searchByName = useCallback( async (id, searchText) => {
         try{
             const res = await api.searchByName({name: searchText, id: id, email: user.email});
@@ -1101,6 +1202,8 @@ function UserContextProvider(props) {
             user, snapshots, isLoading, loggedIn, recentSearches, createUser, loginUser, logoutUser, startLoading, finishLoading, 
             setGoogleAcc, createNewSnapshot, getFolderFileDif, getSnapShotDiff, searchByName, getRecentSearches, createNewControlReq,
             controlReqs, deleteControlReq, setIsLoading, performSearch, searchResults, groupSnapshots, createNewGroupSnapshot,
+            getControlReqQueryFiles, checkInDomains, checkViolations, checkReqsBeforeUpdate, getDeviantFiles, checkPermissionSrc, oneDriveSnapshots, 
+            getODFolderFileDif, getODSnapShotDiff, getODDeviantFiles, setOneDriveAcc, createOneDriveSnapshot, 
             getControlReqQueryFiles, checkInDomains, checkViolations, checkReqsBeforeUpdate, getDeviantFiles, checkPermissionSrc,
             getSnapshots,
             checkForGroupMemSnapshot

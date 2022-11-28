@@ -41,8 +41,6 @@ export default function MySnapshots() {
 
         summedFiles.forEach((file) => {
             const {id, parents, permissions} = file;
-            console.log(permissions);
-            console.log(file);
 
             // check if file is "orphaned" or not
             if (!parents){
@@ -107,7 +105,7 @@ export default function MySnapshots() {
         snapshot.folders = Object.fromEntries(snapshot.folders)
         console.log(snapshot)
         // uncomment below
-        createNewSnapshot(snapshot, user.email)
+        createNewSnapshot(snapshot, user.email, "googleDrive")
     }
 
     const openAnalyzeSnapshot = async () => {
@@ -163,6 +161,7 @@ export default function MySnapshots() {
                 <AnalyzeSharingModal
                     analysisType={analysisType}
                     toggleModal={handleToggleModal}
+                    isGoogle={true}
                 />
             }
         </>

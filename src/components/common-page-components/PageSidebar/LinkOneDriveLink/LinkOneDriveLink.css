@@ -1,0 +1,26 @@
+.onedrive-account {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    margin-left: 10px;
+}
+
+.onedrive-account span {
+    margin-left: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.onedrive-login-link {
+    border-radius: 20px;
+    padding: 8px;
+    text-decoration: none;
+    color: black;
+    transition: 0.12s;
+}
+
+.onedrive-login-link:hover {
+    color: white;
+    background-color: mediumseagreen;
+}
