@@ -28,6 +28,7 @@ function UserContextProvider(props) {
         const loggedInUser = localStorage.getItem("user");
         if (loggedInUser) {
             const foundUser = JSON.parse(loggedInUser);
+            console.log(foundUser)
             setUser(foundUser);
             setLoggedIn(true)
             navigate("/files")
@@ -107,10 +108,15 @@ function UserContextProvider(props) {
         try {
             const res = await api.setLinkedGoogle({email: accEmail, googleId: googleEmail});
             if (res.status === 200) {
+                let user = res.data.user;
+                const currentUser = JSON.parse(localStorage.getItem("user"));
+                if (currentUser.hasOwnProperty("oneDriveId")) {
+                    user.oneDriveId = currentUser.oneDriveId
+                }
                 // set the state of the user
-                setUser(res.data.user);
+                setUser(user);
                 // store the user in localStorage
-                localStorage.setItem('user', JSON.stringify(res.data.user))
+                localStorage.setItem('user', JSON.stringify(user))
             }
             return navigate("/files");
         }
@@ -123,10 +129,15 @@ function UserContextProvider(props) {
         try {
             const res = await api.setLinkedOneDrive({email: accEmail, oneDriveId: oneDriveEmail});
             if (res.status === 200) {
+                let user = res.data.user;
+                const currentUser = JSON.parse(localStorage.getItem("user"));
+                if (currentUser.hasOwnProperty("googleId")) {
+                    user.googleId = currentUser.googleId
+                }
                 // set the state of the user
-                setUser(res.data.user);
+                setUser(user);
                 // store the user in localStorage
-                localStorage.setItem('user', JSON.stringify(res.data.user))
+                localStorage.setItem('user', JSON.stringify(user))
             }
             console.log(user);
             return navigate("/ODfiles");
@@ -1203,8 +1214,7 @@ function UserContextProvider(props) {
             setGoogleAcc, createNewSnapshot, getFolderFileDif, getSnapShotDiff, searchByName, getRecentSearches, createNewControlReq,
             controlReqs, deleteControlReq, setIsLoading, performSearch, searchResults, groupSnapshots, createNewGroupSnapshot,
             getControlReqQueryFiles, checkInDomains, checkViolations, checkReqsBeforeUpdate, getDeviantFiles, checkPermissionSrc, oneDriveSnapshots, 
-            getODFolderFileDif, getODSnapShotDiff, getODDeviantFiles, setOneDriveAcc, createOneDriveSnapshot, 
-            getControlReqQueryFiles, checkInDomains, checkViolations, checkReqsBeforeUpdate, getDeviantFiles, checkPermissionSrc,
+            getODFolderFileDif, getODSnapShotDiff, getODDeviantFiles, setOneDriveAcc, createOneDriveSnapshot,
             getSnapshots,
             checkForGroupMemSnapshot
         }}>

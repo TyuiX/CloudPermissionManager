@@ -2,7 +2,6 @@
     display: flex;
     align-items: center;
     font-size: 14px;
-    margin-left: 10px;
 }
 
 .onedrive-account span {
@@ -13,14 +12,16 @@
 }
 
 .onedrive-login-link {
-    border-radius: 20px;
-    padding: 8px;
+    width: 100%;
+    padding: 10px 8px;
     text-decoration: none;
     color: black;
     transition: 0.12s;
+    border: 1px solid black;
 }
 
 .onedrive-login-link:hover {
+    cursor: pointer;
     color: white;
     background-color: mediumseagreen;
 }
